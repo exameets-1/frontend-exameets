@@ -1,0 +1,147 @@
+.admit-card-details {
+    padding: 40px 20px;
+    background-color: #f5f7fa;
+    min-height: calc(100vh - 60px);
+}
+
+.admit-card-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+.admit-card-details h1 {
+    color: #003366;
+    font-size: 2.2rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.organization-info {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e6f4ff;
+}
+
+.organization-info h2 {
+    color: #015990;
+    font-size: 1.5rem;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.detail-item {
+    background-color: #f8fafc;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e6f4ff;
+}
+
+.detail-item h3 {
+    color: #015990;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.detail-item p {
+    color: #555;
+    line-height: 1.6;
+}
+
+.description-section {
+    margin: 30px 0;
+    padding: 20px;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e6f4ff;
+}
+
+.description-section h3 {
+    color: #015990;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+}
+
+.description-section p {
+    color: #555;
+    line-height: 1.8;
+    white-space: pre-line;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.download-button {
+    background-color: #015990;
+    color: white;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.download-button:hover {
+    background-color: #014570;
+}
+
+.error-message {
+    text-align: center;
+    color: #dc2626;
+    padding: 20px;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .admit-card-details {
+        padding: 20px 15px;
+    }
+
+    .admit-card-container {
+        padding: 20px;
+    }
+
+    .admit-card-details h1 {
+        font-size: 1.8rem;
+    }
+
+    .organization-info h2 {
+        font-size: 1.3rem;
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .admit-card-details h1 {
+        font-size: 1.5rem;
+    }
+
+    .organization-info h2 {
+        font-size: 1.1rem;
+    }
+
+    .detail-item,
+    .description-section {
+        padding: 15px;
+    }
+}

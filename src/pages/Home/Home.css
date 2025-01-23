@@ -1,0 +1,25 @@
+.home-container {
+    width: 100%;
+    padding: 20px;
+  }
+  
+  .content-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px 5%;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .content-section {
+      flex-direction: column;
+      padding: 20px;
+    }
+  }
+  
+  @media screen and (max-width: 1024px) {
+    .content-section {
+      gap: 15px;
+    }
+  }
