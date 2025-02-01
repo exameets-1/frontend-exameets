@@ -5,7 +5,7 @@ import './Navbar.css';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAuthenticated } = useSelector((state) => state.user);
+  const { isAuthenticated,user } = useSelector((state) => state.user);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -121,7 +121,11 @@ const Navbar = () => {
       </div>
 
       <div className="bottom-line">
-        <p>Register to get the notifications you need</p>
+      {isAuthenticated ? (
+          <p>Hi, {user.name}</p>
+        ) : (
+          <p>Register to get the notifications you need</p>
+        )}
         <div className="auth-links">
           {!isAuthenticated ? (
             <>

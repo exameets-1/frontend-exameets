@@ -5,6 +5,16 @@
     margin-left: 20px;
     margin-right: 20px;
 }
+.header-bottom{
+    width:100%;
+}
+
+.admission_page{
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    justify-items: center;
+}
 
 .card {
     background-color: #015990;
@@ -47,15 +57,17 @@
 }
 
 .view-details {
-    color: white;
+    color: #003366;
     text-decoration: none;
     font-weight: bold;
     font-size: 0.9rem;
-    margin-left: 10px;
+    margin: 0px;
+    padding: 0px;
 }
 
 .view-details:hover {
     text-decoration: underline;
+    background-color: #ffffff;
 }
 
 .card-footer {
@@ -80,30 +92,6 @@ h2 {
     font-size: 30px;
     margin-top: 15px;
     margin-bottom: 10px;
-}
-
-.search-filter-sort {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    gap: 20px;
-}
-
-.search-container {
-    position: relative;
-    display: inline-block;
-    width: 50%;
-    margin-left: 20px;
-}
-
-input[type="text"] {
-    padding: 10px;
-    font-size: 20px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    width: 100%;
-    padding-left: 40px;
 }
 
 .pagination {

@@ -7,11 +7,11 @@ import examReducer from "./slices/examSlice.js";
 import internshipReducer from "./slices/internshipSlice.js";
 import previousYearReducer from './slices/previousSlice.js';
 import admissionReducer from './slices/admissionSlice.js';
-import whatsNewReducer from './slices/whatsNewSlice.js';
 import teamReducer from './slices/teamSlice.js';
 import scholarshipReducer from './slices/scholarshipSlice.js';
 import admitCardReducer from './slices/admitCardSlice.js';
 import resultReducer from './slices/resultSlice.js';
+import globalSearchReducer from './slices/globalSearchSlice';
 
 const store = configureStore({
   reducer: {
@@ -23,11 +23,11 @@ const store = configureStore({
     previousYears : previousYearReducer,
     exams : examReducer,
     admissions: admissionReducer,
-    whatsNew: whatsNewReducer,
     team: teamReducer,
     scholarships: scholarshipReducer,
     admitCards: admitCardReducer,
-    results: resultReducer
+    results: resultReducer,
+    globalSearch: globalSearchReducer
   },
 });
 

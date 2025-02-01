@@ -1,5 +1,28 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import axiosInstance from "../../axiosInstance";
+
+// Create Internship
+export const createInternship = createAsyncThunk(
+    "internship/create",
+    async (internshipData) => {
+        try {
+            const { data } = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/create`,
+                internshipData,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true,
+                }
+            );
+            return data;
+        } catch (error) {
+            throw error.response.data.message;
+        }
+    }
+);
 
 const internshipSlice = createSlice({
   name: "internships",
@@ -9,9 +32,16 @@ const internshipSlice = createSlice({
     error: null,
     message: null,
     internship: null,
-    currentPage: 1,
-    totalPages: 1,
-    totalInternships: 0,
+    pagination: {
+      currentPage: 1,
+      totalPages: 1,
+      totalInternships: 0,
+      hasNextPage: false,
+      hasPrevPage: false,
+      nextPage: null,
+      prevPage: null,
+      limit: 8
+    },
     appliedJobs: [],
     latestInternships: [], 
   },
@@ -54,9 +84,7 @@ const internshipSlice = createSlice({
   successForAllInternships(state, action) {
     state.loading = false;
     state.internships = action.payload.internships;
-    state.currentPage = action.payload.currentPage;
-    state.totalPages = action.payload.totalPages;
-    state.totalInternships = action.payload.totalInternships;
+    state.pagination = action.payload.pagination;
   },
   applyInternshipRequest(state) {
     state.loading = true;
@@ -81,17 +109,104 @@ const internshipSlice = createSlice({
   successLatestInternships(state, action) {
     state.loading = false;
     state.error = null;
-    state.latestInternships = action.payload.internships;
+    state.latestInternships = action.payload.internships || [];
   },
   failureLatestInternships(state, action) {
     state.loading = false;
     state.error = action.payload;
     state.latestInternships = [];
   },
+  deleteInternshipRequest(state) {
+    state.loading = true;
+    state.error = null;
+  },
+  deleteInternshipSuccess(state, action) {
+    state.loading = false;
+    state.error = null;
+    state.internships = state.internships.filter(internship => internship._id !== action.payload.id);
+  },
+  deleteInternshipFailed(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  updateInternshipRequest(state) {
+    state.loading = true;
+    state.error = null;
+  },
+  updateInternshipSuccess(state, action) {
+    state.loading = false;
+    state.error = null;
+    state.internship = action.payload;
+    state.message = "Internship updated successfully";
+  },
+  updateInternshipFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  clearError: (state) => {
+    state.error = null;
+  },
+  clearMessage: (state) => {
+    state.message = null;
+  },
+},
+extraReducers: (builder) => {
+    builder
+        // Create Internship
+        .addCase(createInternship.pending, (state) => {
+            state.loading = true;
+        })
+        .addCase(createInternship.fulfilled, (state, action) => {
+            state.loading = false;
+            state.internships.unshift(action.payload.internship);
+            state.message = action.payload.message;
+        })
+        .addCase(createInternship.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.error.message;
+        });
 },
 });
 
-export const fetchInternships = (searchKeyword = "", page = 1) => async (dispatch) => {
+export const fetchInternships = (city = "All", internship_type = "All", searchKeyword = "", page = 1) => async (dispatch) => {
+    try {
+        dispatch(internshipSlice.actions.requestForAllInternships());
+        let link = `${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/getall?`;
+        let queryParams = [`page=${page}`];
+    
+        if (city && city !== "All") {
+            queryParams.push(`city=${encodeURIComponent(city)}`);
+        }
+        
+        if (internship_type && internship_type !== "All") {
+            queryParams.push(`internship_type=${encodeURIComponent(internship_type)}`);
+        }
+        
+        if (searchKeyword) {
+            queryParams.push(`searchKeyword=${encodeURIComponent(searchKeyword)}`);
+        }
+    
+        link += queryParams.join("&");
+        
+        const response = await axios.get(link, { withCredentials: true });
+        
+        if (!response.data.success) {
+            throw new Error(response.data.message || "Failed to fetch internships");
+        }
+        
+        dispatch(internshipSlice.actions.successForAllInternships({
+            internships: response.data.internships,
+            pagination: response.data.pagination
+        }));
+        dispatch(internshipSlice.actions.clearAllErrors());
+    } catch (error) {
+        dispatch(internshipSlice.actions.failureForAllInternships(
+            error.response?.data?.message || error.message || "Failed to fetch internships"
+        ));
+    }
+};
+
+export const fetchInternship_old = (searchKeyword = "", page = 1) => async (dispatch) => {
     try {
         dispatch(internshipSlice.actions.requestForAllInternships());
         let link = `${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/getall?`;
@@ -106,9 +221,7 @@ export const fetchInternships = (searchKeyword = "", page = 1) => async (dispatc
         
         dispatch(internshipSlice.actions.successForAllInternships({
             internships: response.data.internships,
-            currentPage: response.data.currentPage,
-            totalPages: response.data.totalPages,
-            totalInternships: response.data.totalInternships
+            pagination: response.data.pagination
         }));
         dispatch(internshipSlice.actions.clearAllErrors());
     } catch (error) {
@@ -138,9 +251,8 @@ export const resetInternshipSlice = () => (dispatch) => {
 export const fetchLatestInternships = () => async (dispatch) => {
   try {
     dispatch(internshipSlice.actions.requestLatestInternships());
-    const { data } = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/latest`,
-      { withCredentials: true }
+    const { data } = await axiosInstance.get(
+      `/api/v1/internship/latest`
     );
     dispatch(internshipSlice.actions.successLatestInternships(data));
   } catch (error) {
@@ -152,5 +264,30 @@ export const fetchLatestInternships = () => async (dispatch) => {
   }
 };
 
-export const { clearErrors } = internshipSlice.actions;
+export const deleteInternship = (id) => async (dispatch) => {
+  try {
+    dispatch(internshipSlice.actions.deleteInternshipRequest());
+    const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/${id}`, { withCredentials: true });
+    dispatch(internshipSlice.actions.deleteInternshipSuccess({ message: response.data.message, id }));
+  } catch (error) {
+    dispatch(internshipSlice.actions.deleteInternshipFailed(error.response?.data?.message || "Failed to delete internship"));
+  }
+};
+
+export const updateInternship = ({ internshipId, updatedData }) => async (dispatch) => {
+  try {
+    dispatch(internshipSlice.actions.updateInternshipRequest());
+    const { data } = await axios.put(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/update/${internshipId}`,
+      updatedData,
+      { withCredentials: true }
+    );
+    dispatch(internshipSlice.actions.updateInternshipSuccess(data.internship));
+    return data;
+  } catch (error) {
+    dispatch(internshipSlice.actions.updateInternshipFailure(error.response?.data?.message || "Failed to update internship"));
+  }
+};
+
+export const { clearError, clearMessage } = internshipSlice.actions;
 export default internshipSlice.reducer;

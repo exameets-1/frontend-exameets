@@ -1,5 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import axiosInstance from "../../axiosInstance";
 
 const admitCardSlice = createSlice({
     name: "admitCards",
@@ -11,7 +12,8 @@ const admitCardSlice = createSlice({
         currentPage: 1,
         totalPages: 1,
         totalAdmitCards: 0,
-        latestAdmitCards: []
+        latestAdmitCards: [],
+        message: null
     },
     reducers: {
         requestStarted(state) {
@@ -55,9 +57,76 @@ const admitCardSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
             state.latestAdmitCards = [];
+        },
+        deleteAdmitCardSuccess(state, action) {
+            state.loading = false;
+            state.error = null;
+            state.admitCards = state.admitCards.filter(admitCard => admitCard._id !== action.payload.id);
+        },
+        deleteAdmitCardFailed(state, action) {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        deleteAdmitCardRequest(state) {
+            state.loading = true;
+            state.error = null;
+        },
+        updateAdmitCardRequest(state) {
+            state.loading = true;
+            state.error = null;
+        },
+        updateAdmitCardSuccess(state, action) {
+            state.loading = false;
+            state.error = null;
+            state.admitCard = action.payload.admitCard;
+            state.message = "Admit card updated successfully";
+        },
+        updateAdmitCardFailure(state, action) {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        clearMessage(state) {
+            state.message = null;
+        }
+    },
+    extraReducers: (builder) => {
+        builder
+            // Create Admit Card
+            .addCase(createAdmitCard.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(createAdmitCard.fulfilled, (state, action) => {
+                state.loading = false;
+                state.admitCards.unshift(action.payload.admitCard);
+                state.message = action.payload.message;
+            })
+            .addCase(createAdmitCard.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            })
+    },
+});
+
+export const createAdmitCard = createAsyncThunk(
+    "admitCard/create",
+    async (admitCardData) => {
+        try {
+            const { data } = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/admitcard/create`,
+                admitCardData,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true,
+                }
+            );
+            return data;
+        } catch (error) {
+            throw error.response.data.message;
         }
     }
-});
+);
 
 export const fetchAdmitCards = (searchKeyword = "", organization = "", status = "", page = 1) => async (dispatch) => {
     try {
@@ -117,4 +186,30 @@ export const fetchLatestAdmitCards = () => async (dispatch) => {
     }
 };
 
+export const deleteAdmitCard = (id) => async (dispatch) => {
+    try {
+        dispatch(admitCardSlice.actions.deleteAdmitCardRequest());
+        const response = await axiosInstance.delete(`/api/v1/admitcard/${id}`, { withCredentials: true });
+        dispatch(admitCardSlice.actions.deleteAdmitCardSuccess({ message: response.data.message, id }));
+    } catch (error) {
+        dispatch(admitCardSlice.actions.deleteAdmitCardFailed(error.response?.data?.message || "Failed to delete admit card"));
+    }
+};
+
+export const updateAdmitCard = ({ admitCardId, updatedData }) => async (dispatch) => {
+    try {
+        dispatch(admitCardSlice.actions.updateAdmitCardRequest());
+        const { data } = await axios.put(
+            `${import.meta.env.VITE_BACKEND_URL}/api/v1/admitcard/update/${admitCardId}`,
+            updatedData,
+            { withCredentials: true }
+        );
+        dispatch(admitCardSlice.actions.updateAdmitCardSuccess(data.admitCard));
+        return data;
+    } catch (error) {
+        dispatch(admitCardSlice.actions.updateAdmitCardFailure(error.response?.data?.message || "Failed to update admit card"));
+    }
+};
+
+export const { clearMessage } = admitCardSlice.actions;
 export default admitCardSlice.reducer;

@@ -1,9 +1,12 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { fetchInternships, clearAllInternshipErrors } from "../../store/slices/internshipSlice";
+import { fetchInternships, deleteInternship, createInternship } from "../../store/slices/internshipSlice";
 import Spinner from "../../components/Spinner";
+import { FaTrash, FaPlus } from "react-icons/fa";
+import { toast } from "react-toastify";
+import AddInternshipModal from "../../components/AddInternshipModal/AddInternshipModal";
+
 import "./Internships.css";
 
 const useDebounce = (value, delay) => {
@@ -17,160 +20,226 @@ const useDebounce = (value, delay) => {
     return debouncedValue;
 };
 
-const normalizeText = (text) => {
-    return text.toLowerCase()
-        .replace(/[^a-z0-9\s]/g, '')
-        .trim();
-};
-
 const Internships = () => {
-    const [searchInput, setSearchInput] = useState("");
-    const [currentPage, setCurrentPage] = useState(() => {
-        const savedPage = localStorage.getItem('internshipPageNumber');
-        return savedPage ? parseInt(savedPage) : 1;
+    const { isAuthenticated, user } = useSelector((state) => state.user);
+    const [filters, setFilters] = useState({
+        city: "All",
+        internship_type: "All"
     });
-    const searchInputRef = useRef(null);
-    const searchKeyword = useDebounce(searchInput, 500);
-
-    const { 
-        internships, 
-        loading, 
-        error,
-        totalPages,
-        totalInternships 
-    } = useSelector((state) => state.internships);
+    const [searchKeyword, setSearchKeyword] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const debouncedSearchKeyword = useDebounce(searchKeyword, 500);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const jobMatchesSearch = (internship) => {
-        if (!searchKeyword) return true;
-        
-        const normalizedSearch = normalizeText(searchKeyword);
-        
-        // Check internship fields
-        if (normalizeText(internship.internship_type).includes(normalizedSearch)) return true;
-        if (normalizeText(internship.description).includes(normalizedSearch)) return true;
-        if (internship.eligibility_criteria && normalizeText(internship.eligibility_criteria).includes(normalizedSearch)) return true;
-        if (internship.organization && normalizeText(internship.organization).includes(normalizedSearch)) return true;
-        if (internship.skills_required && internship.skills_required.some(skill => 
-            normalizeText(skill).includes(normalizedSearch)
-        )) return true;
-        
-        return false;
+    const { loading, internships, error, pagination } = useSelector((state) => state.internships);
+
+    useEffect(() => {
+        dispatch(fetchInternships(filters.city, filters.internship_type, debouncedSearchKeyword, currentPage));
+    }, [dispatch, filters.city, filters.internship_type, debouncedSearchKeyword, currentPage]);
+
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters(prev => ({
+            ...prev,
+            [name]: value
+        }));
+        setCurrentPage(1); // Reset to first page when filters change
     };
 
-    const filteredInternships = internships?.filter(jobMatchesSearch) || [];
-
-    useEffect(() => {
-        if (searchInputRef.current) {
-            searchInputRef.current.focus();
-        }
-    }, [filteredInternships]);
-
-    useEffect(() => {
-        if (searchKeyword !== "") {
-            setCurrentPage(1);
-            localStorage.setItem('internshipPageNumber', '1');
-        }
-    }, [searchKeyword]);
-
-    useEffect(() => {
-        if (error) {
-            toast.error(error);
-            dispatch(clearAllInternshipErrors());
-        }
-        
-        const savedPage = localStorage.getItem('internshipPageNumber');
-        if (savedPage) {
-            setCurrentPage(parseInt(savedPage));
-        }
-        dispatch(fetchInternships(searchKeyword, currentPage));
-    }, [dispatch, error, searchKeyword, currentPage]);
-
-    useEffect(() => {
-        window.scrollTo({ top: 0, behavior: 'instant' });
-    }, [currentPage]);
-
-    const handlePageChange = (newPage) => {
-        if (newPage < 1 || newPage > totalPages) return;
-        setCurrentPage(newPage);
-        localStorage.setItem('internshipPageNumber', newPage.toString());
+    const handleSearch = (e) => {
+        setSearchKeyword(e.target.value);
+        setCurrentPage(1); // Reset to first page when search changes
     };
 
-    const handleViewDetails = (internshipId) => {
-        localStorage.setItem('internshipsScrollPosition', window.scrollY.toString());
+    const handleInternshipClick = (internshipId) => {
         navigate(`/internship/get/${internshipId}`);
     };
+
+    const handleDeleteInternship = async (internshipId) => {
+        if (window.confirm("Are you sure you want to delete this internship?")) {
+            dispatch(deleteInternship(internshipId));
+            toast.success("Internship deleted successfully");
+        }
+    };
+
+    const handleCreateInternship = async (internshipData) => {
+        try {
+            await dispatch(createInternship(internshipData));
+            setIsModalOpen(false);
+            toast.success("Internship created successfully");
+        } catch (error) {
+            toast.error(error.message || "Failed to create internship");
+        }
+    };
+
+    const handlePageChange = (newPage) => {
+        setCurrentPage(newPage);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    if (loading) return <Spinner />;
+    if (error) return <div>Error: {error}</div>;
 
     return (
         <div className="jobs-page">
             <div className="header-bottom">
-                <h2>Internships</h2>
-                <div className="search-filter-sort">
-                    <div className="search-container">
-                        <input 
-                            ref={searchInputRef}
-                            type="text" 
-                            placeholder="Search internships, skills, organizations..."
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
-                        />
-                    </div>
+                <div className="header-left">
+                    <h2>Internships</h2>
+                    {isAuthenticated && user?.role === 'admin' && (
+                        <button
+                            className="add-job-button"
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            <FaPlus /> Add Internship
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            <div className="filters">
+                <div className="filter-group">
+                    <label htmlFor="city">City:</label>
+                    <select
+                        id="city"
+                        name="city"
+                        value={filters.city}
+                        onChange={handleFilterChange}
+                    >
+                        <option value="All">All Cities</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Mumbai">Mumbai</option>
+                        <option value="Bangalore">Bangalore</option>
+                        <option value="Hyderabad">Hyderabad</option>
+                        <option value="Chennai">Chennai</option>
+                        <option value="Kolkata">Kolkata</option>
+                        <option value="Pune">Pune</option>
+                        <option value="Ahmedabad">Ahmedabad</option>
+                        <option value="Remote">Remote</option>
+                    </select>
+                </div>
+
+                <div className="filter-group">
+                    <label htmlFor="internship_type">Type:</label>
+                    <select
+                        id="internship_type"
+                        name="internship_type"
+                        value={filters.internship_type}
+                        onChange={handleFilterChange}
+                    >
+                        <option value="All">All Types</option>
+                        <option value="Full Time">Full Time</option>
+                        <option value="Part Time">Part Time</option>
+                        <option value="Work from Home">Work from Home</option>
+                    </select>
+                </div>
+
+                <div className="filter-group">
+                    <label htmlFor="search">Search:</label>
+                    <input
+                        type="text"
+                        id="search"
+                        placeholder="Search internships..."
+                        value={searchKeyword}
+                        onChange={handleSearch}
+                    />
                 </div>
             </div>
 
             {loading ? (
-                <div className="loading-spinner">
-                    <Spinner />
-                </div>
+                <Spinner />
             ) : (
                 <>
                     <div className="container">
-                        {filteredInternships?.map((internship) => (
-                            <div key={internship._id} className="card">
-                                <h3  className="company">{internship.title}</h3>
-                                <div className="organization">{internship.organization}</div>
-                                <div className="location">Location: {internship.location}</div>
-                                <div className="qualification">Qualification: {internship.qualification}</div>
-                                <div className="start-date">
-                                    Start Date: {new Date(internship.start_date).toLocaleDateString()}
-                                </div>
-                                <div className="location">Duration: {internship.duration}</div>
-                                <div className="location">Field: {internship.field}</div>
-                                <div className="card-footer">
-                                    <span className="internship-label">{internship.stipend}</span>
-                                    <a 
-                                        href="#" 
-                                        className="view-details"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleViewDetails(internship._id);
-                                        }}
-                                    >
-                                        View Details
-                                    </a>
-                                </div>
+                        {internships?.length === 0 ? (
+                            <div className="no-results">
+                                No internships found matching your criteria. Try adjusting your filters or search term.
                             </div>
-                        ))}
+                        ) : (
+                            internships?.map((internship) => (
+                                <div key={internship._id} className="card">
+                                    <div className="card-header">
+                                        <h3>{internship.title}</h3>
+                                        {isAuthenticated && user?.role === 'admin' && (
+                                            <button
+                                                className="delete-btn"
+                                                onClick={() => handleDeleteInternship(internship._id)}
+                                            >
+                                                <FaTrash />
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="company">{internship.organization}</div>
+                                    <div className="post">Location: {internship.location}</div>
+                                    <div className="qualification">Duration: {internship.duration}</div>
+                                    <div className="start-date">Start Date: {new Date(internship.start_date).toLocaleDateString()}</div>
+                                    <div className="end-date">Last Date to Apply: {new Date(internship.last_date).toLocaleDateString()}</div>
+                                    <div className="card-footer">
+                                        <span className="posts-available">Stipend: {internship.stipend}</span>
+                                        <a
+                                            href="#"
+                                            className="view-details"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                handleInternshipClick(internship._id);
+                                            }}
+                                        >
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
-                    
-                    {totalPages > 1 && (
+
+                    {pagination && pagination.totalPages > 1 && (
                         <div className="pagination">
-                            <button 
-                                className={`pagination-button ${currentPage === 1 ? 'disabled' : ''}`}
-                                onClick={() => handlePageChange(currentPage - 1)}
-                                disabled={currentPage === 1}
+                            <button
+                                className={`pagination-button ${!pagination.hasPrevPage ? 'disabled' : ''}`}
+                                onClick={() => handlePageChange(pagination.prevPage)}
+                                disabled={!pagination.hasPrevPage}
                             >
                                 Previous
                             </button>
-                            <div className="page-info">
-                                Page {currentPage} of {totalPages}
+
+                            <div className="page-numbers">
+                                {pagination.currentPage > 2 && (
+                                    <>
+                                        <button onClick={() => handlePageChange(1)}>1</button>
+                                        {pagination.currentPage > 3 && <span>...</span>}
+                                    </>
+                                )}
+
+                                {pagination.currentPage > 1 && (
+                                    <button onClick={() => handlePageChange(pagination.currentPage - 1)}>
+                                        {pagination.currentPage - 1}
+                                    </button>
+                                )}
+
+                                <button className="active">{pagination.currentPage}</button>
+
+                                {pagination.currentPage < pagination.totalPages && (
+                                    <button onClick={() => handlePageChange(pagination.currentPage + 1)}>
+                                        {pagination.currentPage + 1}
+                                    </button>
+                                )}
+
+                                {pagination.currentPage < pagination.totalPages - 1 && (
+                                    <>
+                                        {pagination.currentPage < pagination.totalPages - 2 && <span>...</span>}
+                                        <button onClick={() => handlePageChange(pagination.totalPages)}>
+                                            {pagination.totalPages}
+                                        </button>
+                                    </>
+                                )}
                             </div>
-                            <button 
-                                className={`pagination-button ${currentPage === totalPages ? 'disabled' : ''}`}
-                                onClick={() => handlePageChange(currentPage + 1)}
-                                disabled={currentPage === totalPages}
+
+                            <button
+                                className={`pagination-button ${!pagination.hasNextPage ? 'disabled' : ''}`}
+                                onClick={() => handlePageChange(pagination.nextPage)}
+                                disabled={!pagination.hasNextPage}
                             >
                                 Next
                             </button>
@@ -178,6 +247,12 @@ const Internships = () => {
                     )}
                 </>
             )}
+
+            <AddInternshipModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleCreateInternship}
+            />
         </div>
     );
 };

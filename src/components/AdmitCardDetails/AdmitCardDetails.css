@@ -1,147 +1,220 @@
-.admit-card-details {
-    padding: 40px 20px;
-    background-color: #f5f7fa;
-    min-height: calc(100vh - 60px);
-}
-
-.admit-card-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-}
-
-.admit-card-details h1 {
-    color: #003366;
-    font-size: 2.2rem;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.organization-info {
-    text-align: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #e6f4ff;
-}
-
-.organization-info h2 {
-    color: #015990;
-    font-size: 1.5rem;
-}
-
-.details-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
-    margin-bottom: 30px;
-}
-
-.detail-item {
-    background-color: #f8fafc;
+/* Apply the same styles as JobDetails.css */
+.job-details-container {
+    margin: 20px auto;
     padding: 20px;
+    max-width: 1200px;
+    background-color: #FFFFFF;
     border-radius: 8px;
-    border: 1px solid #e6f4ff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.detail-item h3 {
+.job-header {
+    text-align: center;
+    background-color: #015990;
+    color: #FFFFFF;
+    padding: 15px 0;
+    border-radius: 8px 8px 0 0;
+    margin: -20px -20px 20px -20px;
+}
+
+.job-header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.job-header .advt-no {
+    font-size: 14px;
+    margin-top: 5px;
+    color: #e0e0e0;
+}
+
+.section {
+    margin: 20px 0;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.section:last-child {
+    border-bottom: none;
+}
+
+.section h2 {
+    font-size: 18px;
     color: #015990;
-    font-size: 1.1rem;
-    margin-bottom: 10px;
-}
-
-.detail-item p {
-    color: #555;
-    line-height: 1.6;
-}
-
-.description-section {
-    margin: 30px 0;
-    padding: 20px;
-    background-color: #f8fafc;
-    border-radius: 8px;
-    border: 1px solid #e6f4ff;
-}
-
-.description-section h3 {
-    color: #015990;
-    font-size: 1.2rem;
+    border-bottom: 2px solid #015990;
+    padding-bottom: 5px;
     margin-bottom: 15px;
 }
 
-.description-section p {
-    color: #555;
-    line-height: 1.8;
-    white-space: pre-line;
+.section p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
 }
 
-.action-buttons {
+.date-info {
     display: flex;
-    justify-content: center;
-    margin-top: 30px;
+    justify-content: space-between;
 }
 
-.download-button {
+.date-info div {
+    flex: 1;
+    margin-right: 15px;
+}
+
+.download-section a.download-link {
+    display: inline-block;
     background-color: #015990;
     color: white;
+    padding: 10px 20px;
     text-decoration: none;
-    padding: 12px 24px;
-    border-radius: 6px;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: background-color 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+    border-radius: 5px;
+    margin-top: 10px;
 }
 
-.download-button:hover {
-    background-color: #014570;
+.job-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: none;
+    border: none;
+    color: #015990;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.back-button:hover {
+    color: #283D50;
+}
+
+.back-button svg {
+    margin-right: 8px;
+}
+
+.edit-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.edit-button:hover {
+    background-color: #357abd;
+}
+
+.edit-input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.edit-input.title-input {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.edit-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    resize: vertical;
+}
+
+.error-container,
+.loading-container,
+.no-data-container {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 600px;
 }
 
 .error-message {
-    text-align: center;
-    color: #dc2626;
-    padding: 20px;
-    font-size: 1.1rem;
+    color: #dc3545;
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.no-data-message {
+    color: #6c757d;
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.more-btn {
+    display: inline-block;
+    background-color: #015990;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.more-btn:hover {
+    background-color: #283D50;
 }
 
 @media (max-width: 768px) {
-    .admit-card-details {
-        padding: 20px 15px;
+    .job-details-container {
+        margin: 10px;
+        padding: 10px;
     }
 
-    .admit-card-container {
-        padding: 20px;
+    .job-header h1 {
+        font-size: 20px;
     }
 
-    .admit-card-details h1 {
-        font-size: 1.8rem;
+    .section h2 {
+        font-size: 16px;
     }
 
-    .organization-info h2 {
-        font-size: 1.3rem;
+    .section p {
+        font-size: 14px;
     }
 
-    .details-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-}
-
-@media (max-width: 480px) {
-    .admit-card-details h1 {
-        font-size: 1.5rem;
+    .more-btn {
+        padding: 8px 16px;
     }
 
-    .organization-info h2 {
-        font-size: 1.1rem;
-    }
-
-    .detail-item,
-    .description-section {
-        padding: 15px;
+    .error-container,
+    .loading-container,
+    .no-data-container {
+        margin: 10px;
+        min-height: 40vh;
     }
 }

@@ -8,6 +8,7 @@ const resultSlice = createSlice({
         result: null,
         loading: false,
         error: null,
+        message: null,
         currentPage: 1,
         totalPages: 1,
         totalResults: 0,
@@ -55,23 +56,63 @@ const resultSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
             state.latestResults = [];
+        },
+        deleteResultRequest(state) {
+            state.loading = true;
+            state.error = null;
+        },
+        deleteResultSuccess(state, action) {
+            state.loading = false;
+            state.error = null;
+            state.results = state.results.filter(result => result._id !== action.payload.id);
+        },
+        deleteResultFailed(state, action) {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        updateResultRequest(state) {
+            state.loading = true;
+            state.error = null;
+        },
+        updateResultSuccess(state, action) {
+            state.loading = false;
+            state.error = null;
+            state.result = action.payload.result;
+        },
+        updateResultFailed(state, action) {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        createResultRequest(state) {
+            state.loading = true;
+            state.error = null;
+        },
+        createResultSuccess(state, action) {
+            state.loading = false;
+            state.message = action.payload.message;
+            state.results.unshift(action.payload.result);
+        },
+        createResultFailed(state, action) {
+            state.loading = false;
+            state.error = action.payload;
         }
     }
 });
 
-export const fetchResults = (searchKeyword = "", page = 1) => async (dispatch) => {
+export const fetchResults = (params = {}) => async (dispatch) => {
     try {
         dispatch(resultSlice.actions.requestStarted());
+        const { keyword = "", page = 1 } = params;
         let link = `${import.meta.env.VITE_BACKEND_URL}/api/v1/result/getall?page=${page}`;
 
-        if(searchKeyword) {
-            link += `&searchKeyword=${searchKeyword}`;
+        if(keyword) {
+            link += `&keyword=${keyword}`;
         }
 
         const response = await axios.get(link, { withCredentials: true });
         dispatch(resultSlice.actions.getResultsSuccess(response.data));
     } catch (error) {
-        dispatch(resultSlice.actions.requestFailed(error.response.data.message));
+        dispatch(resultSlice.actions.requestFailed(error.response?.data?.message || "Failed to fetch results"));
     }
 };
 
@@ -109,6 +150,44 @@ export const fetchLatestResults = () => async (dispatch) => {
                 error.response?.data?.message || "Failed to fetch latest results"
             )
         );
+    }
+};
+
+export const deleteResult = (id) => async (dispatch) => {
+    try {
+        dispatch(resultSlice.actions.deleteResultRequest());
+        const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/result/${id}`, { withCredentials: true });
+        dispatch(resultSlice.actions.deleteResultSuccess({ id }));
+    } catch (error) {
+        dispatch(resultSlice.actions.deleteResultFailed(error.response?.data?.message || "Failed to delete result"));
+    }
+};
+
+export const updateResult = (resultId, updatedData) => async (dispatch) => {
+    try {
+        dispatch(resultSlice.actions.updateResultRequest());
+        const response = await axios.put(
+            `${import.meta.env.VITE_BACKEND_URL}/api/v1/result/update/${resultId}`,
+            updatedData,
+            { withCredentials: true }
+        );
+        dispatch(resultSlice.actions.updateResultSuccess(response.data));
+    } catch (error) {
+        dispatch(resultSlice.actions.updateResultFailed(error.response.data.message));
+    }
+};
+
+export const createResult = (resultData) => async (dispatch) => {
+    try {
+        dispatch(resultSlice.actions.createResultRequest());
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/result/create`, resultData, { withCredentials: true });
+        dispatch(resultSlice.actions.createResultSuccess(response.data));
+        return { success: true };
+    } catch (error) {
+        dispatch(resultSlice.actions.createResultFailed(
+            error.response?.data?.message || 'Error creating result'
+        ));
+        return { success: false, error: error.response?.data?.message };
     }
 };
 

@@ -1,15 +1,13 @@
-.dashboard {
+.user-dashboard {
     min-height: 100vh;
     background-color: #f5f5f5;
     padding: 2rem;
 }
-
-.dashboard-container {
+.user-dashboard-container {
     max-width: 1200px;
     margin: 0 auto;
 }
-
-.dashboard-header {
+.user-dashboard-header {
     background: #fff;
     padding: 1.5rem 2rem;
     border-radius: 8px;
@@ -19,28 +17,23 @@
     justify-content: space-between;
     align-items: center;
 }
-
-.dashboard-header h1 {
+.user-dashboard-header h1 {
     color: #005587;
     font-size: 1.8rem;
     font-weight: 600;
 }
-
-.dashboard-header p {
+.user-dashboard-header p {
     color: #666;
 }
-
-.dashboard-header span {
+.user-dashboard-header span {
     color: #005587;
     font-weight: 500;
 }
-
-.dashboard-content {
+.user-dashboard-content {
     display: flex;
     gap: 2rem;
 }
-
-.sidebar {
+.user-sidebar {
     width: 280px;
     background: #fff;
     border-radius: 8px;
@@ -48,8 +41,7 @@
     padding: 1.5rem;
     height: fit-content;
 }
-
-.sidebar h4 {
+.user-sidebar h4 {
     color: #005587;
     font-size: 1.2rem;
     font-weight: 600;
@@ -57,14 +49,12 @@
     padding-bottom: 1rem;
     border-bottom: 2px solid #f0f0f0;
 }
-
-.sidebar-links {
+.user-sidebar-links {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
-
-.sidebar-link {
+.user-sidebar-link {
     display: flex;
     align-items: center;
     padding: 0.75rem 1rem;
@@ -73,88 +63,36 @@
     border-radius: 6px;
     transition: all 0.3s ease;
 }
-
-.sidebar-link:hover {
+.user-sidebar-link:hover {
     background-color: #f0f7ff;
     color: #005587;
 }
-
-.sidebar-link.active {
+.user-sidebar-link.link-active {
     background-color: #005587;
     color: white;
 }
-
-.sidebar-link svg {
+.user-sidebar-link svg {
     margin-right: 0.75rem;
     font-size: 1.2rem;
 }
-
-.content-area {
+.user-content-area {
     flex: 1;
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 2rem;
 }
-
-.content-header {
+.user-content-header {
     margin-bottom: 2rem;
     padding-bottom: 1rem;
     border-bottom: 2px solid #f0f0f0;
 }
-
-.content-header h2 {
+.user-content-header h2 {
     color: #005587;
     font-size: 1.5rem;
     font-weight: 600;
 }
-
-.profile-section {
-    display: grid;
-    gap: 1.5rem;
-}
-
-.profile-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.profile-field label {
-    color: #666;
-    font-size: 0.9rem;
-}
-
-.profile-field span {
-    color: #333;
-    font-size: 1rem;
-    padding: 0.5rem 0;
-}
-
-.action-button {
-    background-color: #005587;
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 6px;
-    border: none;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.action-button:hover {
-    background-color: #004670;
-}
-
-.action-button.danger {
-    background-color: #dc3545;
-}
-
-.action-button.danger:hover {
-    background-color: #c82333;
-}
-
-.logout-button {
+.user-logout-button {
     width: 100%;
     text-align: left;
     padding: 0.75rem 1rem;
@@ -165,12 +103,10 @@
     cursor: pointer;
     transition: all 0.3s ease;
 }
-
-.logout-button:hover {
+.user-logout-button:hover {
     background-color: #fff1f1;
 }
-
-.delete-button {
+.user-delete-button {
     width: 100%;
     text-align: left;
     padding: 0.75rem 1rem;
@@ -181,33 +117,35 @@
     cursor: pointer;
     transition: all 0.3s ease;
 }
-
-.delete-button:hover {
+.user-delete-button:hover {
     background-color: #fff1f1;
 }
-
 @media (max-width: 768px) {
-    .dashboard {
+    .user-dashboard {
         padding: 1rem;
     }
-
-    .dashboard-content {
+    .user-dashboard-content {
         flex-direction: column;
     }
-
-    .sidebar {
+    .user-sidebar {
         width: 100%;
     }
-
-    .sidebar-toggle {
+    .user-sidebar-toggle {
         display: flex;
         justify-content: flex-end;
         padding: 1rem;
         cursor: pointer;
     }
-
-    .sidebar-toggle svg {
+    .user-sidebar-toggle svg {
         font-size: 1.5rem;
         color: #005587;
     }
+}
+
+.menu-visible {
+    display: block;
+}
+
+.menu-rotated {
+    transform: rotate(180deg);
 }

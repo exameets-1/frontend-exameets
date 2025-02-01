@@ -11,6 +11,12 @@
     flex-wrap: wrap;
     margin: 20px;
 }
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
 
 .card {
     background-color: white;
@@ -140,6 +146,139 @@ select {
     color: #555;
 }
 
+.admit-cards-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.add-admit-card-button {
+    background-color: #015990;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    margin-bottom: 2rem;
+    transition: background-color 0.2s;
+}
+
+.add-admit-card-button:hover {
+    background-color: #014970;
+}
+
+.admit-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.admit-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.admit-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.admit-card-header {
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admit-card-header h3 {
+    margin: 0;
+    color: #015990;
+    font-size: 1.25rem;
+}
+
+.delete-button {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.delete-button:hover {
+    color: #c82333;
+}
+
+.admit-card-body {
+    padding: 1.5rem;
+}
+
+.organization {
+    color: #495057;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.dates {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.description {
+    color: #212529;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.admit-card-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.view-details-button {
+    background: none;
+    border: 2px solid #015990;
+    color: #015990;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.view-details-button:hover {
+    background-color: #015990;
+    color: white;
+}
+
+.download-link {
+    display: inline-block;
+    background-color: #015990;
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.download-link:hover {
+    background-color: #014970;
+}
+
 @media (max-width: 1200px) {
     .card {
         width: 32%;
@@ -165,5 +304,37 @@ select {
 @media (max-width: 600px) {
     .card {
         width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .admit-cards-container {
+        padding: 1rem;
+    }
+
+    .admit-cards-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .admit-card-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .dates {
+        text-align: center;
+    }
+
+    .admit-card-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .view-details-button,
+    .download-link {
+        text-align: center;
     }
 }

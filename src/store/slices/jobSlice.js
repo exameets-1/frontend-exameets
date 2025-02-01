@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import axiosInstance from "../../axiosInstance";
 
 const jobSlice = createSlice({
   name: "jobs",
@@ -88,6 +89,72 @@ const jobSlice = createSlice({
       state.error = action.payload;
       state.latestJobs = [];
     },
+    deleteJobRequest(state) {
+      state.loading = true;
+      state.error = null;
+    },
+    deleteJobSuccess(state, action) {
+      state.loading = false;
+      state.message = action.payload.message;
+      state.jobs = state.jobs.filter(job => job._id !== action.payload.jobId);
+    },
+    deleteJobFailure(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    updateJobRequest(state) {
+      state.loading = true;
+      state.error = null;
+    },
+    updateJobSuccess(state, action) {
+      state.loading = false;
+      state.error = null;
+      state.singleJob = action.payload;
+      state.message = "Job updated successfully";
+    },
+    updateJobFailure(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    createJobRequest(state) {
+      state.loading = true;
+      state.error = null;
+    },
+    createJobSuccess(state, action) {
+      state.loading = false;
+      state.error = null;
+      state.jobs = [action.payload.job, ...state.jobs];
+    },
+    createJobFailed(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    getAllITJobsRequest(state) {
+      state.loading = true;
+      state.error = null;
+    },
+    getAllITJobsSuccess(state, action) {
+      state.loading = false;
+      state.error = null;
+      state.jobs = action.payload.jobs;
+    },
+    getAllITJobsFailed(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    getAllNonITJobsRequest(state) {
+      state.loading = true;
+      state.error = null;
+    },
+    getAllNonITJobsSuccess(state, action) {
+      state.loading = false;
+      state.error = null;
+      state.jobs = action.payload.jobs;
+    },
+    getAllNonITJobsFailed(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+    }
   },
 });
 
@@ -182,5 +249,74 @@ export const fetchLatestJobs = () => async (dispatch) => {
   }
 };
 
+export const deleteJob = (jobId) => async (dispatch) => {
+  try {
+    dispatch(jobSlice.actions.deleteJobRequest());
+    const { data } = await axiosInstance.delete(`api/v1/job/${jobId}`);
+    dispatch(jobSlice.actions.deleteJobSuccess({ message: data.message, jobId }));
+  } catch (error) {
+    dispatch(
+      jobSlice.actions.deleteJobFailure(
+        error.response?.data?.message || "Error deleting job"
+      )
+    );
+  }
+};
+
+export const updateJob = ({ jobId, updatedData }) => async (dispatch) => {
+  try {
+    dispatch(jobSlice.actions.updateJobRequest());
+    const { data } = await axios.put(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/job/${jobId}`,
+      updatedData,
+      { withCredentials: true }
+    );
+    dispatch(jobSlice.actions.updateJobSuccess(data.job));
+    return data;
+  } catch (error) {
+    dispatch(jobSlice.actions.updateJobFailure(error.response?.data?.message || "Failed to update job"));
+  }
+};
+
+export const createJob = (jobData) => async (dispatch) => {
+  try {
+    dispatch(jobSlice.actions.createJobRequest());
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/job/create`,
+      jobData,
+      { withCredentials: true }
+    );
+    dispatch(jobSlice.actions.createJobSuccess(response.data));
+    return response.data;
+  } catch (error) {
+    dispatch(jobSlice.actions.createJobFailed(error.response?.data?.message || "Failed to create job"));
+    throw error;
+  }
+};
+
+export const fetchAllITJobs = () => async (dispatch) => {
+  try {
+    dispatch(jobSlice.actions.getAllITJobsRequest());
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/job/getall/it`,
+      { withCredentials: true }
+    );
+    dispatch(jobSlice.actions.getAllITJobsSuccess(response.data));
+  } catch (error) {
+    dispatch(jobSlice.actions.getAllITJobsFailed(error.response?.data?.message || "Failed to fetch IT jobs"));
+  }
+};
+export const fetchAllNonITJobs = () => async (dispatch) => {
+  try {
+    dispatch(jobSlice.actions.getAllNonITJobsRequest());
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/job/getall/non-it`,
+      { withCredentials: true }
+    );
+    dispatch(jobSlice.actions.getAllNonITJobsSuccess(response.data));
+  } catch (error) {
+    dispatch(jobSlice.actions.getAllNonITJobsFailed(error.response?.data?.message || "Failed to fetch non-IT jobs"));
+  }
+}
 export const { clearErrors } = jobSlice.actions;
 export default jobSlice.reducer;

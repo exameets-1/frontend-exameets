@@ -1,5 +1,27 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+
+// Create Scholarship
+export const createScholarship = createAsyncThunk(
+    "scholarship/create",
+    async (scholarshipData) => {
+        try {
+            const { data } = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/scholarship/create`,
+                scholarshipData,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true,
+                }
+            );
+            return data;
+        } catch (error) {
+            throw error.response?.data?.message || "Failed to create scholarship";
+        }
+    }
+);
 
 const scholarshipSlice = createSlice({
   name: "scholarships",
@@ -87,6 +109,48 @@ const scholarshipSlice = createSlice({
     state.error = action.payload;
     state.latestScholarships = [];
   },
+  deleteScholarshipRequest(state) {
+    state.loading = true;
+    state.error = null;
+  },
+  deleteScholarshipSuccess(state, action) {
+    state.loading = false;
+    state.error = null;
+    state.scholarships = state.scholarships.filter(scholarship => scholarship._id !== action.payload.id);
+  },
+  deleteScholarshipFailed(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  updateScholarshipRequest(state) {
+    state.loading = true;
+    state.error = null;
+  },
+  updateScholarshipSuccess(state, action) {
+    state.loading = false;
+    state.error = null;
+    state.scholarship = action.payload.scholarship;
+  },
+  updateScholarshipFailed(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  }
+},
+extraReducers: (builder) => {
+    builder
+        // Create Scholarship
+        .addCase(createScholarship.pending, (state) => {
+            state.loading = true;
+        })
+        .addCase(createScholarship.fulfilled, (state, action) => {
+            state.loading = false;
+            state.scholarships.unshift(action.payload.scholarship);
+            state.message = action.payload.message;
+        })
+        .addCase(createScholarship.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.error.message;
+        });
 },
 });
 
@@ -148,6 +212,30 @@ export const fetchLatestScholarships = () => async (dispatch) => {
         error.response?.data?.message || "Failed to fetch latest scholarships"
       )
     );
+  }
+};
+
+export const deleteScholarship = (id) => async (dispatch) => {
+    try {
+        dispatch(scholarshipSlice.actions.deleteScholarshipRequest());
+        const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/scholarship/${id}`, { withCredentials: true });
+        dispatch(scholarshipSlice.actions.deleteScholarshipSuccess({ message: response.data.message, id }));
+    } catch (error) {
+        dispatch(scholarshipSlice.actions.deleteScholarshipFailed(error.response?.data?.message || "Failed to delete scholarship"));
+    }
+};
+
+export const updateScholarship = (scholarshipId, updatedData) => async (dispatch) => {
+  try {
+    dispatch(scholarshipSlice.actions.updateScholarshipRequest());
+    const response = await axios.put(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/scholarship/update/${scholarshipId}`,
+      updatedData,
+      { withCredentials: true }
+    );
+    dispatch(scholarshipSlice.actions.updateScholarshipSuccess(response.data));
+  } catch (error) {
+    dispatch(scholarshipSlice.actions.updateScholarshipFailed(error.response.data.message));
   }
 };
 

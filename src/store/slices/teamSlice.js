@@ -38,7 +38,21 @@ const teamSlice = createSlice({
             state.error = null;
         },
         resetTeam(state) {
+            state.error = null;
             state.team = null;
+        },
+        deleteTeamRequest(state) {
+            state.loading = true;
+            state.error = null;
+        },
+        deleteTeamSuccess(state, action) {
+            state.loading = false;
+            state.error = null;
+            state.teams = state.teams.filter(team => team._id !== action.payload.id);
+        },
+        deleteTeamFailed(state, action) {
+            state.loading = false;
+            state.error = action.payload;
         }
     }
 });
@@ -77,6 +91,17 @@ export const clearTeamErrors = () => async (dispatch) => {
 
 export const resetTeamDetails = () => async (dispatch) => {
     dispatch(teamSlice.actions.resetTeam());
+};
+
+export const deleteTeam = (id) => async (dispatch) => {
+    try {
+        dispatch(teamSlice.actions.deleteTeamRequest());
+        const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/team/${id}`, { withCredentials: true });
+        dispatch(teamSlice.actions.deleteTeamSuccess({ message: response.data.message, id }));
+    } catch (error) {
+        dispatch(teamSlice.actions.deleteTeamFailed(error.response?.data?.message || "Failed to delete team"));
+        // toast.error(error.response?.data?.message || "Failed to delete team");
+    }
 };
 
 export default teamSlice.reducer;

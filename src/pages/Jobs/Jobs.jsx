@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchJobs } from "../../store/slices/jobSlice";
+import { fetchJobs, deleteJob, createJob } from "../../store/slices/jobSlice";
 import Spinner from "../../components/Spinner";
-import "./Jobs.css";
+import { FaTrash, FaPlus } from "react-icons/fa";
+import { toast } from "react-toastify";
+import AddJobModal from "../../components/AddJobModal/AddJobModal";
 
+import "./Jobs.css";
+//show delete button only if authenticated
 const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
     useEffect(() => {
@@ -17,17 +21,21 @@ const useDebounce = (value, delay) => {
 };
 
 const Jobs = () => {
+    const {isAuthenticated,  user } = useSelector(
+        (state) => state.user
+    );
     const [filters, setFilters] = useState({
         city: "All",
         job_type: "All"
     });
     const [searchKeyword, setSearchKeyword] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const debouncedSearchTerm = useDebounce(searchKeyword, 500);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { jobs, loading, error, totalPages, currentPage: responsePage } = useSelector((state) => state.jobs);
+    const { jobs, loading: jobsLoading, error: jobsError, totalPages, currentPage: responsePage } = useSelector((state) => state.jobs);
 
     const handleFilterChange = (filterType, value) => {
         setFilters((prev) => ({
@@ -53,10 +61,37 @@ const Jobs = () => {
         navigate(`/job/get/${jobId}`);
     };
 
+    const handleDeleteJob = async (jobId) => {
+        if (window.confirm("Are you sure you want to delete this job?")) {
+            dispatch(deleteJob(jobId));
+            toast.success("Job deleted successfully");
+        }
+    };
+
+    const handleCreateJob = async (jobData) => {
+        try {
+            await dispatch(createJob(jobData));
+            setIsModalOpen(false);
+            toast.success("Job created successfully");
+        } catch (error) {
+            toast.error(error.message || "Failed to create job");
+        }
+    };
+
     return (
         <div className="jobs-page">
             <div className="header-bottom">
-                <h2>Jobs</h2>
+                <div className="header-left">
+                    <h2>Jobs</h2>
+                    {isAuthenticated && user?.role === 'admin' && (
+                        <button
+                            className="add-job-button"
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            <FaPlus /> Add Job
+                        </button>
+                    )}
+                </div>
                 <div className="search-filter-sort">
                     <div className="search-container">
                         <input
@@ -93,7 +128,13 @@ const Jobs = () => {
                 </div>
             </div>
 
-            {loading ? (
+            <AddJobModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleCreateJob}
+            />
+
+            {jobsLoading ? (
                 <div className="loading-spinner">
                     <Spinner />
                 </div>
@@ -102,7 +143,18 @@ const Jobs = () => {
                     <div className="container">
                         {jobs?.map((job) => (
                             <div key={job._id} className="card">
-                                <h3>{job.role}</h3>
+                                <div className="card-header">
+                                    <h3>{job.role}</h3>
+                                    {isAuthenticated && user?.role === 'admin' && (
+                                        <button
+                                            onClick={() => handleDeleteJob(job._id)}
+                                            className="delete-btn"
+                                            title="Delete Job"
+                                        >
+                                            <FaTrash />
+                                        </button>
+                                    )}
+                                </div>
                                 <div className="company">{job.organization}</div>
                                 <div className="post">Location: {job.location}</div>
                                 <div className="post">Experience: {job.experience_required}</div>

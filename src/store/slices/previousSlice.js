@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const previousYearSlice = createSlice({
@@ -13,6 +13,7 @@ const previousYearSlice = createSlice({
     totalPages: 1,
     totalYears: 0,
     appliedYears: [],
+    latestYears: [],
   },
   reducers: {
     requestForAllYears(state) {
@@ -71,49 +72,164 @@ const previousYearSlice = createSlice({
   },
   setAppliedYears(state, action) {
     state.appliedYears = action.payload;
+  },
+  deleteYearRequest(state) {
+    state.loading = true;
+    state.error = null;
+  },
+  deleteYearSuccess(state, action) {
+    state.loading = false;
+    state.error = null;
+    state.previousYears = state.previousYears.filter(year => year._id !== action.payload.id);
+  },
+  deleteYearFailed(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  updateYearRequest(state) {
+    state.loading = true;
+    state.error = null;
+  },
+  updateYearSuccess(state, action) {
+    state.loading = false;
+    state.error = null;
+    state.previousYears = state.previousYears.map(year => 
+      year._id === action.payload.previousYear._id ? action.payload.previousYear : year
+    );
+  },
+  updateYearFailed(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  requestLatestYears(state) {
+    state.loading = true;
+    state.error = null;
+  },
+  successForLatestYears(state, action) {
+    state.loading = false;
+    state.error = null;
+    state.latestYears = action.payload.previousYears;
+  },
+  failureForLatestYears(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+    state.latestYears = [];
   }
 },
+extraReducers: (builder) => {
+  builder
+    // Create Previous Year Paper
+    .addCase(createPreviousYear.pending, (state) => {
+      state.loading = true;
+    })
+    .addCase(createPreviousYear.fulfilled, (state, action) => {
+      state.loading = false;
+      state.previousYears.unshift(action.payload.previousYear);
+      state.message = action.payload.message;
+    })
+    .addCase(createPreviousYear.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
+}
 });
 
-export const fetchPreviousYears = (searchKeyword = "", page = 1, limit = 4) => async (dispatch) => {
-    try {
-        dispatch(previousYearSlice.actions.requestForAllYears());
-        let link = `${import.meta.env.VITE_BACKEND_URL}/api/v1/previousyear/getall?`;
-        let queryParams = [`page=${page}`, `limit=${limit}`];
-    
-        if (searchKeyword) {
-          queryParams.push(`searchKeyword=${searchKeyword}`);
+// Create Previous Year Paper
+export const createPreviousYear = createAsyncThunk(
+    "previousYear/create",
+    async (paperData, { rejectWithValue }) => {
+        try {
+            const { data } = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/previousyear/create`,
+                paperData,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true,
+                }
+            );
+            return data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Failed to create previous year paper");
         }
-    
-        link += queryParams.join("&");
-        const response = await axios.get(link, { withCredentials: true });
-        dispatch(previousYearSlice.actions.successForAllYears(response.data));
-        dispatch(previousYearSlice.actions.clearAllErrors());
-      } catch (error) {
-        dispatch(previousYearSlice.actions.failureForAllYears(error.response.data.message));
-      }
     }
+);
+
+export const fetchPreviousYears = (searchKeyword = "", page = 1, limit = 4) => async (dispatch) => {
+  try {
+      dispatch(previousYearSlice.actions.requestForAllYears());
+      let link = `${import.meta.env.VITE_BACKEND_URL}/api/v1/previousyear/getall?`;
+      let queryParams = [`page=${page}`, `limit=${limit}`];
+  
+      if (searchKeyword) {
+        queryParams.push(`searchKeyword=${searchKeyword}`);
+      }
+  
+      link += queryParams.join("&");
+      const response = await axios.get(link, { withCredentials: true });
+      dispatch(previousYearSlice.actions.successForAllYears(response.data));
+      dispatch(previousYearSlice.actions.clearAllErrors());
+    } catch (error) {
+      dispatch(previousYearSlice.actions.failureForAllYears(error.response.data.message));
+    }
+  }
 
 export const fetchSinglepreviousYear = (yearId) => async (dispatch) => {
-    dispatch(previousYearSlice.actions.requestForSingleYear());
-    try {
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/previousyear/get/${yearId}`, { withCredentials: true });
-        dispatch(previousYearSlice.actions.successForSingleYear(response.data.year));
-        dispatch(previousYearSlice.actions.clearAllErrors());
-    } catch (error) {
-        dispatch(previousYearSlice.actions.failureForSingleYear(error.response.data.message));
-    }
+  dispatch(previousYearSlice.actions.requestForSingleYear());
+  try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/previousyear/get/${yearId}`, { withCredentials: true });
+      dispatch(previousYearSlice.actions.successForSingleYear(response.data.year));
+      dispatch(previousYearSlice.actions.clearAllErrors());
+  } catch (error) {
+      dispatch(previousYearSlice.actions.failureForSingleYear(error.response.data.message));
+  }
 };
 
+export const fetchLatestYears = () => async (dispatch) => {
+  try {
+      dispatch(previousYearSlice.actions.requestLatestYears());
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/previousyear/latest`, { withCredentials: true });
+      dispatch(previousYearSlice.actions.successForLatestYears(data));
+      
+  } catch (error) {
+      dispatch(previousYearSlice.actions.failureForLatestYears(error.response?.data?.message || "Failed to fetch latest years"));
+  }
+}
+
 export const clearAllPreviousYearErrors = () => (dispatch) => {
-    dispatch(previousYearSlice.actions.clearAllErrors());
+  dispatch(previousYearSlice.actions.clearAllErrors());
 };
 
 export const resetPreviousYearSlice = () => (dispatch) => {
-    dispatch(previousYearSlice.actions.resetYearSlice());
+  dispatch(previousYearSlice.actions.resetYearSlice());
 };
 
+export const deleteYear = (id) => async (dispatch) => {
+  try {
+      dispatch(previousYearSlice.actions.deleteYearRequest());
+      const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/previousyear/${id}`, { withCredentials: true });
+      dispatch(previousYearSlice.actions.deleteYearSuccess({ message: response.data.message, id }));
+  } catch (error) {
+      dispatch(previousYearSlice.actions.deleteYearFailed(error.response?.data?.message || "Failed to delete year"));
+  }
+};
+
+export const updateYear = (id, yearData) => async (dispatch) => {
+  try {
+      dispatch(previousYearSlice.actions.updateYearRequest());
+      const response = await axios.put(
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/previousyear/update/${id}`,
+          yearData,
+          { withCredentials: true }
+      );
+      dispatch(previousYearSlice.actions.updateYearSuccess(response.data));
+      return response.data;
+  } catch (error) {
+      dispatch(previousYearSlice.actions.updateYearFailed(error.response?.data?.message || "Failed to update year"));
+      throw error;
+  }
+};
 
 export const { clearErrors } = previousYearSlice.actions;
 export default previousYearSlice.reducer;
-

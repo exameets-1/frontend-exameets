@@ -72,6 +72,19 @@
     background-color: #004579;
 }
 
+.delete-button {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.3s ease;
+}
+
+.delete-button:hover {
+    color: #c82333;
+}
+
 /* Responsive styles */
 @media screen and (max-width: 768px) {
     .teams-container {

@@ -1,18 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { fetchAdmissions } from '../../store/slices/admissionSlice';
+import { useNavigate } from 'react-router-dom';
+import { fetchAdmissions, deleteAdmission, createAdmission } from '../../store/slices/admissionSlice';
+import AddAdmissionModal from '../../components/AddAdmissionModal/AddAdmissionModal';
 import { useTheme } from '../../App';
 import Spinner from '../../components/Spinner';
 import './Admissions.css';
+import { toast } from 'react-toastify';
+import {FaPlus,  FaTrash} from 'react-icons/fa'
 
 const Admissions = () => {
     const dispatch = useDispatch();
     const { darkMode } = useTheme();
-    const [searchInput, setSearchInput] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('');
-    const [selectedStatus, setSelectedStatus] = useState('');
-    const [page, setPage] = useState(1);
+    const navigate = useNavigate();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [searchKeyword, setSearchKeyword] = useState("");
+    const [filters, setFilters] = useState({
+        location: "All",
+        category: "All",
+        showActiveOnly: false
+    });
+    const [currentPage, setCurrentPage] = useState(1);
 
     const useDebounce = (value, delay) => {
         const [debouncedValue, setDebouncedValue] = useState(value);
@@ -29,33 +37,60 @@ const Admissions = () => {
         admissions,
         loading,
         error,
-        totalPages,
+        pagination,
         categories
     } = useSelector((state) => state.admissions);
 
-    const searchKeyword = useDebounce(searchInput, 500);
+    const debouncedSearchKeyword = useDebounce(searchKeyword, 500);
+    const { isAuthenticated, user } = useSelector((state) => state.user);
 
     useEffect(() => {
-        dispatch(fetchAdmissions(searchKeyword, selectedCategory, selectedStatus, page));
-    }, [dispatch, searchKeyword, selectedCategory, selectedStatus, page]);
+        dispatch(fetchAdmissions({
+            searchKeyword: debouncedSearchKeyword,
+            category: filters.category,
+            location: filters.location,
+            page: currentPage,
+            showActiveOnly: filters.showActiveOnly
+        }));
+    }, [dispatch, debouncedSearchKeyword, filters.category, filters.location, filters.showActiveOnly, currentPage]);
 
-    const handleSearchChange = (e) => {
-        setSearchInput(e.target.value);
-        setPage(1);
+    const handleDeleteAdmission = async (admissionId) => {
+        if (window.confirm('Are you sure you want to delete this admission?')) {
+            const response = await dispatch(deleteAdmission(admissionId));
+            if (response.success) {
+                toast.success('Admission deleted successfully');
+            } else {
+                toast.error(response.error || 'Error deleting admission');
+            }
+        }
     };
 
-    const handleCategoryChange = (e) => {
-        setSelectedCategory(e.target.value);
-        setPage(1);
+    const handleAddAdmission = async (admissionData) => {
+        const result = await dispatch(createAdmission(admissionData));
+        if (!result.error) {
+            toast.success('Admission added successfully!');
+            setIsModalOpen(false);
+        } else {
+            toast.error(result.error || 'Error adding admission');
+        }
     };
 
-    const handleStatusChange = (e) => {
-        setSelectedStatus(e.target.value);
-        setPage(1);
+    const handleSearch = (e) => {
+        setSearchKeyword(e.target.value);
+        setCurrentPage(1);
     };
+
+    const handleFilterChange = (filterType, value) => {
+        setFilters((prev) => ({
+            ...prev,
+            [filterType]: value
+        }));
+        setCurrentPage(1);
+    };
+
 
     const handlePageChange = (value) => {
-        setPage(value);
+        setCurrentPage(value);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -67,26 +102,43 @@ const Admissions = () => {
         });
     };
 
+    const handleViewDetails = (admissionId) => {
+        navigate(`/admission/get/${admissionId}`);
+    };
+
     if (loading) return <Spinner />;
     if (error) return <div>Error: {error}</div>;
 
     return (
-        <div>
+        <div className="admission_page">
             <div className="header-bottom">
-                <h2>Admissions</h2>
-                <div className="search-filter-sort">
-                    <div className="search-container">
+            <h1 className="text-[25px] font-semibold text-[#015990] mt-1 mb-4">
+            Admissions</h1>
+            {isAuthenticated && user?.role === 'admin' && (
+                        <button 
+                            className="add-admission-button ml-4"
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            <FaPlus /> Add Admission
+                        </button>
+                    )}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div className="h-[45px] px-0 rounded-md  focus:outline-none focus:border-[#015990]">
                         <input
                             type="text"
-                            placeholder="Search Entrance Exams here..."
-                            value={searchInput}
-                            onChange={handleSearchChange}
+                            placeholder="Search Admissions here..."
+                            value={searchKeyword}
+                            onChange={handleSearch}
+                            className="h-[45px] px-0 rounded-md  focus:outline-none focus:border-[#015990]"
+
                         />
                     </div>
-                    <div className="category-container">
+                    <div className="h-[45px] px-0 rounded-md  focus:outline-none focus:border-[#015990]">
                         <select
-                            value={selectedCategory}
-                            onChange={handleCategoryChange}
+                            value={filters.category}
+                            onChange={(e) => handleFilterChange('category', e.target.value)}
+                            className="h-[45px] px-0 rounded-md  focus:outline-none focus:border-[#015990]"
+
                         >
                             <option value="">All Categories</option>
                             {categories?.map((category) => (
@@ -96,61 +148,115 @@ const Admissions = () => {
                             ))}
                         </select>
                     </div>
-                    <div className="status-container">
+                    <div className="h-[45px] px-0 rounded-md  focus:outline-none focus:border-[#015990]">
                         <select
-                            value={selectedStatus}
-                            onChange={handleStatusChange}
+                            value={filters.location}
+                            onChange={(e) => handleFilterChange('location', e.target.value)}
+                            className="h-[45px] px-0 rounded-md  focus:outline-none focus:border-[#015990]"
+
                         >
-                            <option value="">All Status</option>
-                            <option value="Open">Open</option>
-                            <option value="Closing Soon">Closing Soon</option>
-                            <option value="Closed">Closed</option>
+                            <option value="">All Locations</option>
+                            <option value="Mumbai">Mumbai</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Bangalore">Bangalore</option>
+                            <option value="Chennai">Chennai</option>
+                            <option value="Kolkata">Kolkata</option>
+                            <option value="Hyderabad">Hyderabad</option>
+                            <option value="Pune">Pune</option>
                         </select>
                     </div>
                 </div>
             </div>
 
-            <div className="container">
+            <div className="container justify-items-center  px-1 py-2 pr-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ">
                 {admissions?.length === 0 ? (
                     <div className="col-span-full text-center text-gray-500">
                         No admissions found
                     </div>
                 ) : (
                     admissions?.map((admission) => (
-                        <div key={admission._id} className="card">
-                            <h3>{admission.title}</h3>
-                            <div className="course">Course: {admission.program}</div>
+                        <div key={admission._id} className="card w-[300px]">
+                            <div className="h3 mb-2 border-none">{admission.title}
+                            {isAuthenticated && user?.role === 'admin' && (
+                                    <button
+                                        className="delete-btn float-right"
+                                        onClick={() => handleDeleteAdmission(admission._id)}
+                                    >
+                                        <FaTrash />
+                                    </button>
+                                )}
+                            </div>
+                            <div className="course border-none">Course: {admission.institute}</div>
                             <div className="card-footer">
-                                <span className="end-date">Last Date : {formatDate(admission.applicationDeadline)}</span>
-                                <Link
-                                    to={`/admission/get/${admission._id}`}
+                                <span className="end-date">Last Date: {formatDate(admission.last_date)}</span>
+                                <button
+                                    onClick={() => handleViewDetails(admission._id)}
                                     className="view-details"
                                 >
-                                    View Details
-                                </Link>
+                                    Details
+                                </button>
                             </div>
                         </div>
                     ))
                 )}
             </div>
-            
-            <div className="pagination">
-                <button 
-                    className={`pagination-button ${page === 1 ? 'disabled' : ''}`}
-                    onClick={() => setPage(prev => Math.max(prev - 1, 1))}
-                    disabled={page === 1}
-                >
-                    Previous
-                </button>
-                <span className="page-info">Page {page} of {totalPages || 1}</span>
-                <button 
-                    className={`pagination-button ${page === totalPages ? 'disabled' : ''}`}
-                    onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
-                    disabled={page === totalPages}
-                >
-                    Next
-                </button>
-            </div>
+            {pagination && pagination.totalPages > 1 && (
+                <div className="pagination">
+                    <button
+                        className={`pagination-button ${!pagination.hasPrevPage ? 'disabled' : ''}`}
+                        onClick={() => handlePageChange(pagination.prevPage)}
+                        disabled={!pagination.hasPrevPage}
+                    >
+                        Previous
+                    </button>
+
+                    <div className="page-numbers">
+                        {pagination.currentPage > 2 && (
+                            <>
+                                <button onClick={() => handlePageChange(1)}>1</button>
+                                {pagination.currentPage > 3 && <span>...</span>}
+                            </>
+                        )}
+
+                        {pagination.currentPage > 1 && (
+                            <button onClick={() => handlePageChange(pagination.currentPage - 1)}>
+                                {pagination.currentPage - 1}
+                            </button>
+                        )}
+
+                        <button className="active">{pagination.currentPage}</button>
+
+                        {pagination.currentPage < pagination.totalPages && (
+                            <button onClick={() => handlePageChange(pagination.currentPage + 1)}>
+                                {pagination.currentPage + 1}
+                            </button>
+                        )}
+
+                        {pagination.currentPage < pagination.totalPages - 1 && (
+                            <>
+                                {pagination.currentPage < pagination.totalPages - 2 && <span>...</span>}
+                                <button onClick={() => handlePageChange(pagination.totalPages)}>
+                                    {pagination.totalPages}
+                                </button>
+                            </>
+                        )}
+                    </div>
+
+                    <button
+                        className={`pagination-button ${!pagination.hasNextPage ? 'disabled' : ''}`}
+                        onClick={() => handlePageChange(pagination.nextPage)}
+                        disabled={!pagination.hasNextPage}
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
+
+            <AddAdmissionModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleAddAdmission}
+            />
         </div>
     );
 };

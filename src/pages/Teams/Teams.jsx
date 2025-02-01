@@ -2,13 +2,16 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { fetchTeams, clearTeamErrors } from "../../store/slices/teamSlice";
+import { fetchTeams, clearTeamErrors, deleteTeam } from "../../store/slices/teamSlice";
 import Spinner from "../../components/Spinner";
+import { FaTrash } from "react-icons/fa";
+import useScrollToTop from "../../hooks/useScrollToTop";
 import "./Teams.css";
 
 const Teams = () => {
+    useScrollToTop();
     const { teams, loading, error } = useSelector((state) => state.team);
-    const { isAuthenticated } = useSelector((state) => state.user);
+    const { isAuthenticated, user } = useSelector((state) => state.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -37,6 +40,14 @@ const Teams = () => {
         navigate(`/team/get/${teamId}`);
     };
 
+    const handleDelete = (id, e) => {
+        e.stopPropagation();
+        if (window.confirm('Are you sure you want to delete this team member?')) {
+            dispatch(deleteTeam(id));
+            toast.success('Team member deleted successfully');
+        }
+    };
+
     if (loading) return <Spinner />;
 
     return (
@@ -50,6 +61,7 @@ const Teams = () => {
                                 <th>Name</th>
                                 <th>Role</th>
                                 <th>Verify</th>
+                                <th>Delete</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -65,6 +77,16 @@ const Teams = () => {
                                         >
                                             Verify
                                         </button>
+                                    </td>
+                                    <td>
+                                        {isAuthenticated && user?.role === 'admin' && (
+                                            <button 
+                                                className="delete-button"
+                                                onClick={(e) => handleDelete(team._id, e)}
+                                            >
+                                                <FaTrash />
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                             ))}

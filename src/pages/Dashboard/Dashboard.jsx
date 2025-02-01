@@ -5,15 +5,15 @@ import { toast } from "react-toastify";
 import { logout, clearAllUserErrors, getUser } from "../../store/slices/userSlice";
 import { LuMoveRight } from "react-icons/lu";
 import { FaUser, FaEdit, FaKey, FaSignOutAlt, FaTrash } from "react-icons/fa";
-import MyProfile from "../../components/MyProfile";
-import UpdateProfile from "../../components/UpdateProfile";
-import UpdatePassword from "../../components/UpdatePassword";
-import DeleteAccount from "../../components/DeleteAccount";
-import "./Dashboard.css";
+import MyProfile from "../../components/MyProfile/MyProfile";
+import UpdateProfile from "../../components/UpdateProfile/UpdateProfile";
+import UpdatePassword from "../../components/UpdatePassword/UpdatePassword";
+import DeleteAccount from "../../components/DeleteAccount/DeleteAccount";
+import './Dashboard.css';
 
 const Dashboard = () => {
-  const [show, setShow] = useState(false);
-  const [componentName, setComponentName] = useState("My Profile");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeComponent, setActiveComponent] = useState("My Profile");
 
   const { loading, isAuthenticated, error, user } = useSelector(
     (state) => state.user
@@ -24,11 +24,9 @@ const Dashboard = () => {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [componentName]);
+  }, [activeComponent]);
 
   useEffect(() => {
-    
-    // Fetch user data on mount if authenticated but no user data
     if (isAuthenticated && !user?.name) {
       dispatch(getUser());
     }
@@ -56,63 +54,63 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="dashboard">
-      <div className="dashboard-container">
-        <div className="dashboard-header">
+    <div className="user-dashboard">
+      <div className="user-dashboard-container">
+        <div className="user-dashboard-header">
           <h1>Dashboard</h1>
           <p>
             Welcome, <span>{user && user.name}</span>!
           </p>
         </div>
 
-        <div className="dashboard-content">
-          {/* Sidebar */}
-          <div className={`sidebar ${show ? "show" : ""}`}>
+        <div className="user-dashboard-content">
+          <div className={`user-sidebar ${isMenuOpen ? "menu-visible" : ""}`}>
             <h4>Manage Account</h4>
-            <div className="sidebar-links">
+            <div className="user-sidebar-links">
               {menuItems.map((item, index) => (
                 <button
                   key={index}
                   onClick={() => {
-                    setComponentName(item.component);
-                    setShow(false);
+                    setActiveComponent(item.component);
+                    setIsMenuOpen(false);
                   }}
-                  className={`sidebar-link ${
-                    componentName === item.component ? "active" : ""
+                  className={`user-sidebar-link ${
+                    activeComponent === item.component ? "link-active" : ""
                   }`}
                 >
                   {item.icon}
-                  {item.name}
+                  <span>{item.name}</span>
                 </button>
               ))}
               <button
                 onClick={handleLogout}
-                className="logout-button"
+                className="user-sidebar-link user-logout-button"
               >
-                <FaSignOutAlt /> Logout
+                <FaSignOutAlt />
+                <span>Logout</span>
               </button>
               <button
                 onClick={() => {
-                  setComponentName("Delete Account");
-                  setShow(false);
+                  setActiveComponent("Delete Account");
+                  setIsMenuOpen(false);
                 }}
-                className="delete-button"
+                className="user-sidebar-link user-delete-button"
               >
-                <FaTrash /> Delete Account
+                <FaTrash />
+                <span>Delete Account</span>
               </button>
             </div>
           </div>
 
-          {/* Main Content */}
-          <div className="content-area">
-            <div className="sidebar-toggle" onClick={() => setShow(!show)}>
-              <LuMoveRight className={show ? "rotate-180" : ""} />
+          <div className="user-content-area">
+            <div className="user-sidebar-toggle" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              <LuMoveRight className={isMenuOpen ? "menu-rotated" : ""} />
             </div>
-            <div className="content-header">
-              <h2>{componentName}</h2>
+            <div className="user-content-header">
+              <h2>{activeComponent}</h2>
             </div>
             {(() => {
-              switch (componentName) {
+              switch (activeComponent) {
                 case "My Profile":
                   return <MyProfile />;
                 case "Update Profile":

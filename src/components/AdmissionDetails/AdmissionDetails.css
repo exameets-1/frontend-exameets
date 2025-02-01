@@ -1,0 +1,213 @@
+.admission-details-container {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 1200px;
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.admission-header {
+    text-align: center;
+    background-color: #015990;
+    color: #FFFFFF;
+    padding: 20px;
+    border-radius: 8px 8px 0 0;
+    margin: -20px -20px 20px -20px;
+}
+
+.admission-header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.admission-header .institution {
+    font-size: 16px;
+    margin-top: 8px;
+    color: #e0e0e0;
+}
+
+.section {
+    margin: 20px 0;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.section:last-child {
+    border-bottom: none;
+}
+
+.section h2 {
+    font-size: 18px;
+    color: #015990;
+    border-bottom: 2px solid #015990;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+.section p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+}
+
+.important-dates {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.date-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.date-item:last-child {
+    border-bottom: none;
+}
+
+.application-process {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.apply-button {
+    display: inline-block;
+    background-color: #015990;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    width: fit-content;
+}
+
+.apply-button:hover {
+    background-color: #283D50;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+.admission-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: none;
+    border: none;
+    color: #015990;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.back-button:hover {
+    color: #283D50;
+}
+
+.back-button svg {
+    margin-right: 8px;
+}
+
+.edit-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.edit-button:hover {
+    background-color: #357abd;
+}
+
+.edit-input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.edit-input.title-input {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.edit-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    resize: vertical;
+}
+
+.error-container,
+.loading-container,
+.no-data-container {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 600px;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.no-data-message {
+    color: #6c757d;
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.more-btn {
+    display: inline-block;
+    background-color: #015990;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.more-btn:hover {
+    background-color: #283D50;
+}

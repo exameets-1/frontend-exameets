@@ -1,19 +1,53 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import axiosInstance from "../../axiosInstance";
+
+// Create Admission
+export const createAdmission = createAsyncThunk(
+    "admission/create",
+    async (admissionData) => {
+        try {
+            const { data } = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/admission/create`,
+                admissionData,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true,
+                }
+            );
+            return data;
+        } catch (error) {
+            throw error.response?.data?.message || "Failed to create admission";
+        }
+    }
+);
 
 const admissionSlice = createSlice({
     name: "admissions",
     initialState: {
         admissions: [],
         admission: null,
-        upcomingDeadlines: [],
         categories: [],
         loading: false,
         error: null,
-        currentPage: 1,
-        totalPages: 1,
-        totalAdmissions: 0,
-        latestAdmissions: []
+        pagination: {
+            currentPage: 1,
+            totalPages: 1,
+            totalAdmissions: 0,
+            hasNextPage: false,
+            hasPrevPage: false,
+            nextPage: null,
+            prevPage: null,
+            limit: 8
+        },
+        filters: {
+            categories: [],
+            availableSortFields: []
+        },
+        latestAdmissions: [],
+        message: null
     },
     reducers: {
         requestStarted(state) {
@@ -28,10 +62,8 @@ const admissionSlice = createSlice({
             state.loading = false;
             state.error = null;
             state.admissions = action.payload.admissions;
-            state.currentPage = action.payload.currentPage;
-            state.totalPages = action.payload.totalPages;
-            state.totalAdmissions = action.payload.totalAdmissions;
-            state.categories = action.payload.categories;
+            state.pagination = action.payload.pagination;
+            state.filters = action.payload.filters;
         },
         getSingleAdmissionSuccess(state, action) {
             state.loading = false;
@@ -58,38 +90,94 @@ const admissionSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
             state.latestAdmissions = [];
+        },
+        deleteAdmissionRequest(state) {
+            state.loading = true;
+            state.error = null;
+        },
+        deleteAdmissionSuccess(state, action) {
+            state.loading = false;
+            state.error = null;
+            state.admissions = state.admissions.filter(admission => admission._id !== action.payload.id);
+        },
+        deleteAdmissionFailed(state, action) {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        updateAdmissionRequest(state) {
+            state.loading = true;
+            state.error = null;
+        },
+        updateAdmissionSuccess(state, action) {
+            state.loading = false;
+            state.error = null;
+            state.admission = action.payload.admission;
+            state.message = "Admission updated successfully";
+        },
+        updateAdmissionFailure(state, action) {
+            state.loading = false;
+            state.error = action.payload;
         }
-    }
+    },
+    extraReducers: (builder) => {
+        builder
+            // Create Admission
+            .addCase(createAdmission.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(createAdmission.fulfilled, (state, action) => {
+                state.loading = false;
+                state.admissions.unshift(action.payload.admission);
+                state.message = action.payload.message;
+            })
+            .addCase(createAdmission.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            });
+    },
 });
 
-export const fetchAdmissions = (searchKeyword = "", category = "", level = "", page = 1) => async (dispatch) => {
+export const fetchAdmissions = ({ searchKeyword = "", category = "All", location = "All", page = 1, sortBy = "last_date", sortOrder = "asc", showActiveOnly = false }) => async (dispatch) => {
     try {
         dispatch(admissionSlice.actions.requestStarted());
-        let link = `http://localhost:4000/api/v1/admission/getall?page=${page}`;
-        
-        if (searchKeyword) {
-            link += `&searchKeyword=${searchKeyword}`;
-        }
-        if (category) {
-            link += `&category=${category}`;
+
+        let url = `${import.meta.env.VITE_BACKEND_URL}/api/v1/admission/getall?`;
+        const params = new URLSearchParams();
+
+        if (searchKeyword) params.append("searchKeyword", searchKeyword);
+        if (category !== "All") params.append("category", category);
+        if (location !== "All") params.append("location", location);
+        if (page) params.append("page", page);
+        if (sortBy) params.append("sortBy", sortBy);
+        if (sortOrder) params.append("sortOrder", sortOrder);
+        params.append("showActiveOnly", showActiveOnly);
+
+        url += params.toString();
+
+        const { data } = await axios.get(url, { withCredentials: true });
+
+        if (!data.success) {
+            throw new Error(data.message || "Failed to fetch admissions");
         }
 
-        const response = await axios.get(link, { withCredentials: true });
-        dispatch(admissionSlice.actions.getAdmissionsSuccess(response.data));
+        dispatch(admissionSlice.actions.getAdmissionsSuccess(data));
     } catch (error) {
-        dispatch(admissionSlice.actions.requestFailed(error.response.data.message));
+        dispatch(admissionSlice.actions.requestFailed(
+            error.response?.data?.message || error.message || "Failed to fetch admissions"
+        ));
     }
 };
 
 export const fetchSingleAdmission = (id) => async (dispatch) => {
     try {
-        dispatch(admissionSlice.actions.requestStarted());
-        const response = await axios.get(`http://localhost:4000/api/v1/admission/get/${id}`, {
+        dispatch(admissionSlice.actions.deleteAdmissionRequest());
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/admission/get/${id}`, {
             withCredentials: true
         });
         dispatch(admissionSlice.actions.getSingleAdmissionSuccess(response.data));
     } catch (error) {
-        dispatch(admissionSlice.actions.requestFailed(error.response.data.message));
+        dispatch(admissionSlice.actions.deleteAdmissionFailed(error.response.data.message));
+        // toast.error(error.response.data.message);
     }
 };
 
@@ -115,6 +203,33 @@ export const fetchLatestAdmissions = () => async (dispatch) => {
                 error.response?.data?.message || "Failed to fetch latest admissions"
             )
         );
+    }
+};
+
+export const deleteAdmission = (id) => async(dispatch) => {
+    try {
+        dispatch(admissionSlice.actions.deleteAdmissionRequest());
+        const response = await axiosInstance.delete(`/api/v1/admission/${id}`, {
+            withCredentials: true
+        });
+        dispatch(admissionSlice.actions.deleteAdmissionSuccess({ message: response.data.message, id }));
+    } catch (error) {
+        dispatch(admissionSlice.actions.deleteAdmissionFailed(error.response?.data?.message));
+    }
+}
+
+export const updateAdmission = ({ admissionId, updatedData }) => async (dispatch) => {
+    try {
+        dispatch(admissionSlice.actions.updateAdmissionRequest());
+        const { data } = await axiosInstance.put(
+            `/api/v1/admission/update/${admissionId}`,
+            updatedData,
+            { withCredentials: true }
+        );
+        dispatch(admissionSlice.actions.updateAdmissionSuccess(data));
+        return data;
+    } catch (error) {
+        dispatch(admissionSlice.actions.updateAdmissionFailure(error.response?.data?.message || "Failed to update admission"));
     }
 };
 

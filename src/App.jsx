@@ -9,56 +9,50 @@ import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import Home from "./pages/Home/Home";
 import Dashboard from "./pages/Dashboard/Dashboard";
-import Login from "./pages/Login";
+import Login from "./pages/Login/Login";
 import NotFound from "./pages/NotFound";
-import Register from "./pages/Register";
+import Register from "./pages/Register/Register";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch } from "react-redux";
 import { getUser } from "./store/slices/userSlice";
 
-import PrivacyPolicy from "./components/PrivacyPolicy";
-import Community from "./components/Community";
+import PrivacyPolicy from "./components/PrivacyPolicy/PrivacyPolicy";
+import Community from "./components/Community/Community";
 
-import TermsOfService from "./components/TermsOfService"
-import FeedbackForm from "./components/FeedbackForm";
-import AboutUs from "./components/AboutUs";
-import ContactUs from "./components/ContactUs";
-import CookiePolicy from "./components/CookiePolicy";
-import Preferences from "./pages/Preferences/Preferences";
+import AboutUs from "./components/About/AboutUs";
+import ContactUs from "./components/ContactUs/ContactUs";
 
 import Jobs from "./pages/Jobs/Jobs";
-import JobDetails from "./components/JobDetails";
+import JobDetails from "./components/JobDetails/JobDetails";
 
 import GovtJobs from "./pages/GovtJobs/GovtJobs";
-import GovtJobDetails from "./components/GovtJobDetails";
+import GovtJobDetails from "./components/JobDetails/GovtJobDetails";
 
-import PreviousYear from "./pages/PreviousYear";
-import PreviousYearDetails from "./pages/PreviousYearDetails";
+import PreviousYear from "./pages/PreviousYear/PreviousYear";
+import PreviousYearDetails from "./pages/PreviousYear/PreviousYearDetails";
 
 import Internships from "./pages/Internships/Internships";
-import InternshipDetails from "./components/InternshipDetails";
-
-import Exams from "./pages/Exams";
-import ExamDetails from "./components/ExamDetails";
+import InternshipDetails from "./components/InternshipDetails/InternshipDetails";
 
 import Admissions from "./pages/Admissions/Admissions";
-import AdmissionDetails from "./components/AdmissionDetails";
+import AdmissionDetails from "./components/AdmissionDetails/AdmissionDetails";
 
 import Team from "./pages/Teams/Teams";
 import TeamDetails from "./components/TeamDetails/TeamDetails";
 
-import Scholarships from "./pages/Scholarships";
-import ScholarshipDetails from "./components/ScholarshipDetails";
+import Scholarships from "./pages/Scholarships/Scholarships";
+import ScholarshipDetails from "./components/ScholarshipDetails/ScholarshipDetails";
 
 import Results from "./pages/Results/Results";
-import ResultDetails from "./pages/Results/ResultDetails";
+import ResultDetails from "./components/ResultDetails/ResultDetails";
 
 import AdmitCard from "./pages/AdmitCard/AdmitCard";
 import AdmitCardDetails from "./components/AdmitCardDetails/AdmitCardDetails";
 
 import WhatsNew from "./pages/WhatsNew/WhatsNew";
-import ProtectedRoute from "./components/ProtectedRoute";
+
+import SelectedJobs from "./pages/SelectedJobs/SelectedJobs";
 
 const ThemeContext = createContext();
 
@@ -184,8 +178,6 @@ const App = () => {
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/contact-us" element={<ContactUs />} />
 
-            <Route path="/cookie-policy" element={<CookiePolicy />} />
-            <Route path="/terms" element={<TermsOfService />} />
             <Route path="/internships" element={<Internships />} />
             <Route path="/internship/get/:id" element={<InternshipDetails/>}/>
 
@@ -195,19 +187,12 @@ const App = () => {
             <Route path="/admitcards" element={<AdmitCard />} />
             <Route path="/admitcard/get/:id" element={<AdmitCardDetails />} />
 
-            <Route path="/feedback" element={<FeedbackForm />} />
-            <Route path="/about-us" element={<AboutUs />} />
-            <Route path="/preferences" element={
             
-                <Preferences />
-  
-            } />
+            <Route path="/about-us" element={<AboutUs />} />
 
             <Route path="/previousyears" element={<PreviousYear />} />
             <Route path="/previous-year-details/:subject" element={<PreviousYearDetails />} />
 
-            <Route path="/exams" element={<Exams />} />
-            <Route path="/exam/get/:id" element={<ExamDetails />} />
             
             <Route path="/govtjobs" element={<GovtJobs />} />
             <Route path="/govtjob/get/:id" element={<GovtJobDetails />} />
@@ -220,8 +205,12 @@ const App = () => {
             <Route path="/scholarship/get/:id" element={<ScholarshipDetails />} />
 
             <Route path="/results" element={<Results />} />
-            <Route path="/results/get/:id" element={<ResultDetails />} />
+            <Route path="/result/get/:id" element={<ResultDetails />} />
             <Route path="/whatsnew" element={<WhatsNew />} />
+
+            <Route path="/selected-jobs" element={<SelectedJobs />} />
+
+            
             
           </Routes>
           <Footer />

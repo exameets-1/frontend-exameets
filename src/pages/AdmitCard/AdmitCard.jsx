@@ -1,157 +1,108 @@
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { fetchAdmitCards } from '../../store/slices/admitCardSlice';
-import { useTheme } from '../../App';
+import { useNavigate } from 'react-router-dom';
+import { fetchAdmitCards, deleteAdmitCard, createAdmitCard } from '../../store/slices/admitCardSlice';
+import { FaTrash } from 'react-icons/fa';
+import { toast } from 'react-toastify';
+import AddAdmitCardModal from '../../components/AddAdmitCardModal/AddAdmitCardModal';
 import Spinner from '../../components/Spinner';
 import './AdmitCard.css';
 
 const AdmitCard = () => {
     const dispatch = useDispatch();
-    const { darkMode } = useTheme();
-    const [searchInput, setSearchInput] = useState('');
-    const [selectedOrganization, setSelectedOrganization] = useState('');
-    const [selectedStatus, setSelectedStatus] = useState('');
-    const [page, setPage] = useState(1);
-
-    const useDebounce = (value, delay) => {
-        const [debouncedValue, setDebouncedValue] = useState(value);
-        useEffect(() => {
-            const timer = setTimeout(() => {
-                setDebouncedValue(value);
-            }, delay);
-            return () => clearTimeout(timer);
-        }, [value, delay]);
-        return debouncedValue;
-    };
-
-    const {
-        admitCards,
-        loading,
-        error,
-        totalPages,
-    } = useSelector((state) => state.admitCards);
-
-    const searchKeyword = useDebounce(searchInput, 500);
+    const navigate = useNavigate();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const { admitCards, loading, error } = useSelector((state) => state.admitCards);
+    const { isAuthenticated, user } = useSelector((state) => state.user);
 
     useEffect(() => {
-        dispatch(fetchAdmitCards(searchKeyword, selectedOrganization, selectedStatus, page));
-    }, [dispatch, searchKeyword, selectedOrganization, selectedStatus, page]);
+        dispatch(fetchAdmitCards());
+    }, [dispatch]);
 
-    const handleSearchChange = (e) => {
-        setSearchInput(e.target.value);
-        setPage(1);
+    const handleDeleteAdmitCard = async (admitCardId) => {
+        if (window.confirm('Are you sure you want to delete this admit card?')) {
+            const response = await dispatch(deleteAdmitCard(admitCardId));
+            if (response.success) {
+                toast.success('Admit Card deleted successfully');
+            } else {
+                toast.error(response.error || 'Error deleting admit card');
+            }
+        }
     };
 
-    const handleOrganizationChange = (e) => {
-        setSelectedOrganization(e.target.value);
-        setPage(1);
+    const handleAddAdmitCard = async (admitCardData) => {
+        const result = await dispatch(createAdmitCard(admitCardData));
+        if (!result.error) {
+            toast.success('Admit Card added successfully!');
+            setIsModalOpen(false);
+        } else {
+            toast.error(result.error || 'Error adding admit card');
+        }
     };
 
-    const handleStatusChange = (e) => {
-        setSelectedStatus(e.target.value);
-        setPage(1);
-    };
-
-    const formatDate = (date) => {
-        return new Date(date).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
+    const handleViewDetails = (admitCardId) => {
+        navigate(`/admitcard/get/${admitCardId}`);
     };
 
     if (loading) return <Spinner />;
     if (error) return <div>Error: {error}</div>;
 
     return (
-        <div>
-            <div className="header-bottom">
-                <h2>Admit Cards</h2>
-                <div className="search-filter-sort">
-                    <div className="search-container">
-                        <input
-                            type="text"
-                            placeholder="Search Admit Cards here..."
-                            value={searchInput}
-                            onChange={handleSearchChange}
-                        />
-                    </div>
-                    <div className="organization-container">
-                        <select
-                            value={selectedOrganization}
-                            onChange={handleOrganizationChange}
-                        >
-                            <option value="">All Organizations</option>
-                            <option value="UPSC">UPSC</option>
-                            <option value="SSC">SSC</option>
-                            <option value="IBPS">IBPS</option>
-                            <option value="RRB">RRB</option>
-                            <option value="State PSC">State PSC</option>
-                        </select>
-                    </div>
-                    <div className="status-container">
-                        <select
-                            value={selectedStatus}
-                            onChange={handleStatusChange}
-                        >
-                            <option value="">All Status</option>
-                            <option value="Active">Active</option>
-                            <option value="Expired">Expired</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div className="container">
-                {admitCards?.length === 0 ? (
-                    <div className="col-span-full text-center text-gray-500">
-                        No admit cards found
-                    </div>
-                ) : (
-                    admitCards?.map((card) => (
-                        <div key={card._id} className="card">
-                            <h3>{card.title}</h3>
-                            <div className="organization">Organization: {card.organization}</div>
-                            <div className="exam-date">
-                                <strong>Exam Date:</strong> {formatDate(card.exam_date)}
+        <div className="admit-cards-container">
+            {isAuthenticated && user?.role === 'admin' && (
+                <button 
+                    className="add-admit-card-button"
+                    onClick={() => setIsModalOpen(true)}
+                >
+                    Add Admit Card
+                </button>
+            )}
+            <div className="admit-cards-grid">
+                {admitCards?.map((admitCard) => (
+                    <div key={admitCard._id} className="admit-card">
+                        <div className="admit-card-header">
+                            <h3>{admitCard.title}</h3>
+                            {isAuthenticated && user?.role === 'admin' && (
+                                <button 
+                                    className="delete-button"
+                                    onClick={() => handleDeleteAdmitCard(admitCard._id)}
+                                >
+                                    <FaTrash />
+                                </button>
+                            )}
+                        </div>
+                        <div className="admit-card-body">
+                            <p className="organization">{admitCard.organization}</p>
+                            <div className="dates">
+                                <p>Exam Date: {new Date(admitCard.exam_date).toLocaleDateString()}</p>
+                                <p>Registration: {new Date(admitCard.registration_start_date).toLocaleDateString()} - {new Date(admitCard.registration_end_date).toLocaleDateString()}</p>
                             </div>
-                            <div className="registration-dates">
-                                <div><strong>Registration Start:</strong> {formatDate(card.registration_start_date)}</div>
-                                <div><strong>Registration End:</strong> {formatDate(card.registration_end_date)}</div>
-                            </div>
-                            <div className="card-footer">
-                                <Link 
-                                    to={`/admitcard/get/${card._id}`}
-                                    className="view-details"
+                            <p className="description">{admitCard.description}</p>
+                            <div className="admit-card-actions">
+                                <button 
+                                    onClick={() => handleViewDetails(admitCard._id)}
+                                    className="view-details-button"
                                 >
                                     View Details
-                                </Link>
+                                </button>
+                                <a 
+                                    href={admitCard.download_link} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="download-link"
+                                >
+                                    Download
+                                </a>
                             </div>
                         </div>
-                    ))
-                )}
+                    </div>
+                ))}
             </div>
-
-            {totalPages > 1 && (
-                <div className="pagination">
-                    <button 
-                        className={`pagination-button ${page === 1 ? 'disabled' : ''}`}
-                        onClick={() => setPage(prev => Math.max(prev - 1, 1))}
-                        disabled={page === 1}
-                    >
-                        Previous
-                    </button>
-                    <span className="page-info">Page {page} of {totalPages || 1}</span>
-                    <button 
-                        className={`pagination-button ${page === totalPages ? 'disabled' : ''}`}
-                        onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
-                        disabled={page === totalPages}
-                    >
-                        Next
-                    </button>
-                </div>
-            )}
+            <AddAdmitCardModal 
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleAddAdmitCard}
+            />
         </div>
     );
 };

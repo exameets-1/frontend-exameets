@@ -10,6 +10,7 @@ const userSlice = createSlice({
     error: null,
     message: null,
     downloadMessage: null,
+    matchedJobs: null,
   },
   reducers: {
     loginRequest(state) {
@@ -110,6 +111,21 @@ const userSlice = createSlice({
     downloadRoadmapFailed(state, action) {
       state.loading = false;
       state.downloadMessage = null;
+      state.error = action.payload;
+    },
+    fetchMatchedJobsRequest(state) {
+      state.loading = true;
+      state.error = null;
+      state.matchedJobs = null;
+    },
+    fetchMatchedJobsSuccess(state, action) {
+      state.loading = false;
+      state.matchedJobs = action.payload;
+      state.error = null;
+    },
+    fetchMatchedJobsFailed(state, action) {
+      state.loading = false;
+      state.matchedJobs = null;
       state.error = action.payload;
     },
   },
@@ -240,7 +256,12 @@ export const updatePreferences = createAsyncThunk(
     try {
       const { data } = await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/preferences/update`,
-        preferences,
+        {
+          notifications_about: preferences.notifications_about,
+          isStudying: preferences.isStudying,
+          educationLevel: preferences.educationLevel,
+          preferencesSet: true
+        },
         { withCredentials: true }
       );
       return data;
@@ -290,6 +311,24 @@ export const deleteAccount = createAsyncThunk(
     }
   }
 );
+
+export const fetchMatchedJobs = ()  => async (dispatch) => {
+  dispatch(userSlice.actions.fetchMatchedJobsRequest());
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/user/matchedjobs`,
+      { withCredentials: true }
+    );
+    dispatch(userSlice.actions.fetchMatchedJobsSuccess(response.data));
+    dispatch(userSlice.actions.clearAllErrors());
+  } catch (error) {
+    dispatch(
+      userSlice.actions.fetchMatchedJobsFailed(
+        error.response?.data?.message || "Failed to fetch matched jobs"
+      )
+    );
+  }
+};
 
 export const { resetAuthErrors, clearAllErrors: clearAllUserErrors } = userSlice.actions;
 export default userSlice.reducer;
