@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FaArrowLeft, FaEdit, FaSave } from 'react-icons/fa';
 import { fetchSingleAdmitCard, updateAdmitCard } from '../../store/slices/admitCardSlice';
 import Spinner from '../../components/Spinner';
-import './AdmitCardDetails.css';
 
 const AdmitCardDetails = () => {
   const { id } = useParams();

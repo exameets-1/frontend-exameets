@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import axiosInstance from "../../../../Next.js/exameets/src/axiosInstance";
 
 const admitCardSlice = createSlice({
     name: "admitCards",
@@ -189,7 +188,7 @@ export const fetchLatestAdmitCards = () => async (dispatch) => {
 export const deleteAdmitCard = (id) => async (dispatch) => {
     try {
         dispatch(admitCardSlice.actions.deleteAdmitCardRequest());
-        const response = await axiosInstance.delete(`/api/v1/admitcard/${id}`, { withCredentials: true });
+        const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/admitcard/${id}`, { withCredentials: true });
         dispatch(admitCardSlice.actions.deleteAdmitCardSuccess({ message: response.data.message, id }));
     } catch (error) {
         dispatch(admitCardSlice.actions.deleteAdmitCardFailed(error.response?.data?.message || "Failed to delete admit card"));

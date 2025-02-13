@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'; 
 import { useEffect, useState } from 'react';
-import axiosInstance from '../axiosInstance';
 
 const Payment = ({ amount = 500, onSuccess }) => {
   const [loading, setLoading] = useState(false);
@@ -23,7 +22,7 @@ const Payment = ({ amount = 500, onSuccess }) => {
       setError(null);
 
       // Create order
-      const orderResponse = await axiosInstance.post('/api/payment/create-order', { amount });
+      const orderResponse = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/payment/create-order`, { amount });
 
       if (!orderResponse.data || !orderResponse.data.order || !orderResponse.data.order.id) {
         throw new Error('Invalid order response from server');
@@ -38,7 +37,7 @@ const Payment = ({ amount = 500, onSuccess }) => {
         order_id: orderResponse.data.order.id,
         handler: async function (response) {
           try {
-            const verifyResponse = await axiosInstance.post('/api/payment/verify', {
+            const verifyResponse = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/payment/verify`, {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,

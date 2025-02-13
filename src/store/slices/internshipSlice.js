@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import axiosInstance from "../../../../Next.js/exameets/src/axiosInstance";
 
 // Create Internship
 export const createInternship = createAsyncThunk(
@@ -251,8 +250,8 @@ export const resetInternshipSlice = () => (dispatch) => {
 export const fetchLatestInternships = () => async (dispatch) => {
   try {
     dispatch(internshipSlice.actions.requestLatestInternships());
-    const { data } = await axiosInstance.get(
-      `/api/v1/internship/latest`
+    const { data } = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/latest`
     );
     dispatch(internshipSlice.actions.successLatestInternships(data));
   } catch (error) {

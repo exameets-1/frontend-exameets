@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { RiLock2Fill } from "react-icons/ri";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import axiosInstance from "../../../../Next.js/exameets/src/axiosInstance";
 import "./Login.css";
 
 const Login = () => {
@@ -71,7 +70,7 @@ const Login = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const { data } = await axiosInstance.post("/api/v1/password/send-otp", {
+      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/password/send-otp`, {
         email: forgotEmail
       });
       toast.success(data.message);
@@ -89,7 +88,7 @@ const Login = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const { data } = await axiosInstance.post("/api/v1/password/verify-otp", {
+      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/password/verify-otp`, {
         email: forgotEmail,
         otp
       });
@@ -110,7 +109,7 @@ const Login = () => {
     }
     try {
       setLoading(true);
-      const { data } = await axiosInstance.post("/api/v1/password/reset-password", {
+      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/password/reset-password`, {
         email: forgotEmail,
         otp,
         newPassword

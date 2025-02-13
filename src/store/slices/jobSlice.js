@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import axiosInstance from "../../../../Next.js/exameets/src/axiosInstance";
 
 const jobSlice = createSlice({
   name: "jobs",
@@ -205,29 +204,6 @@ export const clearAllJobErrors = () => (dispatch) => {
 export const resetJobSlice = () => (dispatch) => {
   dispatch(jobSlice.actions.resetJobSlice());
 };
-
-export const applyForJob = (jobId) => async (dispatch, getState) => {
-  try {
-    const { isAuthenticated } = getState().user;
-    if (!isAuthenticated) {
-      throw new Error("Please login to apply for jobs");
-    }
-
-    dispatch(jobSlice.actions.applyJobRequest());
-    await axios.post(
-      `http://localhost:4000/api/v1/job/apply/${jobId}`,
-      {},
-      { withCredentials: true }
-    );
-    dispatch(jobSlice.actions.applyJobSuccess(jobId));
-  } catch (error) {
-    dispatch(jobSlice.actions.applyJobFailure(
-      error.message || "Failed to apply for job"
-    ));
-    throw error;
-  }
-};
-
 export const syncAppliedJobs = (appliedJobs) => (dispatch) => {
   dispatch(jobSlice.actions.setAppliedJobs(appliedJobs));
 };
@@ -252,7 +228,7 @@ export const fetchLatestJobs = () => async (dispatch) => {
 export const deleteJob = (jobId) => async (dispatch) => {
   try {
     dispatch(jobSlice.actions.deleteJobRequest());
-    const { data } = await axiosInstance.delete(`api/v1/job/${jobId}`);
+    const { data } = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/job/${jobId}`);
     dispatch(jobSlice.actions.deleteJobSuccess({ message: data.message, jobId }));
   } catch (error) {
     dispatch(
