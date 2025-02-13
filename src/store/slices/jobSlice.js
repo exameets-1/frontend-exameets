@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import axiosInstance from "../../axiosInstance";
+import axiosInstance from "../../../../Next.js/exameets/src/axiosInstance";
 
 const jobSlice = createSlice({
   name: "jobs",

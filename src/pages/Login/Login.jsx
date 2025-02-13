@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { RiLock2Fill } from "react-icons/ri";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import axiosInstance from "../../axiosInstance";
+import axiosInstance from "../../../../Next.js/exameets/src/axiosInstance";
 import "./Login.css";
 
 const Login = () => {

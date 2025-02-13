@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import axiosInstance from "../../axiosInstance";
 
 // Create Admission
 export const createAdmission = createAsyncThunk(
@@ -209,7 +208,7 @@ export const fetchLatestAdmissions = () => async (dispatch) => {
 export const deleteAdmission = (id) => async(dispatch) => {
     try {
         dispatch(admissionSlice.actions.deleteAdmissionRequest());
-        const response = await axiosInstance.delete(`/api/v1/admission/${id}`, {
+        const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/admission/${id}`, {
             withCredentials: true
         });
         dispatch(admissionSlice.actions.deleteAdmissionSuccess({ message: response.data.message, id }));
@@ -221,8 +220,8 @@ export const deleteAdmission = (id) => async(dispatch) => {
 export const updateAdmission = ({ admissionId, updatedData }) => async (dispatch) => {
     try {
         dispatch(admissionSlice.actions.updateAdmissionRequest());
-        const { data } = await axiosInstance.put(
-            `/api/v1/admission/update/${admissionId}`,
+        const { data } = await axios.put(
+            `${import.meta.env.VITE_BACKEND_URL}/api/v1/admission/update/${admissionId}`,
             updatedData,
             { withCredentials: true }
         );
