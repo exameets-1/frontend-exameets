@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchInternships, deleteInternship, createInternship } from "../../store/slices/internshipSlice";
-import Spinner from "../../components/Spinner";
+import Spinner from "../../components/Spinner/Spinner";
 import { FaTrash, FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
 import AddInternshipModal from "../../components/AddInternshipModal/AddInternshipModal";

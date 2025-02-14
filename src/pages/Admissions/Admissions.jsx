@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchAdmissions, deleteAdmission, createAdmission } from '../../store/slices/admissionSlice';
 import AddAdmissionModal from '../../components/AddAdmissionModal/AddAdmissionModal';
 import { useTheme } from '../../App';
-import Spinner from '../../components/Spinner';
+import Spinner from '../../components/Spinner/Spinner';
 import './Admissions.css';
 import { toast } from 'react-toastify';
 import {FaPlus,  FaTrash} from 'react-icons/fa'

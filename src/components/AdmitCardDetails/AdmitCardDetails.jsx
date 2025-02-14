@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { FaArrowLeft, FaEdit, FaSave } from 'react-icons/fa';
 import { fetchSingleAdmitCard, updateAdmitCard } from '../../store/slices/admitCardSlice';
-import Spinner from '../../components/Spinner';
+import Spinner from '../../components/Spinner/Spinner';
 
 const AdmitCardDetails = () => {
   const { id } = useParams();

@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchGovtJobs, deleteGovtJob, createGovtJob } from "../../store/slices/govtJobSlice";
-import Spinner from "../../components/Spinner";
+import Spinner from "../../components/Spinner/Spinner";
 import { FaTrash, FaSearch } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "./GovtJobs.css";

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSingleResult, resetResultDetails, updateResult } from '../../store/slices/resultSlice';
-import Spinner from '../Spinner';
+import Spinner from '../Spinner/Spinner';
 import { FaArrowLeft, FaCalendarAlt, FaBuilding, FaExternalLinkAlt, FaEdit, FaSave } from 'react-icons/fa';
 import './ResultDetails.css';
 

@@ -9,7 +9,7 @@ import { fetchLatestAdmitCards } from '../../store/slices/admitCardSlice';
 import { fetchLatestAdmissions } from '../../store/slices/admissionSlice';
 import { fetchLatestYears } from '../../store/slices/previousSlice';
 import { Link } from 'react-router-dom';
-import Spinner from '../../components/Spinner';
+import Spinner from '../../components/Spinner/Spinner';
 import useScrollToTop from '../../hooks/useScrollToTop';
 import './WhatsNew.css';
 

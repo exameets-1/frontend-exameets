@@ -8,7 +8,7 @@ import {
 } from 'react-icons/fa';
 import { fetchSingleAdmission, resetAdmissionDetails, updateAdmission } from '../../store/slices/admissionSlice';
 import { useTheme } from '../../App';
-import Spinner from '../Spinner';
+import Spinner from '../Spinner/Spinner';
 import './AdmissionDetails.css';
 
 const AdmissionDetails = () => {

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchPreviousYears, deleteYear, createPreviousYear } from "../../store/slices/previousSlice";
 import { FaTrash } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import Spinner from "../../components/Spinner";
+import Spinner from "../../components/Spinner/Spinner";
 import AddPreviousYearModal from "../../components/AddPreviousYearModal/AddPreviousYearModal";
 
 const useDebounce = (value, delay) => {

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { FaArrowLeft, FaEdit, FaSave } from 'react-icons/fa';
 import { fetchSingleJob, updateJob } from '../../store/slices/jobSlice';
-import Spinner from '../Spinner';
+import Spinner from '../Spinner/Spinner';
 import './JobDetails.css';
 
 const JobDetails = () => {

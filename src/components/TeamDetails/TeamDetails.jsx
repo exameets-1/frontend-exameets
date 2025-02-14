@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FaArrowLeft } from "react-icons/fa";
 import { fetchSingleTeam } from "../../store/slices/teamSlice";
-import Spinner from "../Spinner";
+import Spinner from "../Spinner/Spinner";
 import "./TeamDetails.css";
 
 const TeamDetails = () => {

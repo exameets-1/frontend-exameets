@@ -5,7 +5,7 @@ import { fetchAdmitCards, deleteAdmitCard, createAdmitCard } from '../../store/s
 import { FaTrash } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import AddAdmitCardModal from '../../components/AddAdmitCardModal/AddAdmitCardModal';
-import Spinner from '../../components/Spinner';
+import Spinner from '../../components/Spinner/Spinner';
 import './AdmitCard.css';
 
 const AdmitCard = () => {

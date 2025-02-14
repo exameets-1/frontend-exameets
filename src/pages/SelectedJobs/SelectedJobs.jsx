@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllITJobs, fetchAllNonITJobs } from "../../store/slices/jobSlice";
 import { Link } from "react-router-dom";
-import Spinner from "../../components/Spinner";
+import Spinner from "../../components/Spinner/Spinner";
 import "./SelectedJobs.css";
 
 const SelectedJobs = () => {

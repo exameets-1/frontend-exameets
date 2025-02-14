@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchPreviousYears, deleteYear, updateYear } from "../../store/slices/previousSlice";
-import Spinner from "../../components/Spinner";
+import Spinner from "../../components/Spinner/Spinner";
 import { 
     FaDownload, 
     FaCalendarAlt, 

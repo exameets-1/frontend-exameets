@@ -5,7 +5,7 @@ import { fetchScholarships, deleteScholarship, createScholarship } from '../../s
 import { FaTrash, FaPlus } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import AddScholarshipModal from '../../components/AddScholarshipModal/AddScholarshipModal';
-import Spinner from '../../components/Spinner';
+import Spinner from '../../components/Spinner/Spinner';
 
 const Scholarships = () => {
     const dispatch = useDispatch();

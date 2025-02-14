@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { fetchTeams, clearTeamErrors, deleteTeam } from "../../store/slices/teamSlice";
-import Spinner from "../../components/Spinner";
+import Spinner from "../../components/Spinner/Spinner";
 import { FaTrash } from "react-icons/fa";
 import useScrollToTop from "../../hooks/useScrollToTop";
 import "./Teams.css";
