@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { register, clearAllUserErrors } from "../../store/slices/userSlice.js";
 import { toast } from "react-toastify";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { auth } from "../../firebase/config";
 import PreferencesModal from "../../components/PreferencesModal/PreferencesModal.jsx";
 import useScrollToTop from "../../hooks/useScrollToTop";
 import "./Register.css";

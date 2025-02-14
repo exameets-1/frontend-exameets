@@ -255,7 +255,7 @@ export const updatePreferences = createAsyncThunk(
   async (preferences, { rejectWithValue }) => {
     try {
       const { data } = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/preferences/update`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/preference/update`,
         {
           notifications_about: preferences.notifications_about,
           isStudying: preferences.isStudying,
