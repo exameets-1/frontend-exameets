@@ -202,13 +202,13 @@ const InternshipDetails = () => {
             <span>Start Date:</span>
             {isEditing ? (
               <input
-                type="date"
+                type="text"
                 name="start_date"
-                value={editedInternship?.start_date ? new Date(editedInternship.start_date).toISOString().split('T')[0] : ''}
+                value={editedInternship?.start_date ? editedInternship.start_date : 'Not specified'}
                 onChange={handleInputChange}
               />
             ) : (
-              editedInternship?.start_date ? new Date(editedInternship.start_date).toLocaleDateString() : 'Not specified'
+              editedInternship?.start_date ? editedInternship.start_date : 'Not specified'
             )}
           </li>
         </ul>

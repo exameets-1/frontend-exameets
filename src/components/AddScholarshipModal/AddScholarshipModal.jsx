@@ -54,9 +54,6 @@ const AddScholarshipModal = ({ isOpen, onClose, onSubmit }) => {
         // Format dates to ISO string
         const formattedData = {
             ...formData,
-            start_date: new Date(formData.start_date).toISOString(),
-            last_date: new Date(formData.last_date).toISOString(),
-            post_date: new Date().toISOString()
         };
 
         onSubmit(formattedData);
@@ -135,23 +132,25 @@ const AddScholarshipModal = ({ isOpen, onClose, onSubmit }) => {
                         <div className="form-group">
                             <label htmlFor="start_date">Start Date</label>
                             <input
-                                type="date"
+                                type="text"
                                 id="start_date"
                                 name="start_date"
                                 value={formData.start_date}
                                 onChange={handleChange}
                                 required
+                                placeholder="e.g., 01/01/2024"
                             />
                         </div>
                         <div className="form-group">
                             <label htmlFor="last_date">Last Date to Apply</label>
                             <input
-                                type="date"
+                                type="text" 
                                 id="last_date"
                                 name="last_date"
                                 value={formData.last_date}
                                 onChange={handleChange}
                                 required
+                                placeholder="e.g., 01/01/2024"
                             />
                         </div>
                     </div>

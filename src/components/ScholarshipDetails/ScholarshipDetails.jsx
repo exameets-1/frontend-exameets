@@ -6,7 +6,6 @@ import {
     FaGraduationCap,
     FaMapMarker,
     FaCalendar,
-    FaClock,
     FaUniversity,
     FaMoneyBill,
     FaEdit,
@@ -63,11 +62,6 @@ const ScholarshipDetails = () => {
             ...prev,
             [name]: value
         }));
-    };
-
-    const formatDate = (date) => {
-        if (!date) return '';
-        return new Date(date).toISOString().split('T')[0];
     };
 
     if (loading) {
@@ -159,9 +153,9 @@ const ScholarshipDetails = () => {
                             <FaCalendar className="icon" />
                             {isEditing ? (
                                 <input
-                                    type="date"
+                                    type="text"
                                     name="deadline"
-                                    value={formatDate(editedScholarship.deadline)}
+                                    value={editedScholarship.deadline}
                                     onChange={handleInputChange}
                                     className="edit-input"
                                 />

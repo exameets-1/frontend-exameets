@@ -225,21 +225,11 @@ const GovtJobDetails = () => {
         {isEditing ? (
           <div className="dates-edit">
             <div>
-              <label>Posted Date:</label>
-              <input
-                type="date"
-                name="post_date"
-                value={editedJob.post_date ? new Date(editedJob.post_date).toISOString().split('T')[0] : ''}
-                onChange={handleInputChange}
-                className="edit-input"
-              />
-            </div>
-            <div>
               <label>Last Date to Apply:</label>
               <input
-                type="date"
+                type="text"
                 name="last_date"
-                value={editedJob.last_date ? new Date(editedJob.last_date).toISOString().split('T')[0] : ''}
+                value={editedJob.last_date ? editedJob.last_date : ''}
                 onChange={handleInputChange}
                 className="edit-input"
               />
@@ -247,14 +237,8 @@ const GovtJobDetails = () => {
           </div>
         ) : (
           <ul>
-            <li>
-              <span>Posted Date:</span>
-              <span>{editedJob.post_date ? new Date(editedJob.post_date).toLocaleDateString() : 'Not specified'}</span>
-            </li>
-            <li>
               <span>Last Date to Apply:</span>
-              <span>{editedJob.last_date ? new Date(editedJob.last_date).toLocaleDateString() : 'Not specified'}</span>
-            </li>
+              <span>{editedJob.last_date ? editedJob.last_date : 'Not specified'}</span>
           </ul>
         )}
       </section>

@@ -162,28 +162,28 @@ const AdmissionDetails = () => {
                         <span>Application Start:</span>
                         {isEditing ? (
                             <input
-                                type="date"
+                                type="text"
                                 name="application_start"
-                                value={editedAdmission.application_start ? new Date(editedAdmission.application_start).toISOString().split('T')[0] : ''}
+                                value={editedAdmission.start_date ? editedAdmission.start_date : ''}
                                 onChange={handleInputChange}
                                 className="edit-input"
                             />
                         ) : (
-                            <span>{editedAdmission.application_start ? new Date(editedAdmission.application_start).toLocaleDateString() : 'Not specified'}</span>
+                            <span>{editedAdmission.start_date ? editedAdmission.start_date : 'Not specified'}</span>
                         )}
                     </div>
                     <div className="date-item">
                         <span>Application Deadline:</span>
                         {isEditing ? (
                             <input
-                                type="date"
+                                type="text"
                                 name="application_deadline"
-                                value={editedAdmission.application_deadline ? new Date(editedAdmission.application_deadline).toISOString().split('T')[0] : ''}
+                                value={editedAdmission.last_date ? editedAdmission.last_date : ''}
                                 onChange={handleInputChange}
                                 className="edit-input"
                             />
                         ) : (
-                            <span>{editedAdmission.application_deadline ? new Date(editedAdmission.application_deadline).toLocaleDateString() : 'Not specified'}</span>
+                            <span>{editedAdmission.last_date ? editedAdmission.last_date : 'Not specified'}</span>
                         )}
                     </div>
                 </div>

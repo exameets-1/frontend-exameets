@@ -13,8 +13,8 @@ const AddGovtJobModal = ({ isOpen, onClose, onSubmit }) => {
         eligibility_criteria: '',
         application_link: '',
         salary_range: '',
-        last_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        valid_until: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        last_date: '',
+        valid_until: '',
         result_link: '',
         description: '',
         qualifications: '',
@@ -76,8 +76,8 @@ const AddGovtJobModal = ({ isOpen, onClose, onSubmit }) => {
         eligibility_criteria: { type: 'string', label: 'Eligibility Criteria', multiline: true },
         application_link: { type: 'string', label: 'Application Link' },
         salary_range: { type: 'string', label: 'Salary Range' },
-        last_date: { type: 'date', label: 'Last Date to Apply' },
-        valid_until: { type: 'date', label: 'Valid Until' },
+        last_date: { type: 'text', label: 'Last Date to Apply' },
+        valid_until: { type: 'text', label: 'Valid Until' },
         result_link: { type: 'string', label: 'Result Link' },
         description: { type: 'string', label: 'Description', multiline: true },
         qualifications: { type: 'string', label: 'Qualifications', multiline: true },
@@ -101,33 +101,9 @@ const AddGovtJobModal = ({ isOpen, onClose, onSubmit }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Validate dates
-        const today = new Date();
-        const postDate = new Date(formData.post_date);
-        const lastDate = new Date(formData.last_date);
-        const validUntil = formData.valid_until ? new Date(formData.valid_until) : null;
-
-        if (postDate > lastDate) {
-            alert('Post date cannot be after last date to apply');
-            return;
-        }
-
-        if (validUntil && lastDate > validUntil) {
-            alert('Last date to apply cannot be after valid until date');
-            return;
-        }
-
-        if (validUntil && validUntil < today) {
-            alert('Valid until date must be in the future');
-            return;
-        }
-
         // Format dates for submission
         const formattedData = {
             ...formData,
-            post_date: new Date(formData.post_date).toISOString(),
-            last_date: new Date(formData.last_date).toISOString(),
-            valid_until: formData.valid_until ? new Date(formData.valid_until).toISOString() : undefined
         };
 
         onSubmit(formattedData);
@@ -196,7 +172,7 @@ const AddGovtJobModal = ({ isOpen, onClose, onSubmit }) => {
                                 />
                             ) : (
                                 <input
-                                    type={fieldInfo.type === 'date' ? 'date' : fieldInfo.type === 'url' ? 'url' : 'text'}
+                                    type={fieldInfo.type === 'url' ? 'url' : 'text'}
                                     id={fieldName}
                                     name={fieldName}
                                     value={formData[fieldName]}

@@ -8,8 +8,8 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
         title: '',
         description: '',
         exam_date: '',
-        registration_start_date: new Date().toISOString().split('T')[0],
-        registration_end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        registration_start_date: '',
+        registration_end_date: '',
         eligibility_criteria: '',
         download_link: '',
         organization: ''
@@ -29,9 +29,9 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
         title: { type: 'string', label: 'Title' },
         organization: { type: 'string', label: 'Organization' },
         description: { type: 'string', label: 'Description', multiline: true },
-        exam_date: { type: 'date', label: 'Exam Date' },
-        registration_start_date: { type: 'date', label: 'Registration Start Date' },
-        registration_end_date: { type: 'date', label: 'Registration End Date' },
+        exam_date: { type: 'text', label: 'Exam Date' },
+        registration_start_date: { type: 'text', label: 'Registration Start Date' },
+        registration_end_date: { type: 'text', label: 'Registration End Date' },
         eligibility_criteria: { type: 'string', label: 'Eligibility Criteria', multiline: true },
         download_link: { type: 'url', label: 'Download Link' }
     };
@@ -47,33 +47,9 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Validate dates
-        const examDate = new Date(formData.exam_date);
-        const startDate = new Date(formData.registration_start_date);
-        const endDate = new Date(formData.registration_end_date);
-        const today = new Date();
-
-        if (startDate > endDate) {
-            alert('Registration start date cannot be after end date');
-            return;
-        }
-
-        if (endDate > examDate) {
-            alert('Registration end date cannot be after exam date');
-            return;
-        }
-
-        if (endDate < today) {
-            alert('Registration end date must be in the future');
-            return;
-        }
-
         // Format dates for submission
         const formattedData = {
             ...formData,
-            exam_date: new Date(formData.exam_date).toISOString(),
-            registration_start_date: new Date(formData.registration_start_date).toISOString(),
-            registration_end_date: new Date(formData.registration_end_date).toISOString()
         };
 
         onSubmit(formattedData);
@@ -109,7 +85,7 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
                                 />
                             ) : (
                                 <input
-                                    type={fieldInfo.type === 'date' ? 'date' : fieldInfo.type === 'url' ? 'url' : 'text'}
+                                    type={fieldInfo.type === 'url' ? 'url' : 'text'}
                                     id={fieldName}
                                     name={fieldName}
                                     value={formData[fieldName]}

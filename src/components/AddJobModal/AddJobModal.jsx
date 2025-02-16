@@ -17,8 +17,8 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
         description: '',
         salary_range: '',
         category: '',
-        last_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days from now
-        valid_until: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 60 days from now
+        last_date: '',
+        valid_until: '',
         vacancy: '',
         qualification: ''
     };
@@ -52,8 +52,8 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
         application_link: { type: 'url', label: 'Application Link' },
         description: { type: 'string', label: 'Description', multiline: true },
         salary_range: { type: 'string', label: 'Salary Range' },
-        last_date: { type: 'date', label: 'Last Date to Apply' },
-        valid_until: { type: 'date', label: 'Valid Until' },
+        last_date: { type: 'text', label: 'Last Date to Apply' },
+        valid_until: { type: 'text', label: 'Valid Until' },
         vacancy: { type: 'string', label: 'Number of Vacancies' },
         qualification: { type: 'string', label: 'Qualification', multiline: true }
     };
@@ -87,34 +87,10 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
             return;
         }
 
-        // Validate dates
-        const today = new Date();
-        const postDate = new Date(formData.post_date);
-        const lastDate = new Date(formData.last_date);
-        const validUntil = new Date(formData.valid_until);
-
-        if (postDate > lastDate) {
-            alert('Post date cannot be after last date to apply');
-            return;
-        }
-
-        if (lastDate > validUntil) {
-            alert('Last date to apply cannot be after valid until date');
-            return;
-        }
-
-        if (validUntil < today) {
-            alert('Valid until date must be in the future');
-            return;
-        }
-
         // Submit with processed skills array
         onSubmit({
             ...formData,
             skills_required: skillsArray,
-            post_date: new Date(formData.post_date).toISOString(),
-            last_date: new Date(formData.last_date).toISOString(),
-            valid_until: new Date(formData.valid_until).toISOString()
         });
     };
 
@@ -164,7 +140,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
                                 />
                             ) : (
                                 <input
-                                    type={fieldInfo.type === 'date' ? 'date' : fieldInfo.type === 'url' ? 'url' : 'text'}
+                                    type={fieldInfo.type === 'url' ? 'url' : 'text'}
                                     id={fieldName}
                                     name={fieldName}
                                     value={fieldInfo.type === 'array' 

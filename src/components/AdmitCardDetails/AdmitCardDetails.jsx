@@ -54,15 +54,6 @@ const AdmitCardDetails = () => {
     }));
   };
 
-  const formatDate = (date) => {
-    if (!date) return 'Not specified';
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
   if (loading) {
     return (
       <div className="loading-container">
@@ -162,28 +153,28 @@ const AdmitCardDetails = () => {
             <strong>Release Date:</strong>
             {isEditing ? (
               <input
-                type="date"
+                type="text"
                 name="release_date"
-                value={editedAdmitCard.release_date ? new Date(editedAdmitCard.release_date).toISOString().split('T')[0] : ''}
+                value={editedAdmitCard.release_date || ''}
                 onChange={handleInputChange}
                 className="edit-input"
               />
             ) : (
-              <p>{formatDate(editedAdmitCard.release_date)}</p>
+              <p>{editedAdmitCard.release_date || 'Not specified'}</p>
             )}
           </div>
           <div>
             <strong>Exam Date:</strong>
             {isEditing ? (
               <input
-                type="date"
+                type="text"
                 name="exam_date"
-                value={editedAdmitCard.exam_date ? new Date(editedAdmitCard.exam_date).toISOString().split('T')[0] : ''}
+                value={editedAdmitCard.exam_date || ''}
                 onChange={handleInputChange}
                 className="edit-input"
               />
             ) : (
-              <p>{formatDate(editedAdmitCard.exam_date)}</p>
+              <p>{editedAdmitCard.exam_date || 'Not specified'}</p>
             )}
           </div>
         </div>

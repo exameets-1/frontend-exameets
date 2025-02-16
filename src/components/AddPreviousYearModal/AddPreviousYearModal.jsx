@@ -47,7 +47,7 @@ const AddPreviousYearModal = ({ isOpen, onClose, onSubmit }) => {
         }));
     };
 
-    const handleLogin = () => {
+    const handleLogin = () => { 
         // Handle login logic (e.g., redirect to login page)
         window.location.href = '/login';
     }

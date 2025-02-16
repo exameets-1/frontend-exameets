@@ -71,10 +71,6 @@ const AddInternshipModal = ({ isOpen, onClose, onSubmit }) => {
         // Convert skills string to array
         const formattedData = {
             ...formData,
-            skills_required: formData.skills_required.split(',').map(skill => skill.trim()),
-            post_date: new Date().toISOString(),
-            start_date: new Date(formData.start_date).toISOString(),
-            last_date: new Date(formData.last_date).toISOString()
         };
 
         onSubmit(formattedData);
@@ -156,7 +152,7 @@ const AddInternshipModal = ({ isOpen, onClose, onSubmit }) => {
                         <div className="form-group">
                             <label htmlFor="start_date">Start Date</label>
                             <input
-                                type="date"
+                                type="text"
                                 id="start_date"
                                 name="start_date"
                                 value={formData.start_date}
@@ -167,7 +163,7 @@ const AddInternshipModal = ({ isOpen, onClose, onSubmit }) => {
                         <div className="form-group">
                             <label htmlFor="last_date">Last Date to Apply</label>
                             <input
-                                type="date"
+                                type="text"
                                 id="last_date"
                                 name="last_date"
                                 value={formData.last_date}

@@ -61,11 +61,6 @@ const ResultDetails = () => {
     }));
   };
 
-  const formatDate = (date) => {
-    if (!date) return '';
-    return new Date(date).toISOString().split('T')[0];
-  };
-
   if (loading) return <Spinner />;
   if (error) return <div>Error: {error}</div>;
   if (!editedResult) return <div>No result found</div>;
@@ -119,14 +114,14 @@ const ResultDetails = () => {
               <div className="detail-content">
                 {isEditing ? (
                   <input
-                    type="date"
+                    type="text"
                     name="exam_date"
-                    value={formatDate(editedResult.exam_date)}
+                    value={editedResult.exam_date}
                     onChange={handleInputChange}
                     className="edit-input w-full"
                   />
                 ) : (
-                  <p>Exam Date: {new Date(editedResult.exam_date).toLocaleDateString()}</p>
+                  <p>Exam Date: {editedResult.exam_date}</p>
                 )}
               </div>
             </div>
@@ -138,14 +133,14 @@ const ResultDetails = () => {
               <div className="detail-content">
                 {isEditing ? (
                   <input
-                    type="date"
+                    type="text"
                     name="result_date"
-                    value={formatDate(editedResult.result_date)}
+                    value={editedResult.result_date}
                     onChange={handleInputChange}
                     className="edit-input w-full"
                   />
                 ) : (
-                  <p>Result Date: {new Date(editedResult.result_date).toLocaleDateString()}</p>
+                  <p>Result Date: {editedResult.result_date}</p>
                 )}
               </div>
             </div>

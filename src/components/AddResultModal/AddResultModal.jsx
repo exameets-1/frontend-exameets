@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
     const initialFormData = {
         exam_title: '',
-        result_date: new Date().toISOString().split('T')[0],
+        result_date: '',
         exam_date: '',
         organization: '',
         result_link: '',
@@ -18,8 +18,8 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
 
     const fieldTypes = {
         exam_title: { type: 'string', label: 'Exam Title' },
-        result_date: { type: 'date', label: 'Result Date' },
-        exam_date: { type: 'date', label: 'Exam Date' },
+        result_date: { type: 'text', label: 'Result Date' },
+        exam_date: { type: 'text', label: 'Exam Date' },
         organization: { type: 'string', label: 'Organization' },
         result_link: { type: 'url', label: 'Result Link' },
         description: { type: 'string', label: 'Description', multiline: true }
@@ -41,20 +41,8 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Validate dates
-        const examDate = new Date(formData.exam_date);
-        const resultDate = new Date(formData.result_date);
-
-        if (resultDate < examDate) {
-            alert('Result date cannot be before exam date');
-            return;
-        }
-
-        // Format dates for submission
         const formattedData = {
             ...formData,
-            exam_date: new Date(formData.exam_date).toISOString(),
-            result_date: new Date(formData.result_date).toISOString()
         };
 
         onSubmit(formattedData);
@@ -90,7 +78,7 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
                                 />
                             ) : (
                                 <input
-                                    type={fieldInfo.type === 'date' ? 'date' : fieldInfo.type === 'url' ? 'url' : 'text'}
+                                    type={fieldInfo.type === 'url' ? 'url' : 'text'}
                                     id={fieldName}
                                     name={fieldName}
                                     value={formData[fieldName]}
