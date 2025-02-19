@@ -116,7 +116,7 @@ const Footer = () => {
     };
 
     // Update quote every 5 seconds
-    const intervalId = setInterval(updateQuote, 5000);
+    const intervalId = setInterval(updateQuote, 30000);
 
     return () => clearInterval(intervalId);
   }, []);

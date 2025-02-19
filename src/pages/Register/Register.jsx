@@ -99,6 +99,8 @@ const Register = () => {
         "recaptcha-container",
         {
           size: "invisible",
+          siteKey: import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY,
+          enterprise: true,
         }
       );
     }
@@ -496,12 +498,7 @@ const Register = () => {
               ✓ Passwords match
             </p>
           </div>
-
-          <div className="captcha-section">
-            <input type="checkbox" required />
-            <label>I am not a robot</label>
-          </div>
-
+          
           <button type="submit" className="next-btn" disabled={loading}>
             {loading ? "Registering..." : "Next"}
           </button>

@@ -1,119 +1,113 @@
-.body {
-    font-family: Arial, sans-serif;
-    background-color: #FFFFFF;
-    margin: 0;
-    padding: 0;
-    color: #000000;
+.container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background-color: #ffffff;
 }
 
-.privacy-policy-container {
-    width: 80%;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.content {
+    max-width: 1200px;
+    width: 100%;
+    padding: 0 20px;
 }
 
-h1.privacy-policy-title {
-    color: #015990;
-    text-align: center;
-    font-size: 36px;
-}
-
-h2 {
-    color: #015990;
-    font-size: 26px;
-    margin-top: 20px;
-}
-
-p, ul {
-    font-size: 20px;
-    line-height: 1.6;
-    margin: 10px 0;
-}
-
-ul {
-    list-style-type: disc;
-    margin-left: 20px;
-}
-
-/* Nested lists */
-ul ul {
-    margin-left: 40px;
-    margin-top: 5px;
-    margin-bottom: 15px;
-}
-
-a {
-    color: #015990;
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
-.effective-date, .last-updated {
-    font-size: 14px;
-    color: #283D50;
-    text-align: center;
-}
-
-.intro-text {
-    font-size: 20px;
-    margin-top: 10px;
-    color: #000000;
-    line-height: 1.8;
-}
-
-strong {
+.mainTitle {
+    font-size: 2.5rem;
     font-weight: bold;
-    color: #015990;
+    margin-bottom: 1rem;
+    color: #000000;
 }
 
-/* Responsive Design */
-@media screen and (max-width: 768px) {
-    .privacy-policy-container {
-        width: 90%;
-        padding: 15px;
+.lastUpdated {
+    font-size: 1rem;
+    color: #333333;
+    margin-bottom: 2rem;
+}
+
+.sectionTitle {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 2rem 0 1rem 0;
+    color: #000000;
+}
+
+.subTitle {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 1.5rem 0 1rem 0;
+    color: #000000;
+}
+
+.paragraph {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #333333;
+    margin-bottom: 1rem;
+}
+
+.definitionsList {
+    list-style-type: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.definitionsList li {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.definitionsList li strong {
+    font-weight: bold;
+    color: #000000;
+}
+
+.contactSection {
+    margin-top: 3rem;
+}
+
+.contactList {
+    list-style-type: none;
+    padding: 0;
+}
+
+.contactList li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .mainTitle {
+        font-size: 2rem;
     }
 
-    h1.privacy-policy-title {
-        font-size: 28px;
+    .sectionTitle {
+        font-size: 1.75rem;
     }
 
-    h2 {
-        font-size: 22px;
+    .subTitle {
+        font-size: 1.25rem;
     }
 
-    p, ul {
-        font-size: 16px;
-    }
-
-    .intro-text {
-        font-size: 16px;
+    .content {
+        padding: 0 15px;
     }
 }
 
-@media screen and (max-width: 480px) {
-    .privacy-policy-container {
-        width: 95%;
-        padding: 10px;
+@media (max-width: 480px) {
+    .mainTitle {
+        font-size: 1.75rem;
     }
 
-    h1.privacy-policy-title {
-        font-size: 24px;
+    .sectionTitle {
+        font-size: 1.5rem;
     }
 
-    h2 {
-        font-size: 20px;
+    .subTitle {
+        font-size: 1.125rem;
     }
 
-    p, ul {
-        font-size: 14px;
-    }
-
-    .intro-text {
-        font-size: 14px;
+    .paragraph {
+        font-size: 0.9375rem;
     }
 }

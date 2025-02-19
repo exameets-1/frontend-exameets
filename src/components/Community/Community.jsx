@@ -1,79 +1,110 @@
 import React from 'react';
-import './Community.css';
-import { FaWhatsapp, FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa';
-import { FaTwitter } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { FaWhatsapp, FaFacebook, FaInstagram, FaLinkedin, FaTelegram, FaTwitter } from 'react-icons/fa';
 import useScrollToTop from '../../hooks/useScrollToTop';
 
+const SocialLink = ({ href, icon: Icon }) => (
+  <a 
+    href={href} 
+    target="_blank" 
+    rel="noopener noreferrer"
+    className="transition-transform hover:scale-110"
+  >
+    <Icon className="w-8 h-8 text-primary hover:text-primary-dark transition-colors" />
+  </a>
+);
+
+const Section = ({ title, description, ctaLink, ctaText }) => (
+  <div className="my-8">
+    <h3 className="text-2xl font-semibold text-gray-800 mb-4">{title}</h3>
+    <p className="text-lg text-gray-600 mb-4">{description}</p>
+    {ctaLink && (
+      <a 
+        href={ctaLink} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="inline-block px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors text-lg"
+      >
+        {ctaText}
+      </a>
+    )}
+  </div>
+);
+
 const Community = () => {
-    useScrollToTop();
-    return (
-        <div className="c-body">
-            <div className="container">
-                <h1>Follow Us</h1>
-                <p className="intro-text">Stay connected and up-to-date with the latest news and updates on Exameets by following us on:</p>
+  useScrollToTop();
 
-                <div className="right-side-media">
-                    <a href="#"><FaWhatsapp className="social-icon" /></a>
-                    <a href="#"><FaFacebook className="social-icon" /></a>
-                    <a href="#"><FaInstagram className="social-icon" /></a>
-                    <a href="#"><FaTwitter className="social-icon" /></a>
-                    <a href="#"><FaLinkedin className="social-icon" /></a>
-                </div>
+  const socialLinks = [
+    { href: "https://whatsapp.com/channel/0029VaksJ72Lo4hmldL0yl41", icon: FaWhatsapp },
+    { href: "https://www.instagram.com/exameets/", icon: FaInstagram },
+    { href: "https://x.com/exameets", icon: FaTwitter },
+    { href: "https://www.linkedin.com/company/exameets/", icon: FaLinkedin },
+    { href: "https://t.me/exameetschannel", icon: FaTelegram }
+  ];
 
-                <hr className="divider" />
+  return (
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md px-8 py-12">
+        <h1 className="text-4xl font-bold text-gray-800 mb-6">Follow Us</h1>
+        <p className="text-xl text-gray-600 mb-8">
+          Stay connected and up-to-date with the latest news and updates on Exameets by following us on:
+        </p>
 
-                <h2>Stay Updated!</h2>
-                <p className="highlight-text">
-                    <strong>Join Our Channels</strong><br />
-                    Don't Miss Out on Important Notifications!
-                </p>
-                <p className="description-text">
-                    At Exameets, we understand how crucial it is to stay informed about exam dates, 
-                    job alerts, and other important announcements. Join our WhatsApp and Telegram 
-                    channels to receive instant updates and ensure you never miss an opportunity!
-                </p>
-
-                <div className="section">
-                    <h3>Join Us on WhatsApp</h3>
-                    <p className="channel-description">
-                        Stay connected with our WhatsApp channel for quick updates and notifications.
-                    </p>
-                    <a className="cta-button" href="https://whatsapp.com/channel/0029VaksJ72Lo4hmldL0yl41" target="_blank" rel="noopener noreferrer">
-                        Click here to join our WhatsApp channel
-                    </a>
-                </div>
-
-                <div className="section">
-                    <h3>Join Us on Telegram</h3>
-                    <p className="channel-description">
-                        For in-depth discussions, resources, and alerts, join our Telegram channel.
-                    </p>
-                    <a className="cta-button" href="#" target="_blank" rel="noopener noreferrer">
-                        Click here to join our Telegram channel
-                    </a>
-                </div>
-
-                <hr className="divider" />
-
-                <h3>How to Join</h3>
-                <ol className="instructions-list">
-                    <li><strong>Click the link:</strong> Use the buttons above to navigate to the respective channel.</li>
-                    <li><strong>Follow the instructions:</strong> If prompted, follow the instructions on your app to complete the join process.</li>
-                    <li><strong>Stay Engaged:</strong> Make sure to turn on notifications so you never miss an important update!</li>
-                </ol>
-
-                <hr className="divider" />
-
-                <h2>Help Us Spread the Word!</h2>
-                <p className="spread-word-text">
-                    Know someone who could benefit from these updates? Share this page and encourage 
-                    them to join our community!
-                </p>
-                <p className="motto"><strong>"Stay Informed. Stay Ahead."</strong></p>
-            </div>
+        <div className="flex gap-6 mb-12">
+          {socialLinks.map((link, index) => (
+            <SocialLink key={index} {...link} />
+          ))}
         </div>
-    );
+
+        <hr className="border-gray-200 my-12" />
+
+        <h2 className="text-3xl font-bold text-gray-800 mb-6">Stay Updated!</h2>
+        <div className="bg-gray-50 p-6 rounded-lg mb-8">
+          <p className="text-2xl font-semibold text-gray-800 mb-2">Join Our Channels</p>
+          <p className="text-xl text-gray-600">Don't Miss Out on Important Notifications!</p>
+        </div>
+
+        <p className="text-lg text-gray-600 mb-12">
+          At Exameets, we understand how crucial it is to stay informed about exam dates, 
+          job alerts, and other important announcements. Join our WhatsApp and Telegram 
+          channels to receive instant updates and ensure you never miss an opportunity!
+        </p>
+
+        <Section 
+          title="Join Us on WhatsApp"
+          description="Stay connected with our WhatsApp channel for quick updates and notifications."
+          ctaLink="https://whatsapp.com/channel/0029VaksJ72Lo4hmldL0yl41"
+          ctaText="Click here to join our WhatsApp channel"
+        />
+
+        <Section 
+          title="Join Us on Telegram"
+          description="For in-depth discussions, resources, and alerts, join our Telegram channel."
+          ctaLink="https://t.me/exameetschannel"
+          ctaText="Click here to join our Telegram channel"
+        />
+
+        <hr className="border-gray-200 my-12" />
+
+        <h3 className="text-2xl font-semibold text-gray-800 mb-6">How to Join</h3>
+        <ol className="list-decimal pl-6 space-y-4 text-lg text-gray-600">
+          <li><span className="font-semibold">Click the link:</span> Use the buttons above to navigate to the respective channel.</li>
+          <li><span className="font-semibold">Follow the instructions:</span> If prompted, follow the instructions on your app to complete the join process.</li>
+          <li><span className="font-semibold">Stay Engaged:</span> Make sure to turn on notifications so you never miss an important update!</li>
+        </ol>
+
+        <hr className="border-gray-200 my-12" />
+
+        <h2 className="text-3xl font-bold text-gray-800 mb-6">Help Us Spread the Word!</h2>
+        <p className="text-lg text-gray-600 mb-6">
+          Know someone who could benefit from these updates? Share this page and encourage 
+          them to join our community!
+        </p>
+        <p className="text-xl font-semibold text-primary text-center">
+          "Stay Informed. Stay Ahead."
+        </p>
+      </div>
+    </div>
+  );
 };
 
 export default Community;

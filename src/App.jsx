@@ -54,6 +54,8 @@ import WhatsNew from "./pages/WhatsNew/WhatsNew";
 
 import SelectedJobs from "./pages/SelectedJobs/SelectedJobs";
 
+import SocialModal from "./components/SocialModal";
+
 const ThemeContext = createContext();
 
 export const useTheme = () => useContext(ThemeContext);
@@ -258,6 +260,7 @@ const App = () => {
               apply.
             </span>
           </CookieConsent>
+          <SocialModal />
         </Router>
       </ThemeContext.Provider>
     </>

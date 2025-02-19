@@ -85,7 +85,7 @@ const Navbar = () => {
           <div className="menu-item">
             <div className="menu-item-content">
               <div className="icon-circle">
-              <Link to="/internships">  <img src="/Intern_Icon.svg" alt="Internships" /> </Link>
+              <Link to="/internships">  <img src="/Courses_Icon.svg" alt="Courses" />  </Link>
               </div>
               <Link to="/internships">Internships</Link>
             </div>
@@ -112,7 +112,7 @@ const Navbar = () => {
           <div className="menu-item">
             <div className="menu-item-content">
               <div className="icon-circle">
-              <Link to="/scholarships">  <img src="/Courses_Icon.svg" alt="Courses" /> </Link>
+              <Link to="/scholarships">  <img src="/Intern_Icon.svg" alt="Internships" /> </Link>
               </div>
               <Link to="/scholarships">Scholarships</Link>
             </div>

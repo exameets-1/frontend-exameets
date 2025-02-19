@@ -119,6 +119,10 @@ const ContactUs = () => {
                     <strong>Email:</strong>{' '}
                     <a href="mailto:exameets@gmail.com">exameets@gmail.com</a>
                 </p>
+                <p className="contact-info">
+                    <strong>Phone:</strong>{' '}
+                    <a href="tel:+916302089490">+91 6302089490</a>
+                </p>
                 
                 <hr className="divider" />
                 
