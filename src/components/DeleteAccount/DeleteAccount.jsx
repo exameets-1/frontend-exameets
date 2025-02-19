@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -10,7 +10,7 @@ const DeleteAccount = () => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useSelector((state) => state.user);
+  const { loading } = useSelector((state) => state.user);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,7 +42,7 @@ const DeleteAccount = () => {
         <h3>Warning: This action cannot be undone</h3>
         <p>
           Deleting your account will permanently remove all your data, including your profile information,
-          exam records, and any other associated data. You won't be able to register again with the same mobile number you used. This action is irreversible.
+          exam records, and any other associated data. You won&lsquo;t be able to register again with the same mobile number you used. This action is irreversible.
         </p>
       </div>
 

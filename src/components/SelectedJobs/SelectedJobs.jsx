@@ -9,7 +9,7 @@ import { fetchLatestResults } from '../../store/slices/resultSlice';
 import './SelectedJobs.css';
 
 export default function SelectedJobs() {
-  const { matchedJobs, loading, error, user } = useSelector((state) => state.user);
+  const { matchedJobs, loading, user } = useSelector((state) => state.user);
   const { latestAdmissions, loading: admissionsLoading } = useSelector((state) => state.admissions);
   const { latestInternships, loading: internshipsLoading } = useSelector((state) => state.internships);
   const { latestScholarships, loading: scholarshipsLoading } = useSelector((state) => state.scholarships);

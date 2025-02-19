@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import './AddInternshipModal.css';
 import { useSelector } from 'react-redux';
@@ -157,6 +157,7 @@ const AddInternshipModal = ({ isOpen, onClose, onSubmit }) => {
                                 name="start_date"
                                 value={formData.start_date}
                                 onChange={handleChange}
+                                placeholder='eg : 02/05/24'
                                 required
                             />
                         </div>
@@ -168,6 +169,7 @@ const AddInternshipModal = ({ isOpen, onClose, onSubmit }) => {
                                 name="last_date"
                                 value={formData.last_date}
                                 onChange={handleChange}
+                                placeholder='eg : 02/05/24'
                                 required
                             />
                         </div>

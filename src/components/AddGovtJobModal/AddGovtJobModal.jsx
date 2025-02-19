@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import './AddGovtJobModal.css';
 import { useSelector } from 'react-redux';
@@ -72,12 +72,12 @@ const AddGovtJobModal = ({ isOpen, onClose, onSubmit }) => {
         department: { type: 'string', label: 'Department' },
         location: { type: 'string', label: 'Location' },
         organization: { type: 'string', label: 'Organization' },
-        post_date: { type: 'date', label: 'Post Date' },
+        post_date: { type: 'date', label: 'Do not change POST Date' },
         eligibility_criteria: { type: 'string', label: 'Eligibility Criteria', multiline: true },
         application_link: { type: 'string', label: 'Application Link' },
         salary_range: { type: 'string', label: 'Salary Range' },
-        last_date: { type: 'text', label: 'Last Date to Apply' },
-        valid_until: { type: 'text', label: 'Valid Until' },
+        last_date: { type: 'text', label: 'Last Date to Apply eg : 02/05/24' },
+        valid_until: { type: 'text', label: 'Valid Until 02/05/24' },
         result_link: { type: 'string', label: 'Result Link' },
         description: { type: 'string', label: 'Description', multiline: true },
         qualifications: { type: 'string', label: 'Qualifications', multiline: true },

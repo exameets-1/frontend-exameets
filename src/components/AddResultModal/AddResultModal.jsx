@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import './AddResultModal.css';
 import { useSelector } from 'react-redux';
@@ -18,8 +18,8 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
 
     const fieldTypes = {
         exam_title: { type: 'string', label: 'Exam Title' },
-        result_date: { type: 'text', label: 'Result Date' },
-        exam_date: { type: 'text', label: 'Exam Date' },
+        result_date: { type: 'text', label: 'Result Date eg : 02/05/24' },
+        exam_date: { type: 'text', label: 'Exam Date eg : 02/05/24' },
         organization: { type: 'string', label: 'Organization' },
         result_link: { type: 'url', label: 'Result Link' },
         description: { type: 'string', label: 'Description', multiline: true }

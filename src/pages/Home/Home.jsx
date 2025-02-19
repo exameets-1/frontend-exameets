@@ -1,4 +1,3 @@
-import React from 'react';
 import Welcome from '../../components/Welcome/Welcome';
 import WhatsNew from '../../components/WhatsNew/WhatsNew';
 import './Home.css';

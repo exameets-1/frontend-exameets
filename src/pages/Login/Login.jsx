@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { RiLock2Fill } from "react-icons/ri";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import axios from "axios";
 import "./Login.css";
 
 const Login = () => {
@@ -198,7 +199,7 @@ const Login = () => {
         </form>
 
         <div className="register-link">
-          Don't have an account? <Link to="/register">Sign up</Link>
+          Don&lsquo;t have an account? <Link to="/register">Sign up</Link>
         </div>
       </div>
 

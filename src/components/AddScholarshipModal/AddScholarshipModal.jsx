@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import './AddScholarshipModal.css';
 import { useSelector } from 'react-redux';
@@ -223,7 +223,7 @@ const AddScholarshipModal = ({ isOpen, onClose, onSubmit }) => {
                         <button type="button" onClick={onClose} className="cancel-button">
                             Cancel
                         </button>
-                        {isAuthenticated ? (
+                        {isAuthenticated && user.role === 'admin' ? (
                             <button type="submit" className="submit-button">
                                 Add Scholarship
                             </button>

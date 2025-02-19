@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import './AddAdmitCardModal.css';
 import { useSelector } from 'react-redux';
@@ -29,9 +29,9 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
         title: { type: 'string', label: 'Title' },
         organization: { type: 'string', label: 'Organization' },
         description: { type: 'string', label: 'Description', multiline: true },
-        exam_date: { type: 'text', label: 'Exam Date' },
-        registration_start_date: { type: 'text', label: 'Registration Start Date' },
-        registration_end_date: { type: 'text', label: 'Registration End Date' },
+        exam_date: { type: 'text', label: 'Exam Date eg : 02/05/24' },
+        registration_start_date: { type: 'text', label: 'Registration Start Date eg : 02/05/24' },
+        registration_end_date: { type: 'text', label: 'Registration End Date eg : 02/05/24' },
         eligibility_criteria: { type: 'string', label: 'Eligibility Criteria', multiline: true },
         download_link: { type: 'url', label: 'Download Link' }
     };

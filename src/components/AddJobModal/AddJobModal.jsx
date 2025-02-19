@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import './AddJobModal.css';
 import { useSelector } from 'react-redux';
@@ -47,13 +47,13 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
         role: { type: 'string', label: 'Role' },
         experience_required: { type: 'string', label: 'Experience Required' },
         skills_required: { type: 'array', label: 'Skills Required (comma-separated)' },
-        post_date: { type: 'date', label: 'Post Date' },
-        eligibility_criteria: { type: 'string', label: 'Eligibility Criteria', multiline: true },
+        post_date: { type: 'date', label: 'Post Date DO NOT change POST DATE' },
+        eligibility_criteria: { type: 'string', label: 'Eligibility Criteria eg : 02/05/24', multiline: true },
         application_link: { type: 'url', label: 'Application Link' },
         description: { type: 'string', label: 'Description', multiline: true },
         salary_range: { type: 'string', label: 'Salary Range' },
-        last_date: { type: 'text', label: 'Last Date to Apply' },
-        valid_until: { type: 'text', label: 'Valid Until' },
+        last_date: { type: 'text', label: 'Last Date to Apply eg : 02/05/24' },
+        valid_until: { type: 'text', label: 'Valid Until eg : 02/05/24' },
         vacancy: { type: 'string', label: 'Number of Vacancies' },
         qualification: { type: 'string', label: 'Qualification', multiline: true }
     };

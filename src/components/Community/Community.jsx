@@ -1,5 +1,4 @@
-import React from 'react';
-import { FaWhatsapp, FaFacebook, FaInstagram, FaLinkedin, FaTelegram, FaTwitter } from 'react-icons/fa';
+import { FaWhatsapp, FaInstagram, FaLinkedin, FaTelegram, FaTwitter } from 'react-icons/fa';
 import useScrollToTop from '../../hooks/useScrollToTop';
 
 const SocialLink = ({ href, icon: Icon }) => (
@@ -60,7 +59,7 @@ const Community = () => {
         <h2 className="text-3xl font-bold text-gray-800 mb-6">Stay Updated!</h2>
         <div className="bg-gray-50 p-6 rounded-lg mb-8">
           <p className="text-2xl font-semibold text-gray-800 mb-2">Join Our Channels</p>
-          <p className="text-xl text-gray-600">Don't Miss Out on Important Notifications!</p>
+          <p className="text-xl text-gray-600">Don&rsquo;t Miss Out on Important Notifications!</p>
         </div>
 
         <p className="text-lg text-gray-600 mb-12">
@@ -100,7 +99,7 @@ const Community = () => {
           them to join our community!
         </p>
         <p className="text-xl font-semibold text-primary text-center">
-          "Stay Informed. Stay Ahead."
+          &ldquo;Stay Informed. Stay Ahead.&quot;
         </p>
       </div>
     </div>

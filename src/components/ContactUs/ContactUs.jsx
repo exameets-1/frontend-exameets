@@ -108,10 +108,10 @@ const ContactUs = () => {
         <div className="contact-container">
             {/* Introduction Section */}
             <section className="contact-section">
-                <h2 className="section-title">We're here to help!</h2>
+                <h2 className="section-title">We&#39;re here to help!</h2>
                 <p className="section-description">
                     If you have any questions, feedback, or inquiries, feel free to reach out to us. 
-                    We'd love to hear from you.
+                    We&apos;d love to hear from you.
                 </p>
                 
                 <h3 className="subsection-title">Contact us at:</h3>

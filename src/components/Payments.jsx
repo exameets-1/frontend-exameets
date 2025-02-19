@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'; 
 import { useEffect, useState } from 'react';
+import axios from 'axios'
 
 const Payment = ({ amount = 500, onSuccess }) => {
   const [loading, setLoading] = useState(false);

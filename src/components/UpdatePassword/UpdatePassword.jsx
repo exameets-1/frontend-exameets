@@ -61,6 +61,7 @@ const UpdatePassword = () => {
 
     try {
       await dispatch(updatePassword({ oldPassword, newPassword })).unwrap();
+    // eslint-disable-next-line no-unused-vars
     } catch (err) {
       // Error is handled in useEffect
     }

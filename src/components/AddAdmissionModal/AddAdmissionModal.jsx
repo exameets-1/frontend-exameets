@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import './AddAdmissionModal.css';
 import {useSelector} from 'react-redux'
@@ -42,7 +42,9 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
             [name]: type === 'checkbox' ? checked : value
         }));
     };
-
+    const handleLogin = () => {
+        window.location.href = '/login'
+    }
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -136,6 +138,7 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                                 id="start_date"
                                 name="start_date"
                                 value={formData.start_date}
+                                placeholder='eg : 02/05/24'
                                 onChange={handleChange}
                                 required
                             />
@@ -147,6 +150,7 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                                 id="last_date"
                                 name="last_date"
                                 value={formData.last_date}
+                                placeholder='eg : 02/05/24'
                                 onChange={handleChange}
                                 required
                             />
