@@ -146,7 +146,7 @@ const Footer = () => {
             <p>© 2025 Exameets. All Rights Reserved.</p>
           </div>
           <div className="middle-side">
-            <p>Developed in Partnership with <span>Ceeras</span></p>
+          <p>Developed in Partnership with <Link className='ceerasLink' href="https://www.ceeras.in/" target="_blank" rel="noopener noreferrer">Ceeras‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ </Link></p>
           </div>
           <div className="right-side">
             <a href="https://wa.me/9014185655" target="_blank" rel="noopener noreferrer">

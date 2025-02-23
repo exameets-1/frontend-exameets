@@ -98,21 +98,6 @@ const userSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-    downloadRoadmapRequest(state) {
-      state.loading = true;
-      state.downloadMessage = null;
-      state.error = null;
-    },
-    downloadRoadmapSuccess(state, action) {
-      state.loading = false;
-      state.downloadMessage = action.payload;
-      state.error = null;
-    },
-    downloadRoadmapFailed(state, action) {
-      state.loading = false;
-      state.downloadMessage = null;
-      state.error = action.payload;
-    },
     fetchMatchedJobsRequest(state) {
       state.loading = true;
       state.error = null;
@@ -164,19 +149,6 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(deleteAccount.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(deleteAccount.fulfilled, (state) => {
-        state.loading = false;
-        state.isAuthenticated = false;
-        state.user = {};
-        state.error = null;
-      })
-      .addCase(deleteAccount.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      });
   },
 });
 
@@ -270,26 +242,6 @@ export const updatePreferences = createAsyncThunk(
     }
   }
 );
-
-export const downloadRoadmap = (roadmapId, filename) => async (dispatch) => {
-  dispatch(userSlice.actions.downloadRoadmapRequest());
-  try {
-    const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/api/v1/user/roadmap/download/${roadmapId}`,    
-      {
-        withCredentials: true,
-      }
-    );
-    if (!response.data.url) {
-      throw new Error('PDF URL not found');
-    }
-    dispatch(userSlice.actions.downloadRoadmapSuccess('Download started successfully'));
-    window.open(response.data.url, '_blank');
-  } catch (error) {
-    dispatch(userSlice.actions.downloadRoadmapFailed("Please login to download roadmaps"));
-    throw error;
-  }
-};
 
 export const deleteAccount = createAsyncThunk(
   'user/deleteAccount',
