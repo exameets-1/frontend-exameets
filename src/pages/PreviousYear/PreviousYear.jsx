@@ -1,60 +1,66 @@
 import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchPreviousYears, deleteYear, createPreviousYear } from "../../store/slices/previousSlice";
-
+import { fetchSubjects, createPreviousYear, clearErrors } from "../../store/slices/previousSlice";
 import { toast } from 'react-toastify';
 import Spinner from "../../components/Spinner/Spinner";
 import AddPreviousYearModal from "../../components/AddPreviousYearModal/AddPreviousYearModal";
-
-const useDebounce = (value, delay) => {
-    const [debouncedValue, setDebouncedValue] = useState(value);
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebouncedValue(value);
-        }, delay);
-        return () => clearTimeout(timer);
-    }, [value, delay]);
-    return debouncedValue;
-};
+import useDebouncedSearch from "../../hooks/useDebouncedSearch"; // Import the custom hook
 
 const PreviousYear = () => {
-    const [searchInput, setSearchInput] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const searchInputRef = useRef(null);
-    const searchKeyword = useDebounce(searchInput, 500);
-    const { previousYears, loading, error } = useSelector((state) => state.previousYears);
-    const { isAuthenticated, user } = useSelector((state) => state.user);
 
+    const { 
+        searchKeyword, 
+        setSearchKeyword, 
+        debouncedSearchKeyword 
+    } = useDebouncedSearch("", 500); // Use the custom hook for debouncing
+
+    const { 
+        subjects,
+        loading, 
+        error,
+        message 
+    } = useSelector((state) => state.previousYears);
+    
+    const { isAuthenticated, user } = useSelector((state) => state.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
-        dispatch(fetchPreviousYears("", 1, 1000));
+        dispatch(fetchSubjects());
     }, [dispatch]);
 
+    useEffect(() => {
+        if (error) {
+            toast.error(error);
+            dispatch(clearErrors());
+        }
+        if (message) {
+            toast.success(message);
+        }
+    }, [error, message, dispatch]);
+
     const handleCardClick = (subject) => {
-        navigate(`/previous-year-details/${encodeURIComponent(subject)}`);
+        navigate(`/pyqs/${encodeURIComponent(subject)}`);
     };
-    
+
     const handleAddPaper = async (paperData) => {
         try {
             const result = await dispatch(createPreviousYear(paperData)).unwrap();
             if (result.success) {
                 toast.success('Paper added successfully');
                 setIsModalOpen(false);
-                dispatch(fetchPreviousYears("", 1, 1000));
-            } else {
-                toast.error(result.message || 'Failed to add paper');
+                dispatch(fetchSubjects()); // Refresh subjects list
             }
         } catch (error) {
             toast.error(error || 'Failed to add paper');
         }
     };
 
-    const subjects = [...new Set(previousYears?.map(paper => paper.subject) || [])];
     const filteredSubjects = subjects.filter(subject => 
-        !searchKeyword || subject.toLowerCase().includes(searchKeyword.toLowerCase())
+        subject.toLowerCase().includes(debouncedSearchKeyword.toLowerCase())
     );
 
     if (loading) return <Spinner />;
@@ -80,9 +86,9 @@ const PreviousYear = () => {
                     <div className="flex items-center relative">
                         <input
                             type="text"
-                            placeholder="Search here..."
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
+                            placeholder="Search subjects..."
+                            value={searchKeyword}
+                            onChange={(e) => setSearchKeyword(e.target.value)}
                             ref={searchInputRef}
                             className="w-full md:w-[600px] h-[45px] px-4 rounded-md border border-gray-300 focus:outline-none focus:border-[#015990]"
                         />
@@ -95,23 +101,20 @@ const PreviousYear = () => {
                 </div>
             </div>
 
-            {/* Box Container */}
+            {/* Subject Cards Container */}
             <div className="max-w-7xl mx-auto px-5 py-10">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-h-[600px] overflow-y-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {filteredSubjects.map((subject) => (
                         <div
                             key={subject}
                             className="group h-[200px] bg-white border-2 border-[#015990] rounded-lg overflow-hidden shadow-md flex flex-col transition-transform duration-300 hover:scale-105 cursor-pointer"
                             onClick={() => handleCardClick(subject)}
                         >
-                            {/* Content */}
                             <div className="flex-grow flex items-center justify-center p-5">
                                 <h2 className="text-[23px] font-semibold text-center text-[#015990]">
                                     {subject}
                                 </h2>
                             </div>
-
-                            {/* Download Button */}
                             <div className="bg-[#015990] h-[50px] flex items-center justify-center text-white text-[20px] font-bold">
                                 View Papers
                             </div>
@@ -119,9 +122,9 @@ const PreviousYear = () => {
                     ))}
                 </div>
 
-                {filteredSubjects.length === 0 && (
+                {filteredSubjects.length === 0 && !loading && (
                     <div className="text-center text-gray-500 mt-8">
-                        No subjects found matching your search.
+                        No subjects found {searchKeyword ? "matching your search" : "available"}
                     </div>
                 )}
             </div>

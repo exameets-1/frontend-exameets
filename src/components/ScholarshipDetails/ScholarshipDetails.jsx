@@ -9,7 +9,13 @@ import {
     FaUniversity,
     FaMoneyBill,
     FaEdit,
-    FaSave
+    FaSave,
+    FaTag,
+    FaKey,
+    FaStar,
+    FaLink,
+    FaPlus,
+    FaTimes
 } from 'react-icons/fa';
 import { fetchSingleScholarship, updateScholarship } from '../../store/slices/scholarshipSlice';
 import './ScholarshipDetails.css';
@@ -26,6 +32,7 @@ const ScholarshipDetails = () => {
 
     const [isEditing, setIsEditing] = useState(false);
     const [editedScholarship, setEditedScholarship] = useState(null);
+    const [newKeyword, setNewKeyword] = useState('');
 
     useEffect(() => {
         if (id) {
@@ -57,10 +64,36 @@ const ScholarshipDetails = () => {
     };
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, checked } = e.target;
         setEditedScholarship(prev => ({
             ...prev,
-            [name]: value
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+
+    const handleAddKeyword = () => {
+        if (newKeyword.trim()) {
+            const updatedKeywords = [
+                ...(editedScholarship.keywords || []),
+                newKeyword.trim()
+            ];
+            
+            setEditedScholarship(prev => ({
+                ...prev,
+                keywords: updatedKeywords
+            }));
+            
+            setNewKeyword(''); // Clear the input after adding
+        }
+    };
+
+    const handleDeleteKeyword = (keywordToDelete) => {
+        const updatedKeywords = (editedScholarship.keywords || [])
+            .filter(keyword => keyword !== keywordToDelete);
+        
+        setEditedScholarship(prev => ({
+            ...prev,
+            keywords: updatedKeywords
         }));
     };
 
@@ -75,6 +108,11 @@ const ScholarshipDetails = () => {
     if (!editedScholarship) {
         return <div className="error">Scholarship not found</div>;
     }
+
+    const categoryOptions = [
+        'Merit-based', 'Need-based', 'Research', 'Sports', 
+        'Cultural', 'International', 'Government', 'Private', 'Other'
+    ];
 
     return (
         <div className="scholarship-details">
@@ -97,6 +135,7 @@ const ScholarshipDetails = () => {
                                     value={editedScholarship.title || ''}
                                     onChange={handleInputChange}
                                     className="edit-input"
+                                    placeholder="Scholarship Title"
                                 />
                             ) : (
                                 editedScholarship.title
@@ -110,6 +149,7 @@ const ScholarshipDetails = () => {
                                     value={editedScholarship.organization || ''}
                                     onChange={handleInputChange}
                                     className="edit-input"
+                                    placeholder="Organization"
                                 />
                             ) : (
                                 editedScholarship.organization
@@ -124,43 +164,58 @@ const ScholarshipDetails = () => {
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="educationLevel"
-                                    value={editedScholarship.educationLevel || ''}
+                                    name="qualification"
+                                    value={editedScholarship.qualification || ''}
                                     onChange={handleInputChange}
                                     className="edit-input"
-                                    placeholder="Education Level"
+                                    placeholder="Qualification"
                                 />
                             ) : (
-                                <span>{editedScholarship.educationLevel || 'Eligibility criteria not specified'}</span>
-                            )}
-                        </div>
-                        <div className="detail-item">
-                            <FaMapMarker className="icon" />
-                            {isEditing ? (
-                                <input
-                                    type="text"
-                                    name="country"
-                                    value={editedScholarship.country || ''}
-                                    onChange={handleInputChange}
-                                    className="edit-input"
-                                    placeholder="Country"
-                                />
-                            ) : (
-                                <span>{editedScholarship.country}</span>
+                                <span>{editedScholarship.qualification || 'Qualification not specified'}</span>
                             )}
                         </div>
                         <div className="detail-item">
                             <FaCalendar className="icon" />
                             {isEditing ? (
+                                <>
+                                    <input
+                                        type="text"
+                                        name="start_date"
+                                        value={editedScholarship.start_date || ''}
+                                        onChange={handleInputChange}
+                                        className="edit-input"
+                                        placeholder="Start Date"
+                                    />
+                                    <input
+                                        type="text"
+                                        name="last_date"
+                                        value={editedScholarship.last_date || ''}
+                                        onChange={handleInputChange}
+                                        className="edit-input"
+                                        placeholder="Last Date"
+                                    />
+                                </>
+                            ) : (
+                                <span>
+                                    Start Date: {editedScholarship.start_date || 'Not specified'}
+                                    <br />
+                                    Last Date: {editedScholarship.last_date || 'Not specified'}
+                                </span>
+                            )}
+                        </div>
+                        <div className="detail-item">
+                            <FaMoneyBill className="icon" />
+                            {isEditing ? (
                                 <input
                                     type="text"
-                                    name="deadline"
-                                    value={editedScholarship.deadline}
+                                    name="amount"
+                                    value={editedScholarship.amount || ''}
                                     onChange={handleInputChange}
                                     className="edit-input"
+                                    placeholder="Scholarship Amount"
                                 />
                             ) : (
-                                <span>Deadline: {editedScholarship.deadline ? new Date(editedScholarship.deadline).toLocaleDateString() : 'Not specified'}</span>
+                                <span>Amount: {editedScholarship.amount || 'Not specified'}</span>
                             )}
                         </div>
                     </div>
@@ -170,36 +225,39 @@ const ScholarshipDetails = () => {
                         <div className="info-item">
                             <FaUniversity className="icon" />
                             {isEditing ? (
-                                <input
-                                    type="text"
+                                <select
                                     name="category"
                                     value={editedScholarship.category || ''}
                                     onChange={handleInputChange}
                                     className="edit-input"
-                                    placeholder="Category"
-                                />
+                                >
+                                    {categoryOptions.map(cat => (
+                                        <option key={cat} value={cat}>{cat}</option>
+                                    ))}
+                                </select>
                             ) : (
-                                <span>Type: {editedScholarship.category}</span>
+                                <span>Category: {editedScholarship.category}</span>
                             )}
                         </div>
                         <div className="info-item">
-                            <FaMoneyBill className="icon" />
+                            <FaStar className="icon" />
                             {isEditing ? (
-                                <input
-                                    type="text"
-                                    name="amount"
-                                    value={editedScholarship.amount || ''}
-                                    onChange={handleInputChange}
-                                    className="edit-input"
-                                    placeholder="Amount"
-                                />
+                                <label className="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        name="is_featured"
+                                        checked={editedScholarship.is_featured || false}
+                                        onChange={handleInputChange}
+                                    />
+                                    Featured Scholarship
+                                </label>
                             ) : (
-                                <span>Amount: {editedScholarship.amount}</span>
+                                <span>Featured: {editedScholarship.is_featured ? 'Yes' : 'No'}</span>
                             )}
                         </div>
                     </div>
 
-                    {/* Description Section */}
+                    {/* Description and Eligibility Section */}
                     <div className="description-section">
                         <h3>About the Scholarship</h3>
                         {isEditing ? (
@@ -209,66 +267,135 @@ const ScholarshipDetails = () => {
                                 onChange={handleInputChange}
                                 className="edit-textarea"
                                 rows="4"
+                                placeholder="Scholarship Description"
                             />
                         ) : (
                             <p>{editedScholarship.description}</p>
                         )}
                         
-                        <h4>Requirements</h4>
+                        <h4>Eligibility Criteria</h4>
                         {isEditing ? (
                             <textarea
-                                name="requirements"
-                                value={Array.isArray(editedScholarship.requirements) ? editedScholarship.requirements.join('\n') : ''}
-                                onChange={(e) => {
-                                    const requirements = e.target.value.split('\n').filter(req => req.trim());
-                                    handleInputChange({
-                                        target: {
-                                            name: 'requirements',
-                                            value: requirements
-                                        }
-                                    });
-                                }}
+                                name="eligibility_criteria"
+                                value={editedScholarship.eligibility_criteria || ''}
+                                onChange={handleInputChange}
                                 className="edit-textarea"
                                 rows="4"
-                                placeholder="Enter each requirement on a new line"
+                                placeholder="Eligibility Criteria"
                             />
                         ) : (
-                            <ul className="requirements-list">
-                                {editedScholarship.requirements ? 
-                                    editedScholarship.requirements.map((req, index) => (
-                                        <li key={index}>{req}</li>
-                                    ))
-                                    :
-                                    ['No specific requirements listed'].map((req, index) => (
-                                        <li key={index}>{req}</li>
-                                    ))
-                                }
-                            </ul>
+                            <p>{editedScholarship.eligibility_criteria || 'No specific eligibility criteria listed'}</p>
                         )}
+
+<div className="keywords-management-section">
+                        <h4>Keywords</h4>
+                        {isEditing ? (
+                            <div className="keywords-edit-container">
+                                <div className="keyword-input-group">
+                                    <input
+                                        type="text"
+                                        value={newKeyword}
+                                        onChange={(e) => setNewKeyword(e.target.value)}
+                                        className="edit-input keyword-input"
+                                        placeholder="Enter a new keyword"
+                                    />
+                                    <button 
+                                        onClick={handleAddKeyword} 
+                                        className="add-keyword-button"
+                                        disabled={!newKeyword.trim()}
+                                    >
+                                        <FaPlus /> Add Keyword
+                                    </button>
+                                </div>
+                                <div className="existing-keywords">
+                                    {editedScholarship.keywords && editedScholarship.keywords.map((keyword, index) => (
+                                        <div key={index} className="keyword-tag-edit">
+                                            <span>{keyword}</span>
+                                            <button 
+                                                onClick={() => handleDeleteKeyword(keyword)}
+                                                className="delete-keyword-button"
+                                            >
+                                                <FaTimes />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="keywords-list">
+                                {editedScholarship.keywords && editedScholarship.keywords.length > 0 ? 
+                                    editedScholarship.keywords.map((keyword, index) => (
+                                        <span key={index} className="keyword-tag">{keyword}</span>
+                                    ))
+                                    : 
+                                    <span>No keywords</span>
+                                }
+                            </div>
+                        )}
+                    </div>
+                    </div>
+
+                    {/* Search Description */}
+                    <div className="search-description-section">
+                        <h4>Search Description</h4>
+                        {isEditing ? (
+                            <textarea
+                                name="searchDescription"
+                                value={editedScholarship.searchDescription || ''}
+                                onChange={handleInputChange}
+                                className="edit-textarea"
+                                rows="3"
+                                placeholder="Search Description"
+                            />
+                        ) : (
+                            <p>{editedScholarship.searchDescription || 'No search description provided'}</p>
+                        )}
+                    </div>
+
+                    {/* Additional Fields */}
+                    <div className="additional-fields">
+                        <div className="info-item">
+                            <FaLink className="icon" />
+                            {isEditing ? (
+                                <input
+                                    type="url"
+                                    name="application_link"
+                                    value={editedScholarship.application_link || ''}
+                                    onChange={handleInputChange}
+                                    className="edit-input"
+                                    placeholder="Application Link"
+                                />
+                            ) : (
+                                <a 
+                                    href={editedScholarship.application_link} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="apply-button"
+                                >
+                                    Apply Now
+                                </a>
+                            )}
+                        </div>
+
+                        <div className="slug-section">
+                        <h4>Slug</h4>
+                        {isEditing ? (
+                            <input
+                                type="text"
+                                name="slug"
+                                value={editedScholarship.slug || ''}
+                                onChange={handleInputChange}
+                                className="edit-input"
+                                placeholder="Enter scholarship slug"
+                            />
+                        ) : (
+                            <span>Slug: {editedScholarship.slug || 'Not generated'}</span>
+                        )}
+                    </div>
                     </div>
 
                     {/* Action Buttons */}
                     <div className="action-buttons">
-                        {isEditing ? (
-                            <input
-                                type="url"
-                                name="applicationLink"
-                                value={editedScholarship.applicationLink || ''}
-                                onChange={handleInputChange}
-                                className="edit-input"
-                                placeholder="Application Link"
-                            />
-                        ) : (
-                            <a 
-                                href={editedScholarship.applicationLink} 
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                className="apply-button"
-                            >
-                                Apply Now
-                            </a>
-                        )}
-                        
                         {isAuthenticated && user?.role === 'admin' && (
                             isEditing ? (
                                 <button onClick={handleSave} className="edit-button">

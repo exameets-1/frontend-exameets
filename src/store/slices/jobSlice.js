@@ -157,31 +157,39 @@ const jobSlice = createSlice({
   },
 });
 
-export const fetchJobs = (city, job_type, searchKeyword = "", page = 1) => async (dispatch) => {
-  try {
-    dispatch(jobSlice.actions.requestForAllJobs());
+export const fetchJobs = ({ city, positionType, search, page = 1 }) => 
+  async (dispatch) => {
+    try {
+      dispatch(jobSlice.actions.requestForAllJobs());
 
-    let link = `${import.meta.env.VITE_BACKEND_URL}/api/v1/job/getall?`;
-    let queryParams = [`page=${page}`];
+      let link = `${import.meta.env.VITE_BACKEND_URL}/api/v1/job/getall?`;
+      const queryParams = [`page=${page}`];
 
-    if (searchKeyword) {
-      queryParams.push(`searchKeyword=${encodeURIComponent(searchKeyword)}`);
-    }
-    if (city && city !== "All") {
-      queryParams.push(`city=${encodeURIComponent(city)}`);
-    }
-    if (job_type && job_type !== "All") {
-      queryParams.push(`job_type=${encodeURIComponent(job_type)}`);
-    }
+      if (search) {
+        queryParams.push(`searchKeyword=${encodeURIComponent(search)}`);
+      }
+      if (city && city !== "All") {
+        queryParams.push(`city=${encodeURIComponent(city)}`);
+      }
+      if (positionType && positionType !== "All") {
+        queryParams.push(`job_type=${encodeURIComponent(positionType)}`);
+      }
 
-    link += queryParams.join("&");
-    const response = await axios.get(link, { withCredentials: true });
-    dispatch(jobSlice.actions.successForAllJobs(response.data));
-    dispatch(jobSlice.actions.clearAllErrors());
-  } catch (error) {
-    dispatch(jobSlice.actions.failureForAllJobs(error.response?.data?.message || "Failed to fetch jobs"));
-  }
-};
+      link += queryParams.join("&");
+      const response = await axios.get(link, { withCredentials: true });
+      
+      dispatch(jobSlice.actions.successForAllJobs({
+        jobs: response.data.jobs,
+        totalPages: response.data.totalPages,
+        currentPage: page
+      }));
+      dispatch(jobSlice.actions.clearAllErrors());
+    } catch (error) {
+      dispatch(jobSlice.actions.failureForAllJobs(
+        error.response?.data?.message || "Failed to fetch jobs"
+      ));
+    }
+  };
 
 
 export const fetchSingleJob = (jobId) => async (dispatch) => {
@@ -228,7 +236,12 @@ export const fetchLatestJobs = () => async (dispatch) => {
 export const deleteJob = (jobId) => async (dispatch) => {
   try {
     dispatch(jobSlice.actions.deleteJobRequest());
-    const { data } = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/job/${jobId}`);
+    const { data } = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/job/${jobId}`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
     dispatch(jobSlice.actions.deleteJobSuccess({ message: data.message, jobId }));
   } catch (error) {
     dispatch(
@@ -257,15 +270,86 @@ export const updateJob = ({ jobId, updatedData }) => async (dispatch) => {
 export const createJob = (jobData) => async (dispatch) => {
   try {
     dispatch(jobSlice.actions.createJobRequest());
+
+    // Validate required fields
+    const requiredFields = [
+      'jobTitle', 'category', 'city', 'state', 'country',
+      'positionType', 'companyName', 'companyOverview',
+      'positionSummary', 'education', 'experience',
+      'softSkills', 'benefits', 'submissionMethod',
+      'equalOpportunityStatement', 'slug'
+    ];
+
+    const missingFields = requiredFields.filter(field => !jobData[field]);
+    if (missingFields.length > 0) {
+      throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+    }
+
+    // Validate array requirements
+    const validateArray = (field, name) => {
+      if (!Array.isArray(field) || field.length === 0) {
+        throw new Error(`${name} must have at least one item`);
+      }
+    };
+
+    validateArray(jobData.keyResponsibilities, "Key responsibilities");
+    validateArray(jobData.education, "Education requirements");
+    validateArray(jobData.softSkills, "Soft skills");
+    validateArray(jobData.benefits, "Benefits");
+
+    // Validate enums
+    if (!['IT', 'NON-IT'].includes(jobData.category)) {
+      throw new Error("Invalid category");
+    }
+    if (!['Full-Time', 'Part-Time', 'Contract'].includes(jobData.positionType)) {
+      throw new Error("Invalid position type");
+    }
+    if (!['email', 'portal'].includes(jobData.submissionMethod)) {
+      throw new Error("Invalid submission method");
+    }
+
+    // Validate submission method requirements
+    if (jobData.submissionMethod === 'email' && !jobData.contactEmail) {
+      throw new Error("Contact email is required for email submissions");
+    }
+    if (jobData.submissionMethod === 'portal' && !jobData.applicationPortalLink) {
+      throw new Error("Application portal link is required for portal submissions");
+    }
+
+    if (jobData.keywords && !Array.isArray(jobData.keywords)) {
+      throw new Error('Keywords must be an array');
+    }
+
+    if (jobData.searchDescription && jobData.searchDescription.length > 160) {
+      throw new Error('Search description must be less than 160 characters');
+    }
+
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}/api/v1/job/create`,
-      jobData,
-      { withCredentials: true }
+      {
+        ...jobData,
+        keywords: jobData.keywords || [],
+        searchDescription: jobData.searchDescription || '',
+        // Add optional arrays with default values
+        languages: jobData.languages || [],
+        frameworks: jobData.frameworks || [],
+        databases: jobData.databases || [],
+        methodologies: jobData.methodologies || [],
+        preferredQualifications: jobData.preferredQualifications || [],
+      },
+      { 
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
     );
+
     dispatch(jobSlice.actions.createJobSuccess(response.data));
     return response.data;
   } catch (error) {
-    dispatch(jobSlice.actions.createJobFailed(error.response?.data?.message || "Failed to create job"));
+    const errorMessage = error.response?.data?.message || error.message || "Failed to create job";
+    dispatch(jobSlice.actions.createJobFailed(errorMessage));
     throw error;
   }
 };

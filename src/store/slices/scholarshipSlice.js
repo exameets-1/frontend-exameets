@@ -23,6 +23,29 @@ export const createScholarship = createAsyncThunk(
     }
 );
 
+// Fetch Scholarships
+export const fetchScholarships = createAsyncThunk(
+    "scholarships/fetch",
+    async ({ searchKeyword = "", page = 1, filters = {} }) => {
+        try {
+            const { data } = await axios.get(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/scholarship/getall`,
+                {
+                    params: {
+                        searchKeyword,
+                        page,
+                        ...filters
+                    },
+                    withCredentials: true,
+                }
+            );
+            return data;
+        } catch (error) {
+            throw error.response?.data?.message || "Failed to fetch scholarships";
+        }
+    }
+);
+
 const scholarshipSlice = createSlice({
   name: "scholarships",
   initialState: {
@@ -150,34 +173,24 @@ extraReducers: (builder) => {
         .addCase(createScholarship.rejected, (state, action) => {
             state.loading = false;
             state.error = action.error.message;
+        })
+        // Fetch Scholarships
+        .addCase(fetchScholarships.pending, (state) => {
+            state.loading = true;
+        })
+        .addCase(fetchScholarships.fulfilled, (state, action) => {
+            state.loading = false;
+            state.scholarships = action.payload.scholarships;
+            state.currentPage = action.payload.currentPage;
+            state.totalPages = action.payload.totalPages;
+            state.totalScholarships = action.payload.totalScholarships;
+        })
+        .addCase(fetchScholarships.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.error.message;
         });
 },
 });
-
-export const fetchScholarships = (searchKeyword = "", page = 1) => async (dispatch) => {
-    try {
-        dispatch(scholarshipSlice.actions.requestForAllScholarships());
-        let link = `${import.meta.env.VITE_BACKEND_URL}/api/v1/scholarship/getall?`;
-        let queryParams = [`page=${page}`];
-    
-        if (searchKeyword) {
-            queryParams.push(`searchKeyword=${encodeURIComponent(searchKeyword)}`);
-        }
-    
-        link += queryParams.join("&");
-        const response = await axios.get(link, { withCredentials: true });
-        
-        dispatch(scholarshipSlice.actions.successForAllScholarships({
-            scholarships: response.data.scholarships,
-            currentPage: response.data.currentPage,
-            totalPages: response.data.totalPages,
-            totalScholarships: response.data.totalScholarships
-        }));
-        dispatch(scholarshipSlice.actions.clearAllErrors());
-    } catch (error) {
-        dispatch(scholarshipSlice.actions.failureForAllScholarships(error.response?.data?.message || "Failed to fetch scholarships"));
-    }
-};
 
 export const fetchSingleScholarship = (scholarshipId) => async (dispatch) => {
     dispatch(scholarshipSlice.actions.requestForSingleScholarship());

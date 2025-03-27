@@ -3,31 +3,31 @@ import axios from "axios";
 
 // Create Internship
 export const createInternship = createAsyncThunk(
-    "internship/create",
-    async (internshipData) => {
-        try {
-            const { data } = await axios.post(
-                `${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/create`,
-                internshipData,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    withCredentials: true,
-                }
-            );
-            return data;
-        } catch (error) {
-            throw error.response.data.message;
+  "internship/create",
+  async (internshipData) => {
+    try {
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/create`,
+        internshipData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
         }
+      );
+      return data;
+    } catch (error) {
+      throw error.response.data.message;
     }
+  }
 );
 
 const internshipSlice = createSlice({
   name: "internships",
   initialState: {
     internships: [],
-    loading: false,         
+    loading: false,
     error: null,
     message: null,
     internship: null,
@@ -41,204 +41,208 @@ const internshipSlice = createSlice({
       prevPage: null,
       limit: 8
     },
-    appliedJobs: [],
-    latestInternships: [], 
+    appliedInternships: [], // Fixed typo from appliedJobs
+    latestInternships: [],
   },
   reducers: {
     requestForAllInternships(state) {
-    state.loading = true;
-    state.error = null;
+      state.loading = true;
+      state.error = null;
+    },
+    failureForAllInternships(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    requestForSingleInternship(state) {
+      state.message = null;
+      state.error = null;
+      state.loading = true;
+    },
+    successForSingleInternship(state, action) {
+      state.loading = false;
+      state.error = null;
+      state.internship = action.payload;
+    },
+    failureForSingleInternship(state, action) {
+      state.internship = null;
+      state.error = action.payload;
+      state.loading = false;
+    },
+    clearAllErrors(state) {
+      state.error = null;
+    },
+    resetInternshipSlice(state) {
+      state.error = null;
+      state.internships = [];
+      state.loading = false;
+      state.message = null;
+      state.internship = null;
+      state.latestInternships = [];
+    },
+    successForAllInternships(state, action) {
+      state.loading = false;
+      state.internships = action.payload.internships;
+      state.pagination = {
+        ...state.pagination,
+        currentPage: action.payload.currentPage,
+        totalPages: action.payload.totalPages,
+        totalInternships: action.payload.totalInternships,
+        hasNextPage: action.payload.currentPage < action.payload.totalPages,
+        hasPrevPage: action.payload.currentPage > 1,
+        nextPage: action.payload.currentPage < action.payload.totalPages 
+          ? action.payload.currentPage + 1 
+          : null,
+        prevPage: action.payload.currentPage > 1 
+          ? action.payload.currentPage - 1 
+          : null
+      };
+    },
+    applyInternshipRequest(state) {
+      state.loading = true;
+    },
+    applyInternshipSuccess(state, action) {
+      state.loading = false;
+      if (!state.appliedInternships.includes(action.payload)) {
+        state.appliedInternships.push(action.payload);
+      }
+    },
+    applyInternshipFailure(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    setAppliedInternships(state, action) {
+      state.appliedInternships = action.payload;
+    },
+    requestLatestInternships(state) {
+      state.loading = true;
+      state.error = null;
+    },
+    successLatestInternships(state, action) {
+      state.loading = false;
+      state.error = null;
+      state.latestInternships = action.payload.internships || [];
+    },
+    failureLatestInternships(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+      state.latestInternships = [];
+    },
+    deleteInternshipRequest(state) {
+      state.loading = true;
+      state.error = null;
+    },
+    deleteInternshipSuccess(state, action) {
+      state.loading = false;
+      state.error = null;
+      state.internships = state.internships.filter(
+        internship => internship._id !== action.payload.id
+      );
+    },
+    deleteInternshipFailed(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    updateInternshipRequest(state) {
+      state.loading = true;
+      state.error = null;
+    },
+    updateInternshipSuccess(state, action) {
+      state.loading = false;
+      state.error = null;
+      state.internship = action.payload;
+      state.message = "Internship updated successfully";
+    },
+    updateInternshipFailure(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    clearError: (state) => {
+      state.error = null;
+    },
+    clearMessage: (state) => {
+      state.message = null;
+    },
   },
-  failureForAllInternships(state, action) {
-    state.loading = false;
-    state.error = action.payload;
-  },
-  requestForSingleInternship(state) {
-    state.message = null;
-    state.error = null;
-    state.loading = true;
-  },  
-  successForSingleInternship(state, action) {
-    state.loading = false;
-    state.error = null;
-    state.internship = action.payload;
-  },
-  failureForSingleInternship(state, action) {
-    state.internship = null;
-    state.error = action.payload;
-    state.loading = false;
-  },
-  clearAllErrors(state) {
-    state.error = null;
-    state.internships;
-  },
-  resetInternshipSlice(state) {
-    state.error = null;
-    state.internships = [];
-    state.loading = false;
-    state.message = null;
-    state.internship = null;
-    state.latestInternships = []; 
-  },
-  successForAllInternships(state, action) {
-    state.loading = false;
-    state.internships = action.payload.internships;
-    state.pagination = action.payload.pagination;
-  },
-  applyInternshipRequest(state) {
-    state.loading = true;
-  },
-  applyInternshipSuccess(state, action) {
-    state.loading = false;
-    if (!state.appliedInternships.includes(action.payload)) {
-      state.appliedInternships.push(action.payload);
-    }
-  },
-  applyInternshipFailure(state, action) {
-    state.loading = false;
-    state.error = action.payload;
-  },
-  setAppliedInternships(state, action) {
-    state.appliedInternships = action.payload;
-  },
-  requestLatestInternships(state) {
-    state.loading = true;
-    state.error = null;
-  },
-  successLatestInternships(state, action) {
-    state.loading = false;
-    state.error = null;
-    state.latestInternships = action.payload.internships || [];
-  },
-  failureLatestInternships(state, action) {
-    state.loading = false;
-    state.error = action.payload;
-    state.latestInternships = [];
-  },
-  deleteInternshipRequest(state) {
-    state.loading = true;
-    state.error = null;
-  },
-  deleteInternshipSuccess(state, action) {
-    state.loading = false;
-    state.error = null;
-    state.internships = state.internships.filter(internship => internship._id !== action.payload.id);
-  },
-  deleteInternshipFailed(state, action) {
-    state.loading = false;
-    state.error = action.payload;
-  },
-  updateInternshipRequest(state) {
-    state.loading = true;
-    state.error = null;
-  },
-  updateInternshipSuccess(state, action) {
-    state.loading = false;
-    state.error = null;
-    state.internship = action.payload;
-    state.message = "Internship updated successfully";
-  },
-  updateInternshipFailure(state, action) {
-    state.loading = false;
-    state.error = action.payload;
-  },
-  clearError: (state) => {
-    state.error = null;
-  },
-  clearMessage: (state) => {
-    state.message = null;
-  },
-},
-extraReducers: (builder) => {
+  extraReducers: (builder) => {
     builder
-        // Create Internship
-        .addCase(createInternship.pending, (state) => {
-            state.loading = true;
-        })
-        .addCase(createInternship.fulfilled, (state, action) => {
-            state.loading = false;
-            state.internships.unshift(action.payload.internship);
-            state.message = action.payload.message;
-        })
-        .addCase(createInternship.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.error.message;
-        });
-},
+      .addCase(createInternship.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(createInternship.fulfilled, (state, action) => {
+        state.loading = false;
+        state.internships.unshift(action.payload.internship);
+        state.message = action.payload.message;
+      })
+      .addCase(createInternship.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
+  },
 });
 
-export const fetchInternships = (city = "All", internship_type = "All", searchKeyword = "", page = 1) => async (dispatch) => {
-    try {
-        dispatch(internshipSlice.actions.requestForAllInternships());
-        let link = `${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/getall?`;
-        let queryParams = [`page=${page}`];
-    
-        if (city && city !== "All") {
-            queryParams.push(`city=${encodeURIComponent(city)}`);
-        }
-        
-        if (internship_type && internship_type !== "All") {
-            queryParams.push(`internship_type=${encodeURIComponent(internship_type)}`);
-        }
-        
-        if (searchKeyword) {
-            queryParams.push(`searchKeyword=${encodeURIComponent(searchKeyword)}`);
-        }
-    
-        link += queryParams.join("&");
-        
-        const response = await axios.get(link, { withCredentials: true });
-        
-        if (!response.data.success) {
-            throw new Error(response.data.message || "Failed to fetch internships");
-        }
-        
-        dispatch(internshipSlice.actions.successForAllInternships({
-            internships: response.data.internships,
-            pagination: response.data.pagination
-        }));
-        dispatch(internshipSlice.actions.clearAllErrors());
-    } catch (error) {
-        dispatch(internshipSlice.actions.failureForAllInternships(
-            error.response?.data?.message || error.message || "Failed to fetch internships"
-        ));
-    }
-};
+// Updated fetchInternships to handle pagination correctly
+// Updated Redux slice (internshipSlice.js)
+export const fetchInternships = (params) => async (dispatch) => {
+  try {
+    const { 
+      city = "All", 
+      internship_type = "All", 
+      searchKeyword = "", 
+      page = 1, 
+      limit = 8 
+    } = params;
 
-export const fetchInternship_old = (searchKeyword = "", page = 1) => async (dispatch) => {
-    try {
-        dispatch(internshipSlice.actions.requestForAllInternships());
-        let link = `${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/getall?`;
-        let queryParams = [`page=${page}`];
+    dispatch(internshipSlice.actions.requestForAllInternships());
+    let link = `${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/getall?page=${page}&limit=${limit}`;
     
-        if (searchKeyword) {
-            queryParams.push(`searchKeyword=${encodeURIComponent(searchKeyword)}`);
-        }
-    
-        link += queryParams.join("&");
-        const response = await axios.get(link, { withCredentials: true });
-        
-        dispatch(internshipSlice.actions.successForAllInternships({
-            internships: response.data.internships,
-            pagination: response.data.pagination
-        }));
-        dispatch(internshipSlice.actions.clearAllErrors());
-    } catch (error) {
-        dispatch(internshipSlice.actions.failureForAllInternships(error.response?.data?.message || "Failed to fetch internships"));
+    if (city && city !== "All") {
+      link += `&city=${encodeURIComponent(city)}`;
     }
+    
+    if (internship_type && internship_type !== "All") {
+      link += `&internship_type=${encodeURIComponent(internship_type)}`;
+    }
+    
+    if (searchKeyword) {
+      link += `&searchKeyword=${encodeURIComponent(searchKeyword)}`;
+    }
+
+    const response = await axios.get(link, { withCredentials: true });
+    
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to fetch internships");
+    }
+    
+    dispatch(internshipSlice.actions.successForAllInternships({
+      internships: response.data.internships,
+      currentPage: response.data.currentPage,
+      totalPages: response.data.totalPages,
+      totalInternships: response.data.totalInternships
+    }));
+    
+    dispatch(internshipSlice.actions.clearAllErrors());
+  } catch (error) {
+    dispatch(internshipSlice.actions.failureForAllInternships(
+      error.response?.data?.message || error.message || "Failed to fetch internships"
+    ));
+  }
 };
 
 export const fetchSingleInternship = (internshipId) => async (dispatch) => {
-    dispatch(internshipSlice.actions.requestForSingleInternship());
-    try {
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/get/${internshipId}`, { withCredentials: true });
-        dispatch(internshipSlice.actions.successForSingleInternship(response.data.internship));
-        dispatch(internshipSlice.actions.clearAllErrors());
-    } catch (error) {
-        dispatch(internshipSlice.actions.failureForSingleInternship(error.response.data.message));
-    }
+  dispatch(internshipSlice.actions.requestForSingleInternship());
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/get/${internshipId}`,
+      { withCredentials: true }
+    );
+    dispatch(internshipSlice.actions.successForSingleInternship(response.data.internship));
+    dispatch(internshipSlice.actions.clearAllErrors());
+  } catch (error) {
+    dispatch(internshipSlice.actions.failureForSingleInternship(error.response.data.message));
+  }
 };
 
+// Other actions remain the same as in your original code...
 export const clearAllInternshipErrors = () => (dispatch) => {
     dispatch(internshipSlice.actions.clearAllErrors());
 };

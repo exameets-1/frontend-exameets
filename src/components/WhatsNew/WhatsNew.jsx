@@ -7,11 +7,11 @@ import { fetchLatestScholarships } from '../../store/slices/scholarshipSlice';
 import { fetchLatestResults } from '../../store/slices/resultSlice';
 import { fetchLatestAdmitCards } from '../../store/slices/admitCardSlice';
 import { fetchLatestAdmissions } from '../../store/slices/admissionSlice';
-import { fetchLatestYears } from '../../store/slices/previousSlice';
 import { performGlobalSearch, clearSearchResults } from '../../store/slices/globalSearchSlice';
 import { Link } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import './WhatsNew.css';
+import { fetchLatestYears } from "../../store/slices/previousSlice"; // Import the function
 
 const WhatsNew = () => {
     const dispatch = useDispatch();
@@ -37,7 +37,7 @@ const WhatsNew = () => {
         dispatch(fetchLatestResults());
         dispatch(fetchLatestAdmitCards());
         dispatch(fetchLatestAdmissions());
-        dispatch(fetchLatestYears());
+        dispatch(fetchLatestYears()); // Dispatch fetchLatestYears
     }, [dispatch]);
 
     const getTimestampFromObjectId = (objectId) => {
@@ -100,9 +100,9 @@ const WhatsNew = () => {
             case 'internship': return `/internship/get/${entry._id}`;
             case 'scholarship': return `/scholarship/get/${entry._id}`;
             case 'result': return `/results/get/${entry._id}`;
-            case 'admitcard': return `/admitcard/get/${entry._id}`;
+            case 'admitcard': return `/admitcards/get/${entry._id}`;
             case 'admission': return `/admission/get/${entry._id}`;
-            case 'previousyear': return `/previous-year-details/${entry.subject}`;
+            case 'previousyear': return `/pyqs/${entry.subject}`;
             default: return '#';
         }
     };
@@ -112,9 +112,9 @@ const WhatsNew = () => {
         
         switch(entry.type) {
             case 'job':
-                return `${entry.role || ''} at ${entry.organization || ''}`;
+                return `${entry.jobTitle || ''} at ${entry.companyName || ''}`;
             case 'govtjob':
-                return `${entry.role || ''} at ${entry.organization || ''}`;
+                return `${entry.jobTitle || ''} at ${entry.organization || ''}`;
             case 'internship':
                 return `${entry.title || ''} at ${entry.organization || ''}`;
             case 'previousyear':
@@ -122,9 +122,9 @@ const WhatsNew = () => {
             case 'scholarship':
                 return `${entry.title || ''} - ${entry.organization || ''}`;
             case 'admission':
-                return `${entry.title || ''} - ${entry.organization || ''}`;
+                return `${entry.title || ''} - ${entry.institute || ''}`;
             case 'result':
-                return `${entry.exam_title || ''} - ${entry.organization || ''}`;
+                return `${entry.title || ''} - ${entry.organization || ''}`;
             case 'admitcard':
                 return `${entry.title || ''} - ${entry.organization || ''}`;
             default:

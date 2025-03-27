@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
-import './AddAdmissionModal.css';
-import {useSelector} from 'react-redux'
+import { useSelector } from 'react-redux';
+import { FaPlus, FaTrash } from 'react-icons/fa';
 
 const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
     const initialFormData = {
@@ -16,12 +16,17 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
         category: '',
         fees: '',
         location: '',
+        keywords: [],
+        searchDescription: '',
+        slug: '',
         is_featured: false,
     };
 
     const [formData, setFormData] = useState(initialFormData);
-
-    const {isAuthenticated, user} = useSelector((state) => state.user);
+    const [currentInputs, setCurrentInputs] = useState({
+        keyword: ''
+      });
+    const { isAuthenticated, user } = useSelector((state) => state.user);
 
     const categories = [
         'Engineering',
@@ -42,9 +47,26 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
             [name]: type === 'checkbox' ? checked : value
         }));
     };
+
+    const handleArrayAdd = (field, value) => {
+        if (!value.trim()) return;
+        setFormData(prev => ({
+          ...prev,
+          [field]: [...prev[field], value.trim()]
+      }));
+    };
+    
+    const handleArrayRemove = (field, index) => {
+        setFormData(prev => ({
+          ...prev,
+          [field]: prev[field].filter((_, i) => i !== index)
+       }));
+    };
+
     const handleLogin = () => {
-        window.location.href = '/login'
-    }
+        window.location.href = '/login';
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -53,7 +75,7 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
             return;
         }
 
-        // Format dates to ISO string
+        // Format dates if needed
         const formattedData = {
             ...formData,
         };
@@ -64,51 +86,53 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="modal-overlay">
-            <div className="modal-content">
-                <div className="modal-header">
-                    <h2>Add New Admission</h2>
-                    <button onClick={onClose} className="close-button">
-                        <FaTimes />
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl">
+                <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                    <h2 className="text-2xl font-bold text-gray-800">Add New Admission</h2>
+                    <button onClick={onClose} className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100">
+                        <FaTimes className="w-6 h-6" />
                     </button>
                 </div>
-                <form onSubmit={handleSubmit} className="admission-form">
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label htmlFor="title">Title</label>
+
+                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Title and Institute */}
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">Title</label>
                             <input
                                 type="text"
-                                id="title"
                                 name="title"
                                 value={formData.title}
                                 onChange={handleChange}
                                 required
                                 placeholder="Enter admission title"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
-                        <div className="form-group">
-                            <label htmlFor="institute">Institute</label>
+
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">Institute</label>
                             <input
                                 type="text"
-                                id="institute"
                                 name="institute"
                                 value={formData.institute}
                                 onChange={handleChange}
                                 required
                                 placeholder="Enter institute name"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
-                    </div>
 
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label htmlFor="category">Category</label>
+                        {/* Category and Course */}
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">Category</label>
                             <select
-                                id="category"
                                 name="category"
                                 value={formData.category}
                                 onChange={handleChange}
                                 required
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="">Select category</option>
                                 {categories.map(category => (
@@ -116,138 +140,219 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                                 ))}
                             </select>
                         </div>
-                        <div className="form-group">
-                            <label htmlFor="course">Course</label>
+
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">Course</label>
                             <input
                                 type="text"
-                                id="course"
                                 name="course"
                                 value={formData.course}
                                 onChange={handleChange}
                                 required
                                 placeholder="Enter course name"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
-                    </div>
 
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label htmlFor="start_date">Start Date</label>
+                        {/* Dates */}
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">Start Date</label>
                             <input
                                 type="text"
-                                id="start_date"
                                 name="start_date"
                                 value={formData.start_date}
-                                placeholder='eg : 02/05/24'
                                 onChange={handleChange}
                                 required
+                                placeholder="eg: 02/05/24"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
-                        <div className="form-group">
-                            <label htmlFor="last_date">Last Date to Apply</label>
+
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">Last Date to Apply</label>
                             <input
                                 type="text"
-                                id="last_date"
                                 name="last_date"
                                 value={formData.last_date}
-                                placeholder='eg : 02/05/24'
                                 onChange={handleChange}
                                 required
+                                placeholder="eg: 02/05/24"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
-                    </div>
 
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label htmlFor="fees">Fees</label>
+                        {/* Fees and Location */}
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">Fees</label>
                             <input
                                 type="text"
-                                id="fees"
                                 name="fees"
                                 value={formData.fees}
                                 onChange={handleChange}
                                 required
                                 placeholder="Enter course fees"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
-                        <div className="form-group">
-                            <label htmlFor="location">Location</label>
+
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">Location</label>
                             <input
                                 type="text"
-                                id="location"
                                 name="location"
                                 value={formData.location}
                                 onChange={handleChange}
                                 required
                                 placeholder="Enter institute location"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
+                        </div>
+
+                        {/* Application Link */}
+                        <div className="md:col-span-2 space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">Application Link</label>
+                            <input
+                                type="url"
+                                name="application_link"
+                                value={formData.application_link}
+                                onChange={handleChange}
+                                required
+                                placeholder="Enter application URL"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+
+                        {/* Eligibility Criteria */}
+                        <div className="md:col-span-2 space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">Eligibility Criteria</label>
+                            <textarea
+                                name="eligibility_criteria"
+                                value={formData.eligibility_criteria}
+                                onChange={handleChange}
+                                required
+                                rows={3}
+                                placeholder="Enter eligibility criteria"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                            />
+                        </div>
+
+                        {/* Description */}
+                        <div className="md:col-span-2 space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">Description</label>
+                            <textarea
+                                name="description"
+                                value={formData.description}
+                                onChange={handleChange}
+                                required
+                                rows={4}
+                                placeholder="Enter admission description"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                            />
+                        </div>
+
+                        {/* Featured Checkbox */}
+                        <div className="md:col-span-2 space-y-2">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    name="is_featured"
+                                    checked={formData.is_featured}
+                                    onChange={handleChange}
+                                    className="w-4 h-4 rounded border-gray-300 focus:ring-blue-500"
+                                />
+                                <span className="text-sm font-medium text-gray-700">Featured Admission</span>
+                            </label>
+                        </div>
+                        {/* Slug */}
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">Slug</label>
+                            <input
+                                type="text"
+                                name="slug"
+                                value={formData.slug}
+                                onChange={handleChange}
+                                required
+                                placeholder="Enter admission slug"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                        {/* Search Description */}
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">Search Description</label>
+                            <textarea
+                                name="searchDescription"
+                                value={formData.searchDescription}
+                                onChange={handleChange}
+                                required
+                                rows={3}
+                                placeholder="Enter search description"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium">Keywords</label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Add keyword"
+                                    className="flex-1 p-2 border rounded"
+                                    value={currentInputs.keyword}
+                                    onChange={(e) => setCurrentInputs(prev => ({...prev, keyword: e.target.value}))}
+                                />
+                                <button
+                                    type="button"
+                                    className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                                    onClick={() => {
+                                        handleArrayAdd('keywords', currentInputs.keyword);
+                                        setCurrentInputs(prev => ({...prev, keyword: ''}));
+                                    }}
+                                >
+                                    <FaPlus />
+                                </button>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {formData.keywords.map((keyword, index) => (
+                                    <div key={index} className="bg-gray-100 px-2 py-1 rounded flex items-center gap-1">
+                                        {keyword}
+                                        <button
+                                            type="button"
+                                            onClick={() => handleArrayRemove('keywords', index)}
+                                            className="text-red-500 hover:text-red-700"
+                                        >
+                                            <FaTrash size={12} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="eligibility_criteria">Eligibility Criteria</label>
-                        <textarea
-                            id="eligibility_criteria"
-                            name="eligibility_criteria"
-                            value={formData.eligibility_criteria}
-                            onChange={handleChange}
-                            required
-                            rows={3}
-                            placeholder="Enter eligibility criteria"
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="description">Description</label>
-                        <textarea
-                            id="description"
-                            name="description"
-                            value={formData.description}
-                            onChange={handleChange}
-                            required
-                            rows={4}
-                            placeholder="Enter admission description"
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="application_link">Application Link</label>
-                        <input
-                            type="url"
-                            id="application_link"
-                            name="application_link"
-                            value={formData.application_link}
-                            onChange={handleChange}
-                            required
-                            placeholder="Enter application URL"
-                        />
-                    </div>
-
-                    <div className="form-group checkbox-group">
-                        <label>
-                            <input
-                                type="checkbox"
-                                name="is_featured"
-                                checked={formData.is_featured}
-                                onChange={handleChange}
-                            />
-                            Featured Admission
-                        </label>
-                    </div>
-
-                    <div className="form-actions">
-                        <button type="button" onClick={onClose} className="cancel-button">
-                            Cancel
-                        </button>
-                        {isAuthenticated && user?.role === 'admin' ? (
-                            <button type="submit" className="submit-button">
-                                Add Admission
+                    <div className="pt-6 border-t border-gray-200">
+                        <div className="flex justify-end gap-4">
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="px-6 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                            >
+                                Cancel
                             </button>
-                        ) : (
-                            <button className="submit-button" onClick={handleLogin}>
-                                Login to Add Admission
-                            </button>
-                        )}
+                            {isAuthenticated && user?.role === 'admin' ? (
+                                <button
+                                    type="submit"
+                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                >
+                                    Add Admission
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={handleLogin}
+                                    className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                                >
+                                    Login to Add
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </form>
             </div>

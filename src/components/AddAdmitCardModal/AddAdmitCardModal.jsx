@@ -1,119 +1,341 @@
 import { useState } from 'react';
-import { FaTimes } from 'react-icons/fa';
-import './AddAdmitCardModal.css';
+import PropTypes from 'prop-types';
+import { FaTimes, FaPlus, FaTrash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 
 const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
     const initialFormData = {
         title: '',
-        description: '',
-        exam_date: '',
-        registration_start_date: '',
-        registration_end_date: '',
-        eligibility_criteria: '',
-        download_link: '',
-        organization: ''
+        organization: '',
+        advertisementNumber: '',
+        importantDates: [],
+        examDetails: [],
+        vacancies: '',
+        downloadSteps: [],
+        importantLinks: [],
+        instructions: [],
+        officialWebsite: '',
+        slug: '',
+        keywords: [],
+        searchDescription: '',
+        isFeatured: false
     };
 
     const [formData, setFormData] = useState(initialFormData);
+    const [currentInputs, setCurrentInputs] = useState({
+        importantDateEvent: '',
+        importantDateDate: '',
+        examDate: '',
+        shiftTimings: '',
+        reportingTime: '',
+        downloadStep: '',
+        instruction: '',
+        linkType: '',
+        link: ''
+    });
 
-    const {isAuthenticated, user} = useSelector((state) => state.user);
+    const { isAuthenticated, user } = useSelector((state) => state.user);
 
-    const handleLogin = () => {
-        // Implement login logic here
-        // For example, redirect to the login page
-        window.location.href = '/login';
+    const arrayFields = {
+        importantDates: { 
+            label: 'Important Dates', 
+            type: 'object', 
+            fields: ['event', 'date'] 
+        },
+        examDetails: { 
+            label: 'Exam Details', 
+            type: 'object', 
+            fields: ['examDate', 'shiftTimings', 'reportingTime'] 
+        },
+        downloadSteps: { label: 'Download Steps', type: 'text' },
+        instructions: { label: 'Instructions', type: 'text' },
+        importantLinks: { 
+            label: 'Important Links', 
+            type: 'object', 
+            fields: ['linkType', 'link'] 
+        },
+        keywords: { label: 'Keywords', type: 'text' }
     };
 
-    const fieldTypes = {
-        title: { type: 'string', label: 'Title' },
-        organization: { type: 'string', label: 'Organization' },
-        description: { type: 'string', label: 'Description', multiline: true },
-        exam_date: { type: 'text', label: 'Exam Date eg : 02/05/24' },
-        registration_start_date: { type: 'text', label: 'Registration Start Date eg : 02/05/24' },
-        registration_end_date: { type: 'text', label: 'Registration End Date eg : 02/05/24' },
-        eligibility_criteria: { type: 'string', label: 'Eligibility Criteria', multiline: true },
-        download_link: { type: 'url', label: 'Download Link' }
+    const handleArrayChange = (field, value) => {
+        setCurrentInputs(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleAddItem = (field) => {
+        if (!currentInputs[field].trim()) return;
+        setFormData(prev => ({
+            ...prev,
+            [field]: [...prev[field], currentInputs[field].trim()]
+        }));
+        setCurrentInputs(prev => ({ ...prev, [field]: '' }));
+    };
+
+    const handleAddObjectItem = (field) => {
+        const fields = arrayFields[field].fields;
+        const values = fields.map(f => currentInputs[f].trim());
+        if (values.some(v => !v)) return;
+
+        setFormData(prev => ({
+            ...prev,
+            [field]: [...prev[field], 
+            Object.fromEntries(fields.map((f, i) => [f, values[i]]))
+            ]
+        }));
+        fields.forEach(f => {
+            setCurrentInputs(prev => ({ ...prev, [f]: '' }));
+        });
+    };
+
+    const handleRemoveItem = (field, index) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: prev[field].filter((_, i) => i !== index)
+        }));
     };
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        const { name, value, type } = e.target;
+        if (type === 'checkbox') {
+            setFormData(prev => ({ ...prev, [name]: e.target.checked }));
+        } else {
+            setFormData(prev => ({ ...prev, [name]: value }));
+        }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        // Format dates for submission
-        const formattedData = {
-            ...formData,
-        };
-
-        onSubmit(formattedData);
+        onSubmit(formData);
     };
 
     if (!isOpen) return null;
 
     return (
-        <div className="modal-overlay">
-            <div className="modal-content">
-                <div className="modal-header">
-                    <h2>Add New Admit Card</h2>
-                    <button onClick={onClose} className="close-button">
-                        <FaTimes />
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl">
+                <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                    <h2 className="text-2xl font-bold text-gray-800">Add New Admit Card</h2>
+                    <button onClick={onClose} className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100">
+                        <FaTimes className="w-6 h-6" />
                     </button>
                 </div>
-                <form onSubmit={handleSubmit} className="admit-card-form">
-                    {Object.entries(fieldTypes).map(([fieldName, fieldInfo]) => (
-                        <div key={fieldName} className="form-group">
-                            <label htmlFor={fieldName}>
-                                {fieldInfo.label}
-                                <span className="field-type">({fieldInfo.type})</span>
-                            </label>
-                            {fieldInfo.multiline ? (
-                                <textarea
-                                    id={fieldName}
-                                    name={fieldName}
-                                    value={formData[fieldName]}
-                                    onChange={handleChange}
-                                    required
-                                    rows={4}
-                                    placeholder={`Enter ${fieldInfo.label.toLowerCase()}`}
-                                />
-                            ) : (
+
+                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Basic Information */}
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700">Title</label>
                                 <input
-                                    type={fieldInfo.type === 'url' ? 'url' : 'text'}
-                                    id={fieldName}
-                                    name={fieldName}
-                                    value={formData[fieldName]}
+                                    type="text"
+                                    name="title"
+                                    value={formData.title}
                                     onChange={handleChange}
-                                    required
-                                    placeholder={`Enter ${fieldInfo.label.toLowerCase()}`}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700">Organization</label>
+                                <input
+                                    type="text"
+                                    name="organization"
+                                    value={formData.organization}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700">Advertisement Number</label>
+                                <input
+                                    type="text"
+                                    name="advertisementNumber"
+                                    value={formData.advertisementNumber}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700">Vacancies</label>
+                                <input
+                                    type="text"
+                                    name="vacancies"
+                                    value={formData.vacancies}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Website and Slug */}
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700">Official Website</label>
+                                <input
+                                    type="url"
+                                    name="officialWebsite"
+                                    value={formData.officialWebsite}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700">Slug</label>
+                                <input
+                                    type="text"
+                                    name="slug"
+                                    value={formData.slug}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Array Fields */}
+                        {Object.entries(arrayFields).map(([field, config]) => (
+                            <div key={field} className="md:col-span-2 space-y-2">
+                                <label className="block text-sm font-medium text-gray-700">{config.label}</label>
+                                
+                                {config.type === 'object' ? (
+                                    <div className="space-y-4">
+                                        <div className="flex gap-2">
+                                            {config.fields.map(subField => (
+                                                <input
+                                                    key={subField}
+                                                    type="text"
+                                                    value={currentInputs[subField]}
+                                                    onChange={(e) => handleArrayChange(subField, e.target.value)}
+                                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    placeholder={`Enter ${subField}`}
+                                                />
+                                            ))}
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAddObjectItem(field)}
+                                                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                                            >
+                                                <FaPlus />
+                                            </button>
+                                        </div>
+                                        <div className="space-y-2">
+                                            {formData[field].map((item, index) => (
+                                                <div key={index} className="bg-gray-100 p-3 rounded-lg flex justify-between items-center">
+                                                    <div className="flex gap-2">
+                                                        {Object.entries(item).map(([key, value]) => (
+                                                            <span key={key} className="font-medium">{key}: {value}</span>
+                                                        ))}
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveItem(field, index)}
+                                                        className="text-red-500 hover:text-red-700"
+                                                    >
+                                                        <FaTrash size={14} />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={currentInputs[field]}
+                                                onChange={(e) => handleArrayChange(field, e.target.value)}
+                                                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder={`Add ${config.label.toLowerCase()}`}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAddItem(field)}
+                                                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                                            >
+                                                <FaPlus />
+                                            </button>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            {formData[field].map((item, index) => (
+                                                <div key={index} className="bg-gray-100 px-3 py-1 rounded-full flex items-center gap-2">
+                                                    {item}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveItem(field, index)}
+                                                        className="text-red-500 hover:text-red-700"
+                                                    >
+                                                        <FaTrash size={14} />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        ))}
+
+                        {/* Search Description */}
+                        <div className="md:col-span-2 space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">Search Description</label>
+                            <textarea
+                                name="searchDescription"
+                                value={formData.searchDescription}
+                                onChange={handleChange}
+                                rows={4}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                            />
+                        </div>
+
+                        {/* Featured Checkbox */}
+                        <div className="md:col-span-2 space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">Featured Admit Card</label>
+                            <input
+                                type="checkbox"
+                                name="isFeatured"
+                                checked={formData.isFeatured}
+                                onChange={handleChange}
+                                className="w-4 h-4 rounded border-gray-300 focus:ring-blue-500"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="pt-6 border-t border-gray-200">
+                        <div className="flex justify-end gap-4">
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="px-6 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                            >
+                                Cancel
+                            </button>
+                            {isAuthenticated && user?.role === 'admin' ? (
+                                <button
+                                    type="submit"
+                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                >
+                                    Add Admit Card
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => window.location.href = '/login'}
+                                    className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                                >
+                                    Login to Add
+                                </button>
                             )}
                         </div>
-                    ))}
-                    <div className="form-actions">
-                        <button type="button" onClick={onClose} className="cancel-button">
-                            Cancel
-                        </button>
-                        {isAuthenticated && user?.role === 'admin' ? (
-                        <button type="submit" className="submit-button">
-                            Add Admit Card
-                        </button>
-                        ) : (
-                            <button className="submit-button" onClick={handleLogin}>
-                                Login to Add Admit Card
-                            </button>
-                        )}
                     </div>
                 </form>
             </div>
         </div>
     );
+};
+AddAdmitCardModal.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
 };
 
 export default AddAdmitCardModal;

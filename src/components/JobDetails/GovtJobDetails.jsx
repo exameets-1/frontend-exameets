@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { FaArrowLeft, FaEdit, FaSave } from 'react-icons/fa';
+import { FaArrowLeft, FaEdit, FaSave, FaPlus, FaTrash } from 'react-icons/fa';
 import { fetchSingleGovtJob, updateGovtJob } from '../../store/slices/govtJobSlice';
 import Spinner from '../Spinner/Spinner';
-import './JobDetails.css';
 
 const GovtJobDetails = () => {
   const { id } = useParams();
@@ -12,256 +11,408 @@ const GovtJobDetails = () => {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [editedJob, setEditedJob] = useState(null);
-  
+  const [currentArrayInputs, setCurrentArrayInputs] = useState({});
+  const [currentFAQ, setCurrentFAQ] = useState({ question: '', answer: '' });
+
   const { job, loading, error } = useSelector((state) => state.govtJobs);
   const { isAuthenticated, user } = useSelector((state) => state.user);
 
   useEffect(() => {
-    if (id) {
-      dispatch(fetchSingleGovtJob(id));
-    }
+    if (id) dispatch(fetchSingleGovtJob(id));
   }, [dispatch, id]);
 
   useEffect(() => {
     if (job) {
-      setEditedJob(job);
+      // Initialize all array fields to empty arrays if undefined
+      const initializedJob = { 
+        faq: [],
+        postNames: [],
+        educationalQualifications: [],
+        additionalRequirements: [],
+        vacancyPostNames: [],
+        vacancyCounts: [],
+        vacancyPayScales: [],
+        selectionProcess: [],
+        howToApplyOnlineSteps: [],
+        howToApplyOfflineSteps: [],
+        requiredDocuments: [],
+        examSubjects: [],
+        examQuestionCounts: [],
+        examMarks: [],
+        examDurations: [],
+        keywords: [],
+        ...job 
+      };
+      setEditedJob(initializedJob);
     }
   }, [job]);
 
-  const handleBack = () => {
-    navigate(-1);
-  };
+  const handleBack = () => navigate(-1);
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
+  const handleEdit = () => setIsEditing(true);
 
   const handleSave = async () => {
     try {
-      await dispatch(updateGovtJob({ jobId: id, updatedData: editedJob }));
-      setIsEditing(false);
+      // Clean FAQ data and convert isFeatured to boolean before sending
+      const cleanedData = {
+        ...editedJob,
+        faq: editedJob.faq.map(faq => ({
+          question: faq.question,
+          answer: faq.answer,
+          ...(faq._id && { _id: faq._id })
+        })),
+        isFeatured: Boolean(editedJob.isFeatured)
+      };
+
+      const result = await dispatch(updateGovtJob({
+        jobId: id,
+        updatedData: cleanedData
+      })).unwrap();
+
+      if (result?.error) {
+        console.error('Update failed:', result.error);
+        alert(`Update failed: ${result.error}`);
+      } else {
+        setIsEditing(false);
+      }
     } catch (error) {
-      console.error('Failed to update job:', error);
+      console.error('Save error:', error);
+      let errorMessage;
+      
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.toString()) {
+        errorMessage = error.toString();
+      } else {
+        errorMessage = 'An unexpected error occurred';
+      }
+
+      alert(`Update failed: ${errorMessage}`);
     }
   };
 
   const handleInputChange = (e) => {
+    const { name, value, type } = e.target;
+    const newValue = type === 'checkbox' ? e.target.checked : value;
+    setEditedJob(prev => ({ ...prev, [name]: newValue }));
+  };
+
+  const handleArrayChange = (field, value) => {
+    setCurrentArrayInputs(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleAddArrayItem = (field) => {
+    if (!currentArrayInputs[field]?.trim()) return;
+    setEditedJob(prev => ({
+      ...prev,
+      [field]: [...prev[field], currentArrayInputs[field].trim()]
+    }));
+    setCurrentArrayInputs(prev => ({ ...prev, [field]: '' }));
+  };
+
+  const handleRemoveArrayItem = (field, index) => {
+    setEditedJob(prev => ({
+      ...prev,
+      [field]: prev[field].filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleFAQChange = (e) => {
     const { name, value } = e.target;
+    setCurrentFAQ(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddFAQ = () => {
+    if (!currentFAQ.question.trim() || !currentFAQ.answer.trim()) return;
     setEditedJob(prev => ({
       ...prev,
-      [name]: value
+      faq: [...prev.faq, { ...currentFAQ }]
+    }));
+    setCurrentFAQ({ question: '', answer: '' });
+  };
+
+  const handleRemoveFAQ = (index) => {
+    setEditedJob(prev => ({
+      ...prev,
+      faq: prev.faq.filter((_, i) => i !== index)
     }));
   };
 
-  const handleSkillsChange = (e) => {
-    const skills = e.target.value.split(',').map(skill => skill.trim());
-    setEditedJob(prev => ({
-      ...prev,
-      skills_required: skills
-    }));
+  const renderEditableField = (field, label, type = 'text') => {
+    // Handle array fields except FAQ
+    if (Array.isArray(editedJob[field]) && field !== 'faq') {
+      return (
+        <div className="space-y-2">
+          <div className="flex flex-wrap gap-2 mb-2">
+            {editedJob[field].map((item, index) => (
+              <div key={index} className="bg-blue-100 px-2 py-1 rounded flex items-center gap-2">
+                <span>{item}</span>
+                {isEditing && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveArrayItem(field, index)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <FaTrash size={12} />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+          {isEditing && (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={currentArrayInputs[field] || ''}
+                onChange={(e) => handleArrayChange(field, e.target.value)}
+                placeholder={`Add ${label.toLowerCase()}`}
+                className="flex-1 p-2 border rounded"
+              />
+              <button
+                type="button"
+                onClick={() => handleAddArrayItem(field)}
+                className="px-3 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                <FaPlus />
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // FAQ Handling
+    if (field === 'faq') {
+      return (
+        <div className="space-y-4">
+          <div className="flex gap-4">
+            <input
+              type="text"
+              name="question"
+              value={currentFAQ.question}
+              onChange={handleFAQChange}
+              placeholder="Question"
+              className="flex-1 p-2 border rounded"
+            />
+            <input
+              type="text"
+              name="answer"
+              value={currentFAQ.answer}
+              onChange={handleFAQChange}
+              placeholder="Answer"
+              className="flex-1 p-2 border rounded"
+            />
+            <button
+              type="button"
+              onClick={handleAddFAQ}
+              className="px-3 bg-blue-500 text-white rounded"
+            >
+              <FaPlus />
+            </button>
+          </div>
+          {editedJob.faq.map((item, index) => (
+            <div key={index} className="bg-gray-100 p-3 rounded">
+              <div className="flex justify-between items-center mb-2">
+                <strong>{item.question}</strong>
+                <button
+                  onClick={() => handleRemoveFAQ(index)}
+                  className="text-red-500"
+                >
+                  <FaTrash size={14} />
+                </button>
+              </div>
+              <p>{item.answer}</p>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // Regular input fields
+    return (
+      <input
+        type={type}
+        name={field}
+        value={editedJob[field] || ''}
+        onChange={handleInputChange}
+        className="w-full p-2 border rounded"
+      />
+    );
   };
 
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <Spinner />
+  const renderSection = (title, fields) => (
+    <section className="my-6 p-4 border-b border-gray-200">
+      <h2 className="text-xl font-semibold text-blue-800 border-b-2 border-blue-800 pb-2 mb-4">
+        {title}
+      </h2>
+      <div className="space-y-4">
+        {fields.map(([field, label, fieldType]) => (
+          <div key={field} className="space-y-2">
+            <label className="block font-medium">{label}</label>
+            {isEditing ? (
+              fieldType === 'checkbox' ? (
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    name={field}
+                    checked={editedJob[field]}
+                    onChange={handleInputChange}
+                    className="w-4 h-4"
+                  />
+                  <span>{label}</span>
+                </div>
+              ) : (
+                renderEditableField(field, label, fieldType)
+              )
+            ) : (
+              <div className="text-gray-700">
+                {Array.isArray(editedJob[field]) ? (
+                  field === 'faq' ? (
+                    <div className="space-y-4">
+                      {editedJob.faq.map((faq, index) => (
+                        <div key={index} className="bg-gray-100 p-4 rounded">
+                          <h3 className="font-medium">{faq.question}</h3>
+                          <p className="text-gray-600">{faq.answer}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    editedJob[field].join(', ')
+                  )
+                ) : (
+                  editedJob[field]
+                )}
+              </div>
+            )}
+          </div>
+        ))}
       </div>
-    );
-  }
+    </section>
+  );
 
-  if (error) {
-    return (
-      <div className="error-container">
-        <p className="error-message">An error occurred while fetching job details.</p>
-        <button onClick={handleBack} className="more-btn">
-          Go Back
-        </button>
-      </div>
-    );
-  }
-
-  if (!editedJob) {
-    return (
-      <div className="no-data-container">
-        <p className="no-data-message">No job details found</p>
-        <button onClick={handleBack} className="more-btn">
-          Go Back
-        </button>
-      </div>
-    );
-  }
+  if (loading) return <Spinner />;
+  if (error) return <div>Error: {error}</div>;
+  if (!editedJob) return <div>No job found</div>;
 
   return (
-    <div className="job-details-container">
-      <div className="job-details-header">
-        <button onClick={handleBack} className="back-button">
-          <FaArrowLeft /> Back to Jobs
+    <div className="max-w-6xl mx-auto p-5 bg-white rounded-lg shadow-md my-8">
+      <div className="flex justify-between items-center mb-8">
+        <button onClick={handleBack} className="flex items-center text-blue-800">
+          <FaArrowLeft className="mr-2" /> Back
         </button>
         {isAuthenticated && user?.role === 'admin' && (
           isEditing ? (
-            <button onClick={handleSave} className="edit-button">
-              <FaSave /> Save Changes
+            <button onClick={handleSave} className="bg-green-600 text-white px-4 py-2 rounded">
+              <FaSave className="mr-2" /> Save
             </button>
           ) : (
-            <button onClick={handleEdit} className="edit-button">
-              <FaEdit /> Edit Job
+            <button onClick={handleEdit} className="bg-blue-600 text-white px-4 py-2 rounded">
+              <FaEdit className="mr-2" /> Edit
             </button>
           )
         )}
       </div>
 
-      <div className="job-header">
-        {isEditing ? (
-          <input
-            type="text"
-            name="role"
-            value={editedJob.role || ''}
-            onChange={handleInputChange}
-            className="edit-input title-input"
-          />
-        ) : (
-          <h1>{editedJob.role || editedJob.job_type || 'Job Position'}</h1>
-        )}
-        <p className="advt-no">
-          Organization: {
-            isEditing ? (
-              <input
-                type="text"
-                name="organization"
-                value={editedJob.organization || ''}
-                onChange={handleInputChange}
-                className="edit-input"
-              />
-            ) : (
-              editedJob.organization || 'Not specified'
-            )
-          }
-        </p>
-      </div>
+      {/* Basic Information */}
+      {renderSection('Basic Information', [
+        ['jobTitle', 'Job Title'],
+        ['jobOverview', 'Job Overview', 'textarea'],
+        ['organization', 'Organization'],
+        ['totalVacancies', 'Total Vacancies'],
+        ['jobLocation', 'Job Location'],
+      ])}
 
-      <section className="section">
-        <h2>Brief Information</h2>
-        {isEditing ? (
-          <textarea
-            name="description"
-            value={editedJob.description || ''}
-            onChange={handleInputChange}
-            className="edit-textarea"
-          />
-        ) : (
-          <p>{editedJob.description || 'No description available'}</p>
-        )}
-      </section>
+      {/* Important Dates */}
+      {renderSection('Important Dates', [
+        ['notificationReleaseDate', 'Notification Release Date'],
+        ['applicationStartDate', 'Application Start Date'],
+        ['applicationEndDate', 'Application End Date'],
+        ['examInterviewDate', 'Exam/Interview Date'],
+      ])}
 
-      <section className="section">
-        <h2>Essential Qualification</h2>
-        {isEditing ? (
-          <textarea
-            name="eligibility_criteria"
-            value={editedJob.eligibility_criteria || ''}
-            onChange={handleInputChange}
-            className="edit-textarea"
-          />
-        ) : (
-          <p>{editedJob.eligibility_criteria || 'No eligibility criteria specified'}</p>
-        )}
-      </section>
+      {/* Eligibility Criteria */}
+      {renderSection('Eligibility Criteria', [
+        ['educationalQualifications', 'Educational Qualifications'],
+        ['ageLimitMin', 'Minimum Age'],
+        ['ageLimitMax', 'Maximum Age'],
+        ['ageRelaxation', 'Age Relaxation'],
+        ['additionalRequirements', 'Additional Requirements'],
+      ])}
 
-      <section className="section">
-        <h2>Required Skills</h2>
-        {isEditing ? (
-          <textarea
-            name="skills_required"
-            value={editedJob.skills_required ? editedJob.skills_required.join(', ') : ''}
-            onChange={handleSkillsChange}
-            placeholder="Enter skills separated by commas"
-            className="edit-textarea"
-          />
-        ) : (
-          <ul>
-            {editedJob.skills_required && Array.isArray(editedJob.skills_required) ? (
-              editedJob.skills_required.map((skill, index) => (
-                <li key={index}>{skill}</li>
-              ))
-            ) : (
-              <li>No specific skills mentioned</li>
-            )}
-          </ul>
-        )}
-      </section>
+      {/* Vacancy Details */}
+      {renderSection('Vacancy Details', [
+        ['vacancyPostNames', 'Post Names'],
+        ['vacancyCounts', 'Vacancy Counts'],
+        ['vacancyPayScales', 'Pay Scales'],
+      ])}
 
-      <section className="section">
-        <h2>Location</h2>
-        {isEditing ? (
-          <input
-            type="text"
-            name="location"
-            value={editedJob.location || ''}
-            onChange={handleInputChange}
-            className="edit-input"
-          />
-        ) : (
-          <p>{editedJob.location || 'Not specified'}</p>
-        )}
-      </section>
+      {/* Application Details */}
+      {renderSection('Application Details', [
+        ['applicationMode', 'Application Mode'],
+        ['applicationFeeGeneral', 'Application Fee (General)'],
+        ['applicationFee_SC_ST_PWD', 'Application Fee (SC/ST/PWD)'],
+        ['applicationFeePaymentMode', 'Payment Mode'],
+      ])}
 
-      <section className="section">
-        <h2>Experience Required</h2>
-        {isEditing ? (
-          <input
-            type="text"
-            name="experience_required"
-            value={editedJob.experience_required || ''}
-            onChange={handleInputChange}
-            className="edit-input"
-          />
-        ) : (
-          <p>{editedJob.experience_required || 'Not specified'}</p>
-        )}
-      </section>
+      {/* Selection Process */}
+      {renderSection('Selection Process', [
+        ['selectionProcess', 'Selection Process Steps'],
+      ])}
 
-      <section className="section">
-        <h2>Important Dates</h2>
+      {/* How to Apply */}
+      {renderSection('How to Apply', [
+        ['howToApplyOnlineSteps', 'Online Application Steps'],
+        ['howToApplyOfflineSteps', 'Offline Application Steps'],
+        ['requiredDocuments', 'Required Documents'],
+      ])}
+
+      {/* Exam Details */}
+      {renderSection('Exam Details', [
+        ['examSubjects', 'Exam Subjects'],
+        ['examQuestionCounts', 'Question Counts'],
+        ['examMarks', 'Marks Distribution'],
+        ['examDurations', 'Exam Durations'],
+      ])}
+
+      {/* Links */}
+      {renderSection('Important Links', [
+        ['notificationPDFLink', 'Notification PDF Link', 'url'],
+        ['applyOnlineLink', 'Apply Online Link', 'url'],
+        ['officialWebsiteLink', 'Official Website', 'url'],
+      ])}
+
+      {/* FAQ Section */}
+      <section className="my-6 p-4 border-b border-gray-200">
+        <h2 className="text-xl font-semibold text-blue-800 border-b-2 border-blue-800 pb-2 mb-4">
+          FAQs
+        </h2>
         {isEditing ? (
-          <div className="dates-edit">
-            <div>
-              <label>Last Date to Apply:</label>
-              <input
-                type="text"
-                name="last_date"
-                value={editedJob.last_date ? editedJob.last_date : ''}
-                onChange={handleInputChange}
-                className="edit-input"
-              />
-            </div>
+          renderEditableField('faq', 'FAQs')
+        ) : (
+          <div className="space-y-4">
+            {editedJob.faq.map((faq, index) => (
+              <div key={index} className="bg-gray-100 p-4 rounded">
+                <h3 className="font-medium">{faq.question}</h3>
+                <p className="text-gray-600">{faq.answer}</p>
+              </div>
+            ))}
           </div>
-        ) : (
-          <ul>
-              <span>Last Date to Apply:</span>
-              <span>{editedJob.last_date ? editedJob.last_date : 'Not specified'}</span>
-          </ul>
         )}
       </section>
 
-      <section className="section">
-        <h2>Application Link</h2>
-        {isEditing ? (
-          <input
-            type="url"
-            name="application_link"
-            value={editedJob.application_link || ''}
-            onChange={handleInputChange}
-            className="edit-input"
-          />
-        ) : (
-          editedJob.application_link ? (
-            <a href={editedJob.application_link} target="_blank" rel="noopener noreferrer">
-              Apply Now
-            </a>
-          ) : (
-            <p>Application link not available</p>
-          )
-        )}
+      {/* Additional Fields */}
+      <section className="my-6 p-4 border-b border-gray-200">
+        <h2 className="text-xl font-semibold text-blue-800 border-b-2 border-blue-800 pb-2 mb-4">
+          Additional Information
+        </h2>
+        {renderSection('Additional Information', [
+          ['keywords', 'Keywords'],
+          ['searchDescription', 'Search Description', 'textarea'],
+          ['slug', 'Slug'],
+          ['isFeatured', 'Featured Job', 'checkbox'],
+        ])}
       </section>
     </div>
   );

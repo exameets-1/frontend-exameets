@@ -30,7 +30,8 @@ import GovtJobs from "./pages/GovtJobs/GovtJobs";
 import GovtJobDetails from "./components/JobDetails/GovtJobDetails";
 
 import PreviousYear from "./pages/PreviousYear/PreviousYear";
-import PreviousYearDetails from "./pages/PreviousYear/PreviousYearDetails";
+import SubjectPapers from "./components/SubjectPapers";
+import YearPapers from "./components/YearPapers";
 
 import Internships from "./pages/Internships/Internships";
 import InternshipDetails from "./components/InternshipDetails/InternshipDetails";
@@ -187,14 +188,14 @@ const App = () => {
             <Route path="/admission/get/:id" element={<AdmissionDetails />} />
 
             <Route path="/admitcards" element={<AdmitCard />} />
-            <Route path="/admitcard/get/:id" element={<AdmitCardDetails />} />
+            <Route path="/admitcards/get/:id" element={<AdmitCardDetails />} />
 
             
             <Route path="/about-us" element={<AboutUs />} />
 
             <Route path="/previousyears" element={<PreviousYear />} />
-            <Route path="/previous-year-details/:subject" element={<PreviousYearDetails />} />
-
+            <Route path="/pyqs/:subjectSlug" element={<SubjectPapers />} />
+            <Route path="/pyqs/:subjectSlug/:year" element={<YearPapers />} />
             
             <Route path="/govtjobs" element={<GovtJobs />} />
             <Route path="/govtjob/get/:id" element={<GovtJobDetails />} />
@@ -207,7 +208,7 @@ const App = () => {
             <Route path="/scholarship/get/:id" element={<ScholarshipDetails />} />
 
             <Route path="/results" element={<Results />} />
-            <Route path="/result/get/:id" element={<ResultDetails />} />
+            <Route path="/results/get/:id" element={<ResultDetails />} />
             <Route path="/whatsnew" element={<WhatsNew />} />
 
             <Route path="/selected-jobs" element={<SelectedJobs />} />

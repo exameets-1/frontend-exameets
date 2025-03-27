@@ -11,58 +11,19 @@ import { fetchLatestYears } from '../../store/slices/previousSlice';
 import { Link } from 'react-router-dom';
 import Spinner from '../../components/Spinner/Spinner';
 import useScrollToTop from '../../hooks/useScrollToTop';
-import './WhatsNew.css';
 
 const WhatsNew = () => {
     useScrollToTop();
     const dispatch = useDispatch();
-    const { 
-        latestJobs,
-        loading: jobsLoading,
-        error: jobsError 
-    } = useSelector((state) => state.jobs);
 
-    const {
-        latestGovtJobs,
-        loading: govtJobsLoading,
-        error: govtJobsError
-    } = useSelector((state) => state.govtJobs);
-
-    const {
-        latestInternships,
-        loading: internshipsLoading,
-        error: internshipsError
-    } = useSelector((state) => state.internships);
-
-    const {
-        latestScholarships,
-        loading: scholarshipsLoading,
-        error: scholarshipsError
-    } = useSelector((state) => state.scholarships);
-
-    const {
-        latestResults,
-        loading: resultsLoading,
-        error: resultsError
-    } = useSelector((state) => state.results);
-
-    const {
-        latestAdmitCards,
-        loading: admitCardsLoading,
-        error: admitCardsError
-    } = useSelector((state) => state.admitCards);
-
-    const {
-        latestAdmissions,
-        loading: admissionsLoading,
-        error: admissionsError
-    } = useSelector((state) => state.admissions);
-
-    const {
-        latestYears,
-        loading: yearsLoading,
-        error: yearsError
-    } = useSelector((state) => state.previousYears);
+    const { latestJobs, loading: jobsLoading, error: jobsError } = useSelector((state) => state.jobs);
+    const { latestGovtJobs, loading: govtJobsLoading, error: govtJobsError } = useSelector((state) => state.govtJobs);
+    const { latestInternships } = useSelector((state) => state.internships);
+    const { latestScholarships } = useSelector((state) => state.scholarships);
+    const { latestResults } = useSelector((state) => state.results);
+    const { latestAdmitCards } = useSelector((state) => state.admitCards);
+    const { latestAdmissions } = useSelector((state) => state.admissions);
+    const { latestYears } = useSelector((state) => state.previousYears);
 
     useEffect(() => {
         dispatch(fetchLatestJobs());
@@ -75,7 +36,7 @@ const WhatsNew = () => {
         dispatch(fetchLatestYears());
     }, [dispatch]);
 
-    if (jobsLoading || govtJobsLoading || internshipsLoading || scholarshipsLoading || resultsLoading || admitCardsLoading || admissionsLoading || yearsLoading) {
+    if (jobsLoading || govtJobsLoading) {
         return (
             <div className="flex justify-center items-center min-h-[80vh]">
                 <Spinner />
@@ -83,157 +44,187 @@ const WhatsNew = () => {
         );
     }
 
-    if (jobsError || govtJobsError || internshipsError || scholarshipsError || resultsError || admitCardsError || admissionsError || yearsError) {
+    if (jobsError || govtJobsError) {
         return (
             <div className="flex justify-center items-center min-h-[80vh]">
-                <p className="text-red-500">
-                    {jobsError || govtJobsError || internshipsError || scholarshipsError || resultsError || admitCardsError || admissionsError || yearsError}
-                </p>
+                <p className="text-red-500">{jobsError || govtJobsError}</p>
             </div>
         );
     }
 
     return (
-        <div className="whatsnew-page">
-            <div className="whatsnew-header">
-                <h1>What&apos;s New</h1>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+            <div className="bg-[#015990] p-6 rounded-lg mb-8">
+                <h1 className="text-3xl font-bold text-white text-center">What&apos;s New</h1>
             </div>
 
-            <div className="whatsnew-grid">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Latest Jobs Section */}
-                <div className="section-card">
-                    <h2>Latest Jobs</h2>
+                <div className="bg-white border-2 border-[#015990] rounded-lg p-4 shadow-md flex flex-col">
+                    <h2 className="text-xl font-semibold text-[#015990] border-b-2 border-[#015990] pb-2 mb-4">Latest Jobs</h2>
                     {latestJobs && latestJobs.length > 0 ? (
                         latestJobs.map((job) => (
-                            <div key={job._id} className="section-item">
-                                <Link to={`/job/get/${job._id}`}>
-                                    <p>{job.role} - {job.organization}</p>
+                            <div key={job._id} className="py-2 border-b last:border-b-0 hover:bg-gray-100 transition">
+                                <Link to={`/job/get/${job._id}`} className="text-gray-800 hover:text-[#015990]">
+                                    <p>{job.jobTitle} - {job.companyName}</p>
                                 </Link>
                             </div>
                         ))
                     ) : (
-                        <p className="empty-message">No recent jobs</p>
+                        <p className="text-gray-500 italic">No recent jobs</p>
                     )}
-                    <Link to="/jobs"><button className="view-all-button">View All</button></Link>
+                    <Link to="/jobs" className="mt-auto">
+                        <button className="mt-4 bg-[#015990] text-white px-4 py-2 rounded hover:bg-[#014d7a] transition">
+                            View All
+                        </button>
+                    </Link>
                 </div>
 
-                {/* Latest Govt Jobs Section */}
-                <div className="section-card">
-                    <h2>Latest Government Jobs</h2>
-                    {latestGovtJobs && latestGovtJobs.length > 0 ? (
-                        latestGovtJobs.map((job) => (
-                            <div key={job._id} className="section-item">
-                                <Link to={`/govtjob/get/${job._id}`}>
-                                    <p>{job.role} - {job.department}</p>
+                {/* Latest Previous Year Papers Section */}
+                <div className="bg-white border-2 border-[#015990] rounded-lg p-4 shadow-md flex flex-col">
+                    <h2 className="text-xl font-semibold text-[#015990] border-b-2 border-[#015990] pb-2 mb-4">Latest Previous Year Papers</h2>
+                    {latestYears && latestYears.length > 0 ? (
+                        latestYears.map((paper) => (
+                            <div key={paper._id} className="py-2 border-b last:border-b-0 hover:bg-gray-100 transition">
+                                <Link to={`/pyqs/${paper.subject}`} className="text-gray-800 hover:text-[#015990]">
+                                    <p>{paper.title} - {paper.year}</p>
                                 </Link>
                             </div>
                         ))
                     ) : (
-                        <p className="empty-message">No recent government jobs</p>
+                        <p className="text-gray-500 italic">No recent previous year papers</p>
                     )}
-                    <Link to="/govtjobs"><button className="view-all-button">View All</button></Link>
+                    <Link to="/pyqs" className="mt-auto">
+                        <button className="mt-4 bg-[#015990] text-white px-4 py-2 rounded hover:bg-[#014d7a] transition">
+                            View All
+                        </button>
+                    </Link>
+                </div>
+
+                {/* Latest Government Jobs Section */}
+                <div className="bg-white border-2 border-[#015990] rounded-lg p-4 shadow-md flex flex-col">
+                    <h2 className="text-xl font-semibold text-[#015990] border-b-2 border-[#015990] pb-2 mb-4">Latest Government Jobs</h2>
+                    {latestGovtJobs && latestGovtJobs.length > 0 ? (
+                        latestGovtJobs.map((job) => (
+                            <div key={job._id} className="py-2 border-b last:border-b-0 hover:bg-gray-100 transition">
+                                <Link to={`/govtjob/get/${job._id}`} className="text-gray-800 hover:text-[#015990]">
+                                    <p>{job.jobTitle} - {job.organization}</p>
+                                </Link>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-gray-500 italic">No recent government jobs</p>
+                    )}
+                    <Link to="/govtjobs" className="mt-auto">
+                        <button className="mt-4 bg-[#015990] text-white px-4 py-2 rounded hover:bg-[#014d7a] transition">
+                            View All
+                        </button>
+                    </Link>
                 </div>
 
                 {/* Latest Internships Section */}
-                <div className="section-card">
-                    <h2>Latest Internships</h2>
+                <div className="bg-white border-2 border-[#015990] rounded-lg p-4 shadow-md flex flex-col">
+                    <h2 className="text-xl font-semibold text-[#015990] border-b-2 border-[#015990] pb-2 mb-4">Latest Internships</h2>
                     {latestInternships && latestInternships.length > 0 ? (
                         latestInternships.map((internship) => (
-                            <div key={internship._id} className="section-item">
-                                <Link to={`/internship/get/${internship._id}`}>
-                                    <p>{internship.internship_type} - {internship.organization}</p>
+                            <div key={internship._id} className="py-2 border-b last:border-b-0 hover:bg-gray-100 transition">
+                                <Link to={`/internship/get/${internship._id}`} className="text-gray-800 hover:text-[#015990]">
+                                    <p>{internship.title} - {internship.companyName}</p>
                                 </Link>
                             </div>
                         ))
                     ) : (
-                        <p className="empty-message">No recent internships</p>
+                        <p className="text-gray-500 italic">No recent internships</p>
                     )}
-                    <Link to="/internships"><button className="view-all-button">View All</button></Link>
+                    <Link to="/internships" className="mt-auto">
+                        <button className="mt-4 bg-[#015990] text-white px-4 py-2 rounded hover:bg-[#014d7a] transition">
+                            View All
+                        </button>
+                    </Link>
                 </div>
 
                 {/* Latest Scholarships Section */}
-                <div className="section-card">
-                    <h2>Latest Scholarships</h2>
+                <div className="bg-white border-2 border-[#015990] rounded-lg p-4 shadow-md flex flex-col">
+                    <h2 className="text-xl font-semibold text-[#015990] border-b-2 border-[#015990] pb-2 mb-4">Latest Scholarships</h2>
                     {latestScholarships && latestScholarships.length > 0 ? (
                         latestScholarships.map((scholarship) => (
-                            <div key={scholarship._id} className="section-item">
-                                <Link to={`/scholarship/get/${scholarship._id}`}>
+                            <div key={scholarship._id} className="py-2 border-b last:border-b-0 hover:bg-gray-100 transition">
+                                <Link to={`/scholarship/get/${scholarship._id}`} className="text-gray-800 hover:text-[#015990]">
                                     <p>{scholarship.title} - {scholarship.organization}</p>
                                 </Link>
                             </div>
                         ))
                     ) : (
-                        <p className="empty-message">No recent scholarships</p>
+                        <p className="text-gray-500 italic">No recent scholarships</p>
                     )}
-                    <Link to="/scholarships"><button className="view-all-button">View All</button></Link>
+                    <Link to="/scholarships" className="mt-auto">
+                        <button className="mt-4 bg-[#015990] text-white px-4 py-2 rounded hover:bg-[#014d7a] transition">
+                            View All
+                        </button>
+                    </Link>
                 </div>
 
                 {/* Latest Results Section */}
-                <div className="section-card">
-                    <h2>Latest Results</h2>
+                <div className="bg-white border-2 border-[#015990] rounded-lg p-4 shadow-md flex flex-col">
+                    <h2 className="text-xl font-semibold text-[#015990] border-b-2 border-[#015990] pb-2 mb-4">Latest Results</h2>
                     {latestResults && latestResults.length > 0 ? (
                         latestResults.map((result) => (
-                            <div key={result._id} className="section-item">
-                                <Link to={`/results/get/${result._id}`}>
-                                    <p>{result.exam_title}</p>
+                            <div key={result._id} className="py-2 border-b last:border-b-0 hover:bg-gray-100 transition">
+                                <Link to={`/result/get/${result._id}`} className="text-gray-800 hover:text-[#015990]">
+                                    <p>{result.title} - {result.organization}</p>
                                 </Link>
                             </div>
                         ))
                     ) : (
-                        <p className="empty-message">No recent results</p>
+                        <p className="text-gray-500 italic">No recent results</p>
                     )}
-                    <Link to="/results"><button className="view-all-button">View All</button></Link>
+                    <Link to="/results" className="mt-auto">
+                        <button className="mt-4 bg-[#015990] text-white px-4 py-2 rounded hover:bg-[#014d7a] transition">
+                            View All
+                        </button>
+                    </Link>
                 </div>
 
                 {/* Latest Admit Cards Section */}
-                <div className="section-card">
-                    <h2>Latest Admit Cards</h2>
+                <div className="bg-white border-2 border-[#015990] rounded-lg p-4 shadow-md flex flex-col">
+                    <h2 className="text-xl font-semibold text-[#015990] border-b-2 border-[#015990] pb-2 mb-4">Latest Admit Cards</h2>
                     {latestAdmitCards && latestAdmitCards.length > 0 ? (
                         latestAdmitCards.map((admitCard) => (
-                            <div key={admitCard._id} className="section-item">
-                                <Link to={`/admitcard/get/${admitCard._id}`}>
+                            <div key={admitCard._id} className="py-2 border-b last:border-b-0 hover:bg-gray-100 transition">
+                                <Link to={`/admitcards/get/${admitCard._id}`} className="text-gray-800 hover:text-[#015990]">
                                     <p>{admitCard.title} - {admitCard.organization}</p>
                                 </Link>
                             </div>
                         ))
                     ) : (
-                        <p className="empty-message">No recent admit cards</p>
+                        <p className="text-gray-500 italic">No recent admit cards</p>
                     )}
-                    <Link to="/admitcards"><button className="view-all-button">View All</button></Link>
+                    <Link to="/admitcards" className="mt-auto">
+                        <button className="mt-4 bg-[#015990] text-white px-4 py-2 rounded hover:bg-[#014d7a] transition">
+                            View All
+                        </button>
+                    </Link>
                 </div>
 
                 {/* Latest Admissions Section */}
-                <div className="section-card">
-                    <h2>Latest Admissions</h2>
+                <div className="bg-white border-2 border-[#015990] rounded-lg p-4 shadow-md flex flex-col">
+                    <h2 className="text-xl font-semibold text-[#015990] border-b-2 border-[#015990] pb-2 mb-4">Latest Admissions</h2>
                     {latestAdmissions && latestAdmissions.length > 0 ? (
                         latestAdmissions.map((admission) => (
-                            <div key={admission._id} className="section-item">
-                                <Link to={`/admission/get/${admission._id}`}>
-                                    <p>{admission.title} - {admission.institution}</p>
+                            <div key={admission._id} className="py-2 border-b last:border-b-0 hover:bg-gray-100 transition">
+                                <Link to={`/admission/get/${admission._id}`} className="text-gray-800 hover:text-[#015990]">
+                                    <p>{admission.title} - {admission.organization}</p>
                                 </Link>
                             </div>
                         ))
                     ) : (
-                        <p className="empty-message">No recent admissions</p>
+                        <p className="text-gray-500 italic">No recent admissions</p>
                     )}
-                    <Link to="/admissions"><button className="view-all-button">View All</button></Link>
-                </div>
-
-                {/* Latest Years Section */}
-                <div className="section-card">
-                    <h2>Latest PYQ&apos;s</h2>
-                    {latestYears && latestYears.length > 0 ? (
-                        latestYears.map((year) => (
-                            <div key={year._id} className="section-item">
-                                <Link to={`/previous-year-details/${year.subject}`}>
-                                    <p>{year.year} - {year.subject}</p>
-                                </Link>
-                            </div>
-                        ))
-                    ) : (
-                        <p className="empty-message">No recent years</p>
-                    )}
-                    <Link to="/previousyears"><button className="view-all-button">View All</button></Link>
+                    <Link to="/admissions" className="mt-auto">
+                        <button className="mt-4 bg-[#015990] text-white px-4 py-2 rounded hover:bg-[#014d7a] transition">
+                            View All
+                        </button>
+                    </Link>
                 </div>
             </div>
         </div>

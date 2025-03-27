@@ -6,23 +6,46 @@ import { FaTrash, FaPlus } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import AddScholarshipModal from '../../components/AddScholarshipModal/AddScholarshipModal';
 import Spinner from '../../components/Spinner/Spinner';
+import useDebouncedSearch from '../../hooks/useDebouncedSearch';
 
 const Scholarships = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [searchKeyword, setSearchKeyword] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
     const [filters, setFilters] = useState({
         category: "All",
         amount: "All"
     });
-    
-    const { scholarships, loading, error } = useSelector((state) => state.scholarships);
+
+    const { scholarships, loading, error, totalPages } = useSelector((state) => state.scholarships);
     const { isAuthenticated, user } = useSelector((state) => state.user);
 
+    const { 
+        searchKeyword, 
+        setSearchKeyword,
+        debouncedSearchKeyword,
+        searchInputRef 
+    } = useDebouncedSearch("", 500);
+
+    // Reset to the first page when searchKeyword or filters change
     useEffect(() => {
-        dispatch(fetchScholarships());
-    }, [dispatch]);
+        setCurrentPage(1); // Reset to the first page
+    }, [debouncedSearchKeyword, filters]);
+
+    // Fetch scholarships whenever debouncedSearchKeyword, currentPage, or filters change
+    useEffect(() => {
+        dispatch(fetchScholarships({ 
+            searchKeyword: debouncedSearchKeyword, 
+            page: currentPage,
+            filters
+        })).then(() => {
+            // Refocus the search bar after the search operation completes
+            if (searchInputRef.current) {
+                searchInputRef.current.focus();
+            }
+        });
+    }, [dispatch, debouncedSearchKeyword, currentPage, filters, searchInputRef]);
 
     const handleDeleteScholarship = async (scholarshipId) => {
         if (window.confirm('Are you sure you want to delete this scholarship?')) {
@@ -56,109 +79,158 @@ const Scholarships = () => {
         }));
     };
 
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setCurrentPage(newPage);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
     if (loading) return <Spinner />;
     if (error) return <div>Error: {error}</div>;
 
-    const filteredScholarships = scholarships?.filter(scholarship => {
-        const matchesSearch = scholarship.title.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-                            scholarship.organization.toLowerCase().includes(searchKeyword.toLowerCase());
-        const matchesCategory = filters.category === "All" || scholarship.category === filters.category;
-        const matchesAmount = filters.amount === "All" || handleAmountFilter(scholarship.amount, filters.amount);
-        
-        return matchesSearch && matchesCategory && matchesAmount;
-    });
-
-    function handleAmountFilter(scholarshipAmount, filterValue) {
-        const amount = parseInt(scholarshipAmount.replace(/[^0-9]/g, ''));
-        switch(filterValue) {
-            case "below50k": return amount < 50000;
-            case "50kTo1L": return amount >= 50000 && amount <= 100000;
-            case "above1L": return amount > 100000;
-            default: return true;
-        }
-    }
-
     return (
-        <div className="scholarships-page">
-            <div className="header-bottom">
-                <div className="header-left">
-                    <h2>Scholarships</h2>
-                    {isAuthenticated && user?.role === 'admin' && (
-                        <button 
-                            className="add-scholarship-button"
-                            onClick={() => setIsModalOpen(true)}
-                        >
-                            <FaPlus /> Add Scholarship
-                        </button>
+        <div className="min-h-screen bg-gray-50 p-4">
+            <div className="max-w-7xl mx-auto">
+                {isAuthenticated && user?.role === 'admin' && (
+                    <button 
+                        className="mb-6 bg-[#015990] text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                        onClick={() => setIsModalOpen(true)}
+                    >
+                        <FaPlus className="inline mr-2" />
+                        Add Scholarship
+                    </button>
+                )}
+
+                <div className="bg-[#e6f4ff] p-6 rounded-lg mb-8">
+                    <div className="mb-6">
+                        <h2 className="text-3xl font-bold text-[#003366]">
+                            Scholarships
+                        </h2>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row gap-4 mb-6">
+                        <div className="flex-1">
+                            <input
+                                ref={searchInputRef} // Attach the ref to the search input
+                                type="text"
+                                placeholder="Search scholarships..."
+                                value={searchKeyword}
+                                onChange={(e) => setSearchKeyword(e.target.value)}
+                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="flex gap-2">
+                            <select
+                                value={filters.category}
+                                onChange={(e) => handleFilterChange('category', e.target.value)}
+                                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="All">All Categories</option>
+                                <option value="Merit">Merit Based</option>
+                                <option value="Need">Need Based</option>
+                                <option value="Research">Research</option>
+                                <option value="Sports">Sports</option>
+                                <option value="Cultural">Cultural</option>
+                                <option value="International">International</option>
+                                <option value="Government">Government</option>
+                                <option value="Private">Private</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <select
+                                value={filters.amount}
+                                onChange={(e) => handleFilterChange('amount', e.target.value)}
+                                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="All">All Amounts</option>
+                                <option value="below50k">Below ₹50,000</option>
+                                <option value="50kTo1L">₹50,000 - ₹1,00,000</option>
+                                <option value="above1L">Above ₹1,00,000</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Scholarships Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                    {scholarships?.length === 0 ? (
+                        <div className="col-span-full text-center py-10 text-gray-600">
+                            No scholarships found matching your criteria. Try adjusting your filters or search term.
+                        </div>
+                    ) : (
+                        scholarships?.map((scholarship) => (
+                            <div key={scholarship._id} className="bg-white border-2 border-[#015990] rounded-lg p-4 shadow-md hover:scale-105 transition-transform relative">
+                                {isAuthenticated && user?.role === 'admin' && (
+                                    <button 
+                                        className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                                        onClick={() => handleDeleteScholarship(scholarship._id)}
+                                    >
+                                        <FaTrash className="w-5 h-5" />
+                                    </button>
+                                )}
+                                
+                                <h3 className="text-xl font-semibold mb-2">{scholarship.title}</h3>
+                                <div className="text-sm text-gray-600 border-b border-gray-200 pb-2 mb-3">
+                                    {scholarship.organization}
+                                </div>
+                                <div className="text-sm text-gray-600 mb-2">
+                                    Category: {scholarship.category}
+                                </div>
+                                <div className="text-sm text-gray-600 mb-2">
+                                    Amount: {scholarship.amount}
+                                </div>
+                                <div className="text-sm text-gray-600 mb-3">
+                                    Last Date: {scholarship.last_date}
+                                </div>
+                                <div className="flex justify-between items-center mt-4">
+                                    {/*<span className="bg-[#015990] text-white text-xs px-3 py-1 rounded">
+                                        {scholarship.eligibility}
+                                    </span>*/}
+                                    <button
+                                        className="text-[#015990] font-medium hover:underline"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleViewDetails(scholarship._id);
+                                        }}
+                                    >
+                                        View Details →
+                                    </button>
+                                </div>
+                            </div>
+                        ))
                     )}
                 </div>
-                <div className="search-filter-sort">
-                    <div className="search-container">
-                        <input
-                            type="text"
-                            placeholder="Search scholarships..."
-                            value={searchKeyword}
-                            onChange={(e) => setSearchKeyword(e.target.value)}
-                        />
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <div className="flex justify-center items-center gap-4 my-8">
+                        <button
+                            className={`px-4 py-2 bg-[#015990] text-white rounded ${
+                                currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
+                            }`}
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                        >
+                            Previous
+                        </button>
+                        
+                        <div className="text-gray-600">
+                            Page {currentPage} of {totalPages}
+                        </div>
+
+                        <button
+                            className={`px-4 py-2 bg-[#015990] text-white rounded ${
+                                currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
+                            }`}
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                        >
+                            Next
+                        </button>
                     </div>
-                    <select
-                        value={filters.category}
-                        onChange={(e) => handleFilterChange("category", e.target.value)}
-                    >
-                        <option value="All">Filter by Category</option>
-                        <option value="Merit">Merit Based</option>
-                        <option value="Need">Need Based</option>
-                        <option value="Research">Research</option>
-                        <option value="Sports">Sports</option>
-                    </select>
-                    <select
-                        value={filters.amount}
-                        onChange={(e) => handleFilterChange("amount", e.target.value)}
-                    >
-                        <option value="All">Filter by Amount</option>
-                        <option value="below50k">Below ₹50,000</option>
-                        <option value="50kTo1L">₹50,000 - ₹1,00,000</option>
-                        <option value="above1L">Above ₹1,00,000</option>
-                    </select>
-                </div>
+                )}
             </div>
 
-            <div className="container">
-                {filteredScholarships?.map((scholarship) => (
-                    <div key={scholarship._id} className="card">
-                        <div className="card-header">
-                            <h3>{scholarship.title}</h3>
-                            {isAuthenticated && user?.role === 'admin' && (
-                                <button 
-                                    className="delete-btn"
-                                    onClick={() => handleDeleteScholarship(scholarship._id)}
-                                >
-                                    <FaTrash />
-                                </button>
-                            )}
-                        </div>
-                        <div className="organization">{scholarship.organization}</div>
-                        <div className="category">Category: {scholarship.category}</div>
-                        <div className="amount">Amount: {scholarship.amount}</div>
-                        <div className="eligibility">Eligibility: {scholarship.eligibility}</div>
-                        <div className="card-footer">
-                            <div className="dates">
-                                <span className="end-date">
-                                    Last Date: {new Date(scholarship.last_date).toLocaleDateString()}
-                                </span>
-                            </div>
-                            <div className="actions">
-                                <button 
-                                    onClick={() => handleViewDetails(scholarship._id)}
-                                    className="view-details"
-                                >
-                                    View Details
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
             <AddScholarshipModal 
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}

@@ -6,6 +6,8 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: true, // This allows external access
+    allowedHosts: ['exameets.local'], 
     proxy: {
       '/api': {
         target: 'http://localhost:4000',

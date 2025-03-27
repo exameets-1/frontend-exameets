@@ -61,7 +61,7 @@ const Teams = () => {
                                 <th>Name</th>
                                 <th>Role</th>
                                 <th>Verify</th>
-                                <th>Delete</th>
+                                {isAuthenticated && user?.role === 'admin' && <th>Delete</th>}
                             </tr>
                         </thead>
                         <tbody>
@@ -78,16 +78,14 @@ const Teams = () => {
                                             Verify
                                         </button>
                                     </td>
-                                    <td>
-                                        {isAuthenticated && user?.role === 'admin' && (
-                                            <button 
-                                                className="delete-button"
-                                                onClick={(e) => handleDelete(team._id, e)}
-                                            >
-                                                <FaTrash />
-                                            </button>
-                                        )}
-                                    </td>
+                                    {isAuthenticated && user?.role === 'admin' && (
+                                        <button 
+                                            className="delete-button"
+                                            onClick={(e) => handleDelete(team._id, e)}
+                                        >
+                                            <FaTrash />
+                                        </button>
+                                    )}
                                 </tr>
                             ))}
                         </tbody>

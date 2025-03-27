@@ -85,9 +85,9 @@ export default function SelectedJobs() {
     
     switch(type) {
       case 'job':
-        return `${item.role || ''} at ${item.organization || item.company || ''}`;
+        return `${item.jobTitle || ''} at ${item.organization || item.companyName || ''}`;
       case 'internship':
-        return `${item.title || ''} at ${item.organization || item.company || ''}`;
+        return `${item.jobTitle || ''} at ${item.organization || item.company || ''}`;
       case 'scholarship':
         return `${item.title || ''} - ${item.organization || item.company || ''}`;
       case 'admission':
