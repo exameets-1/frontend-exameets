@@ -6,7 +6,7 @@ export const performGlobalSearch = createAsyncThunk(
     'globalSearch/performSearch',
     async (searchTerm, { rejectWithValue }) => {
         try {
-            const response = await axios.get(`/api/v1/search?q=${encodeURIComponent(searchTerm)}`);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/search?q=${encodeURIComponent(searchTerm)}`);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || 'An error occurred');
