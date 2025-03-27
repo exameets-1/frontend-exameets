@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { FaArrowLeft, FaEdit, FaSave, FaTimes, FaPlus } from "react-icons/fa";
 import { fetchSingleAdmission, updateAdmission } from "../../store/slices/admissionSlice";
 import Spinner from "../Spinner/Spinner";
+import { toast } from 'react-toastify';
 import './AdmissionDetails.css';
 
 const AdmissionDetails = () => {
@@ -46,8 +47,10 @@ const AdmissionDetails = () => {
         try {
             await dispatch(updateAdmission({ admissionId: id, updatedData: editedAdmission }));
             setIsEditing(false);
+            toast.success('Admission updated successfully');
         } catch (error) {
             console.error('Failed to update admission:', error);
+            toast.error('Failed to update admission');
         }
     };
     

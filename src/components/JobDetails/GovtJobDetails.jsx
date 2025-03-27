@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FaArrowLeft, FaEdit, FaSave, FaPlus, FaTrash } from 'react-icons/fa';
 import { fetchSingleGovtJob, updateGovtJob } from '../../store/slices/govtJobSlice';
 import Spinner from '../Spinner/Spinner';
+import { toast } from 'react-toastify';
 
 const GovtJobDetails = () => {
   const { id } = useParams();
@@ -71,9 +72,10 @@ const GovtJobDetails = () => {
 
       if (result?.error) {
         console.error('Update failed:', result.error);
-        alert(`Update failed: ${result.error}`);
+        toast.error('Failed to update govt job');
       } else {
         setIsEditing(false);
+        toast.success('Govt job updated successfully');
       }
     } catch (error) {
       console.error('Save error:', error);

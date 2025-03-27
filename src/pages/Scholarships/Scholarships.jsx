@@ -15,7 +15,7 @@ const Scholarships = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [filters, setFilters] = useState({
         category: "All",
-        amount: "All"
+        qualification: "All"
     });
 
     const { scholarships, loading, error, totalPages } = useSelector((state) => state.scholarships);
@@ -127,8 +127,8 @@ const Scholarships = () => {
                                 className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="All">All Categories</option>
-                                <option value="Merit">Merit Based</option>
-                                <option value="Need">Need Based</option>
+                                <option value="Merit-based">Merit Based</option>
+                                <option value="Need-based">Need Based</option>
                                 <option value="Research">Research</option>
                                 <option value="Sports">Sports</option>
                                 <option value="Cultural">Cultural</option>
@@ -138,14 +138,25 @@ const Scholarships = () => {
                                 <option value="Other">Other</option>
                             </select>
                             <select
-                                value={filters.amount}
-                                onChange={(e) => handleFilterChange('amount', e.target.value)}
+                                value={filters.qualification}
+                                onChange={(e) => handleFilterChange('qualification', e.target.value)}
                                 className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
-                                <option value="All">All Amounts</option>
-                                <option value="below50k">Below ₹50,000</option>
-                                <option value="50kTo1L">₹50,000 - ₹1,00,000</option>
-                                <option value="above1L">Above ₹1,00,000</option>
+                                <option value="All">All Qualifications</option>
+                                <option value="Class 8">Class 8</option>
+                                <option value="Class 9">Class 9</option>
+                                <option value="Class 10">Class 10</option>
+                                <option value="Class 11">Class 11</option>
+                                <option value="Class 12">Class 12</option>
+                                <option value="Graduation">Graduation</option>
+                                <option value="Post Graduation">Post Graduation</option>
+                                <option value="Post Graduation Diploma">Post Graduation Diploma</option>
+                                <option value="Phd">Phd</option>
+                                <option value="ITI">ITI</option>
+                                <option value="Polytechnic/Diploma">Polytechnic/Diploma</option>
+                                <option value="Post Doctoral">Post Doctoral</option>
+                                <option value="Vocational Course">Vocational Course</option>
+                                <option value="Coaching classes">Coaching classes</option>
                             </select>
                         </div>
                     </div>
@@ -177,7 +188,7 @@ const Scholarships = () => {
                                     Category: {scholarship.category}
                                 </div>
                                 <div className="text-sm text-gray-600 mb-2">
-                                    Amount: {scholarship.amount}
+                                    Qualification: {scholarship.qualification}
                                 </div>
                                 <div className="text-sm text-gray-600 mb-3">
                                     Last Date: {scholarship.last_date}

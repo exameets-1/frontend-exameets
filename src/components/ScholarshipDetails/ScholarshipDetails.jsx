@@ -4,20 +4,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { 
     FaArrowLeft,
     FaGraduationCap,
-    FaMapMarker,
     FaCalendar,
     FaUniversity,
     FaMoneyBill,
     FaEdit,
     FaSave,
-    FaTag,
-    FaKey,
     FaStar,
     FaLink,
     FaPlus,
     FaTimes
 } from 'react-icons/fa';
 import { fetchSingleScholarship, updateScholarship } from '../../store/slices/scholarshipSlice';
+import { toast } from 'react-toastify';
 import './ScholarshipDetails.css';
 
 const ScholarshipDetails = () => {
@@ -58,8 +56,10 @@ const ScholarshipDetails = () => {
         try {
             await dispatch(updateScholarship(id, editedScholarship));
             setIsEditing(false);
+            toast.success('Scholarship updated successfully');
         } catch (error) {
             console.error('Failed to update scholarship:', error);
+            toast.error('Failed to update scholarship');
         }
     };
 
@@ -114,6 +114,10 @@ const ScholarshipDetails = () => {
         'Cultural', 'International', 'Government', 'Private', 'Other'
     ];
 
+    const qualOptions = [
+        'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12', 'Graduation', 'Post Graduation', 'Post Graduation Diploma', 'Phd', 'ITI', 'Polytechnic/Diploma', 'Post Doctoral', 'Vocational Course', 'Coaching classes', 'Other'
+    ];
+
     return (
         <div className="scholarship-details">
             <div className="back-navigation">
@@ -162,16 +166,18 @@ const ScholarshipDetails = () => {
                         <div className="detail-item">
                             <FaGraduationCap className="icon" />
                             {isEditing ? (
-                                <input
-                                    type="text"
+                                <select
                                     name="qualification"
                                     value={editedScholarship.qualification || ''}
                                     onChange={handleInputChange}
                                     className="edit-input"
-                                    placeholder="Qualification"
-                                />
+                                >
+                                    {qualOptions.map(qual => (
+                                        <option key={qual} value={qual}>{qual}</option>
+                                    ))}
+                                </select>
                             ) : (
-                                <span>{editedScholarship.qualification || 'Qualification not specified'}</span>
+                                <span>Qualification: {editedScholarship.qualification}</span>
                             )}
                         </div>
                         <div className="detail-item">
@@ -287,7 +293,7 @@ const ScholarshipDetails = () => {
                             <p>{editedScholarship.eligibility_criteria || 'No specific eligibility criteria listed'}</p>
                         )}
 
-<div className="keywords-management-section">
+                        <div className="keywords-management-section">
                         <h4>Keywords</h4>
                         {isEditing ? (
                             <div className="keywords-edit-container">

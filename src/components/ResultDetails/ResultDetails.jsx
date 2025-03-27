@@ -11,6 +11,7 @@ import {
 import { fetchSingleResult, resetResultDetails, updateResult } from '../../store/slices/resultSlice';
 import Spinner from '../Spinner/Spinner';
 import './ResultDetails.css';
+import { toast } from 'react-toastify';
 
 const ResultDetails = () => {
   const { id } = useParams();
@@ -55,8 +56,10 @@ const ResultDetails = () => {
     try {
       await dispatch(updateResult(id, editedResult));
       setIsEditing(false);
+      toast.success('Result updated successfully');
     } catch (error) {
       console.error('Update failed:', error);
+      toast.error('Failed to update result');
     }
   };
 

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FaArrowLeft, FaEdit, FaSave, FaPlus, FaTrash } from 'react-icons/fa';
 import { fetchSingleJob, updateJob } from '../../store/slices/jobSlice';
 import Spinner from '../Spinner/Spinner';
+import { toast } from 'react-toastify';
 
 const JobDetails = () => {
   const { id } = useParams();
@@ -88,8 +89,10 @@ const JobDetails = () => {
     try {
       await dispatch(updateJob({ jobId: id, updatedData: editedJob }));
       setIsEditing(false);
+      toast.success('Job updated successfully');
     } catch (error) {
       console.error('Failed to update job:', error);
+      toast.error('Failed to update job');
     }
   };
 

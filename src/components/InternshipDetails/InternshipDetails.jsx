@@ -5,6 +5,7 @@ import { FaArrowLeft, FaEdit, FaSave, FaTimes, FaPlus } from 'react-icons/fa';
 import { fetchSingleInternship, updateInternship } from '../../store/slices/internshipSlice';
 import Spinner from '../Spinner/Spinner';
 import './InternshipDetails.css';
+import { toast } from 'react-toastify';
 
 const InternshipDetails = () => {
   const { id } = useParams();
@@ -50,8 +51,10 @@ const InternshipDetails = () => {
     try {
       await dispatch(updateInternship({ internshipId: id, updatedData: editedInternship }));
       setIsEditing(false);
+      toast.success('Internship updated successfully');
     } catch (error) {
       console.error('Failed to update internship:', error);
+      toast.error('Failed to update internship');
     }
   };
 

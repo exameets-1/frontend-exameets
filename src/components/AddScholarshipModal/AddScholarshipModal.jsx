@@ -39,6 +39,24 @@ const AddScholarshipModal = ({ isOpen, onClose, onSubmit }) => {
         'Other'
     ];
 
+    const qualifications = [
+        'Class 8',
+        'Class 9',
+        'Class 10',
+        'Class 11',
+        'Class 12',
+        'Graduation',
+        'Post Graduation',
+        'Post Graduation Diploma',
+        'Phd',
+        'ITI',
+        'Polytechnic/Diploma',
+        'Post Doctoral',
+        'Vocational Course',
+        'Coaching classes',
+        'Other'
+    ];
+
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
@@ -123,7 +141,7 @@ const AddScholarshipModal = ({ isOpen, onClose, onSubmit }) => {
                             />
                         </div>
 
-                        {/* Category and Qualification */}
+                        {/* Category */}
                         <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700">Category</label>
                             <select
@@ -140,17 +158,21 @@ const AddScholarshipModal = ({ isOpen, onClose, onSubmit }) => {
                             </select>
                         </div>
 
+                        {/* Qualification */}
                         <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700">Qualification</label>
-                            <input
-                                type="text"
+                            <select
                                 name="qualification"
                                 value={formData.qualification}
                                 onChange={handleChange}
                                 required
-                                placeholder="Enter required qualification"
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
+                            >
+                                <option value="">Select qualification</option>
+                                {qualifications.map(qualification => (
+                                    <option key={qualification} value={qualification}>{qualification}</option>
+                                ))}
+                            </select>
                         </div>
 
                         {/* Dates */}
@@ -162,7 +184,7 @@ const AddScholarshipModal = ({ isOpen, onClose, onSubmit }) => {
                                 value={formData.start_date}
                                 onChange={handleChange}
                                 required
-                                placeholder="eg: 02/05/24"
+                                placeholder="eg: 02-05-2025"
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
@@ -175,7 +197,7 @@ const AddScholarshipModal = ({ isOpen, onClose, onSubmit }) => {
                                 value={formData.last_date}
                                 onChange={handleChange}
                                 required
-                                placeholder="eg: 02/05/24"
+                                placeholder="eg: 02-05-2025"
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>

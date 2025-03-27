@@ -10,6 +10,7 @@ import {
   FaSave,
   FaLink
 } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const AdmitCardDetails = () => {
   const { id } = useParams();
@@ -47,8 +48,10 @@ const AdmitCardDetails = () => {
         updatedData: editedAdmitCard 
       }));
       setIsEditing(false);
+      toast.success('Admit card updated successfully');
     } catch (error) {
       console.error('Update failed:', error);
+      toast.error('Failed to update admit card');
     }
   };
 

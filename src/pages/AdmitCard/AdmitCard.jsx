@@ -35,14 +35,13 @@ const AdmitCards = () => {
     dispatch(fetchAdmitCards({
       searchKeyword: debouncedSearchKeyword,
       page: currentPage,
-      sort: filters.sort
     })).then(() => {
       // Refocus the search bar after the search operation completes
       if (searchInputRef.current) {
         searchInputRef.current.focus();
       }
     });
-  }, [dispatch, debouncedSearchKeyword, currentPage, filters.sort, searchInputRef]);
+  }, [dispatch, debouncedSearchKeyword, currentPage, searchInputRef]);
 
   const handleDeleteAdmitCard = async (admitCardId) => {
     if (window.confirm('Are you sure you want to delete this admit card?')) {
@@ -74,10 +73,6 @@ const AdmitCards = () => {
     setCurrentPage(1); // Reset to the first page when search changes
   };
 
-  const handleFilterChange = (filterType, value) => {
-    setFilters(prev => ({ ...prev, [filterType]: value }));
-    setCurrentPage(1); // Reset to the first page when filters change
-  };
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -119,7 +114,7 @@ const AdmitCards = () => {
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <div className="flex gap-2">
+            {/* <div className="flex gap-2">
               <select
                 value={filters.sort}
                 onChange={(e) => handleFilterChange('sort', e.target.value)}
@@ -128,7 +123,7 @@ const AdmitCards = () => {
                 <option value="recent">Recent First</option>
                 <option value="oldest">Oldest First</option>
               </select>
-            </div>
+            </div> */}
           </div>
         </div>
 
