@@ -20,7 +20,6 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
         searchDescription: '',
         slug: '',
         is_featured: false,
-        postedBy: null
     };
 
     const [formData, setFormData] = useState(initialFormData);
@@ -79,7 +78,6 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
         // Format dates if needed
         const formattedData = {
             ...formData,
-            postedBy: user._id
         };
 
         onSubmit(formattedData);

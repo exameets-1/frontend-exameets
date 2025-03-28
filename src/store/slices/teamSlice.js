@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const teamSlice = createSlice({
@@ -54,6 +54,22 @@ const teamSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
         }
+    },
+    extraReducers: (builder) => {
+        builder
+            // Create Team
+            .addCase(createTeam.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(createTeam.fulfilled, (state, action) => {
+                state.loading = false;
+                state.teams.unshift(action.payload.team);
+                state.message = action.payload.message;
+            })
+            .addCase(createTeam.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            });
     }
 });
 
@@ -103,5 +119,26 @@ export const deleteTeam = (id) => async (dispatch) => {
         // toast.error(error.response?.data?.message || "Failed to delete team");
     }
 };
+
+export const createTeam = createAsyncThunk(
+    "team/create",
+    async (teamData) => {
+        try {
+            const { data } = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/team/create`,
+                teamData,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true,
+                }
+            );
+            return data;
+        } catch (error) {
+            throw error.response?.data?.message || "Failed to create team";
+        }
+    }
+);
 
 export default teamSlice.reducer;
