@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchSubjects, createPreviousYear, clearErrors } from "../../store/slices/previousSlice";
 import { toast } from 'react-toastify';
 import Spinner from "../../components/Spinner/Spinner";
-import AddPreviousYearModal from "../../components/AddPreviousYearModal/AddPreviousYearModal";
+import AddPreviousYearModal from "../../modals/AddModals/AddPreviousYearModal";
 import useDebouncedSearch from "../../hooks/useDebouncedSearch"; // Import the custom hook
 
 const PreviousYear = () => {
@@ -66,18 +66,18 @@ const PreviousYear = () => {
     if (loading) return <Spinner />;
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white dark:bg-gray-900">
             {/* Top Section */}
-            <div className="w-full bg-[#DFF1FF] py-10 px-5">
+            <div className="w-full bg-[#DFF1FF] dark:bg-gray-800 py-10 px-5">
                 <div className="max-w-7xl mx-auto">
                     <div className="flex justify-between items-center mb-4">
-                        <h1 className="text-[25px] font-semibold text-[#015990]">
+                        <h1 className="text-[25px] font-semibold text-[#015990] dark:text-white">
                             Previous Year Question Papers
                         </h1>
                         {isAuthenticated && user?.role === 'admin' && (
                             <button
                                 onClick={() => setIsModalOpen(true)}
-                                className="bg-[#015990] text-white px-4 py-2 rounded-md hover:bg-[#014970] transition-colors"
+                                className="bg-[#015990] dark:bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-[#014970] dark:hover:bg-blue-700 transition-colors"
                             >
                                 Add Paper
                             </button>
@@ -90,45 +90,45 @@ const PreviousYear = () => {
                             value={searchKeyword}
                             onChange={(e) => setSearchKeyword(e.target.value)}
                             ref={searchInputRef}
-                            className="w-full md:w-[600px] h-[45px] px-4 rounded-md border border-gray-300 focus:outline-none focus:border-[#015990]"
+                            className="w-full md:w-[600px] h-[45px] px-4 rounded-md border border-gray-300 focus:outline-none focus:border-[#015990] dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                         />
                         <button className="absolute right-0 h-[45px] w-[45px] flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </button>
                     </div>
                 </div>
             </div>
-
+    
             {/* Subject Cards Container */}
             <div className="max-w-7xl mx-auto px-5 py-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {filteredSubjects.map((subject) => (
                         <div
                             key={subject}
-                            className="group h-[200px] bg-white border-2 border-[#015990] rounded-lg overflow-hidden shadow-md flex flex-col transition-transform duration-300 hover:scale-105 cursor-pointer"
+                            className="group h-[200px] bg-white dark:bg-gray-800 border-2 border-[#015990] dark:border-gray-700 rounded-lg overflow-hidden shadow-md flex flex-col transition-transform duration-300 hover:scale-105 cursor-pointer"
                             onClick={() => handleCardClick(subject)}
                         >
                             <div className="flex-grow flex items-center justify-center p-5">
-                                <h2 className="text-[23px] font-semibold text-center text-[#015990]">
+                                <h2 className="text-[23px] font-semibold text-center text-[#015990] dark:text-white">
                                     {subject}
                                 </h2>
                             </div>
-                            <div className="bg-[#015990] h-[50px] flex items-center justify-center text-white text-[20px] font-bold">
+                            <div className="bg-[#015990] dark:bg-gray-950 h-[50px] flex items-center justify-center text-white text-[20px] font-bold">
                                 View Papers
                             </div>
                         </div>
                     ))}
                 </div>
-
+    
                 {filteredSubjects.length === 0 && !loading && (
-                    <div className="text-center text-gray-500 mt-8">
+                    <div className="text-center text-gray-500 dark:text-gray-300 mt-8">
                         No subjects found {searchKeyword ? "matching your search" : "available"}
                     </div>
                 )}
             </div>
-
+    
             <AddPreviousYearModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}

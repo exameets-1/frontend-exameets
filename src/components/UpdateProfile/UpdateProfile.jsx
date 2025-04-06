@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateProfile } from "../../store/slices/updateProfileSlice";
 import { getUser } from "../../store/slices/userSlice";
 import { toast } from "react-toastify";
-import "./UpdateProfile.css";
 
 const UpdateProfile = () => {
   const dispatch = useDispatch();
@@ -61,11 +60,11 @@ const UpdateProfile = () => {
   };
 
   return (
-    <div className="update-profile-container">
-      <div className="update-profile-card">
-        <form onSubmit={handleSubmit} className="update-profile-form">
-          <div className="form-group">
-            <label>Full Name</label>
+    <div className="min-h-screen p-4 md:p-8 bg-gray-100 dark:bg-gray-900 flex justify-center items-start">
+      <div className="bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-md p-6 md:p-8 w-full max-w-lg mt-4 md:mt-8">
+        <form onSubmit={handleSubmit} className="flex flex-col space-y-6">
+          <div className="flex flex-col space-y-2">
+            <label className="text-gray-600 dark:text-gray-300 font-medium text-sm">Full Name</label>
             <input
               type="text"
               id="name"
@@ -74,28 +73,33 @@ const UpdateProfile = () => {
               onChange={handleChange}
               minLength={3}
               maxLength={30}
-              className="form-input"
+              className="w-full py-3 px-4 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base bg-gray-50 dark:bg-gray-700 dark:text-white"
             />
           </div>
 
-          <div className="form-group">
-            <label>Date of Birth</label>
+          <div className="flex flex-col space-y-2">
+            <label className="text-gray-600 dark:text-gray-300 font-medium text-sm">Date of Birth</label>
             <input
               type="date"
               id="dob"
               value={formData.dob}
               onChange={handleChange}
-              className="form-input"
+              className="w-full py-3 px-4 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base bg-gray-50 dark:bg-gray-700 dark:text-white"
             />
           </div>
 
-          <div className="form-group">
-            <label>Gender</label>
+          <div className="flex flex-col space-y-2">
+            <label className="text-gray-600 dark:text-gray-300 font-medium text-sm">Gender</label>
             <select
               id="gender"
               value={formData.gender}
               onChange={handleChange}
-              className="form-input"
+              className="w-full py-3 px-4 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base appearance-none bg-no-repeat bg-right-4 cursor-pointer bg-gray-50 dark:bg-gray-700 dark:text-white"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234A5568'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+                backgroundSize: '1rem',
+                backgroundPosition: 'right 0.75rem center'
+              }}
             >
               <option value="">Select gender</option>
               <option value="male">Male</option>
@@ -106,7 +110,9 @@ const UpdateProfile = () => {
 
           <button
             type="submit"
-            className={`update-button ${(loading || updateLoading) ? 'loading' : ''}`}
+            className={`mt-4 bg-[#015990] dark:bg-gray-950 hover:bg-gray-500 dark:hover:bg-gray-500 text-white py-3 px-4 rounded-lg font-semibold text-base transition-all duration-300 transform hover:-translate-y-px ${
+              (loading || updateLoading) ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed' : ''
+            }`}
             disabled={loading || updateLoading}
           >
             {updateLoading ? "Updating..." : "Update Profile"}

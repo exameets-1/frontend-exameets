@@ -61,39 +61,39 @@ const TeamDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <button
           onClick={handleBack}
-          className="mb-8 flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+          className="mb-8 flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white transition-colors"
         >
           <FaArrowLeft className="mr-2" />
           <span className="font-medium">Back to Team</span>
         </button>
 
-        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sm:p-8 mb-8">
           <div className="flex flex-col items-center text-center mb-8">
             <img
               src={team.image}
               alt={team.name}
               className="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover mb-6 shadow-md"
             />
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{team.name}</h1>
-            <h2 className="text-xl text-gray-600 mb-2">{team.position}</h2>
-            <div className="text-gray-500 text-sm bg-gray-100 px-3 py-1 rounded-full">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{team.name}</h1>
+            <h2 className="text-xl text-gray-600 dark:text-gray-400 mb-2">{team.position}</h2>
+            <div className="text-gray-500 dark:text-gray-300 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
               {team.duration} with company
             </div>
           </div>
 
           <div className="space-y-6">
             <div className="border-l-4 border-blue-500 pl-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">About</h3>
-              <p className="text-gray-600 leading-relaxed">{team.description}</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">About</h3>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{team.description}</p>
             </div>
 
             <div className="border-l-4 border-green-500 pl-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Strengths</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Strengths</h3>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                 {team.strengths.split(".").map((paragraph, index) => (
                   <React.Fragment key={index}>
                     {paragraph}
@@ -105,7 +105,7 @@ const TeamDetails = () => {
 
             {team.certificates?.length > 0 && (
               <div className="border-l-4 border-purple-500 pl-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Certifications</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Certifications</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {team.certificates.map((certificate, index) => (
                     <a

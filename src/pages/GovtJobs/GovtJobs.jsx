@@ -5,7 +5,7 @@ import { fetchGovtJobs, deleteGovtJob, createGovtJob } from "../../store/slices/
 import Spinner from "../../components/Spinner/Spinner";
 import { FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
-import AddGovtJobModal from "../../components/AddGovtJobModal/AddGovtJobModal";
+import AddGovtJobModal from "../../modals/AddModals/AddGovtJobModal"
 import useDebouncedSearch from "../../hooks/useDebouncedSearch"; // Import the custom hook
 
 const GovtJobs = () => {
@@ -96,20 +96,20 @@ const GovtJobs = () => {
     if (error) return <div>Error: {error}</div>;
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
             <div className="max-w-7xl mx-auto">
                 {isAuthenticated && user?.role === "admin" && (
                     <button 
-                        className="mb-6 bg-[#015990] text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                        className="mb-6 bg-[#015990] dark:bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
                         onClick={() => setIsModalOpen(true)}
                     >
                         Add Government Job
                     </button>
                 )}
 
-                <div className="bg-[#e6f4ff] p-6 rounded-lg mb-8">
+                <div className="bg-[#e6f4ff] dark:bg-gray-800 p-6 rounded-lg mb-8">
                     <div className="mb-6">
-                        <h2 className="text-3xl font-bold text-[#003366]">
+                        <h2 className="text-3xl font-bold text-[#003366] dark:text-white">
                             Government Jobs
                         </h2>
                     </div>
@@ -121,17 +121,17 @@ const GovtJobs = () => {
                                 placeholder="Search jobs..."
                                 value={searchKeyword}
                                 onChange={handleSearchChange}
-                                ref={searchInputRef} // Attach the ref from the custom hook
-                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                ref={searchInputRef}
+                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                             />
                         </div>
                         <div className="flex gap-2">
                             <select
                                 value={filters.location}
                                 onChange={(e) => handleFilterChange("location", e.target.value)}
-                                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             >
-                                <option value="All">All Cities</option>
+                                                                <option value="All">All Cities</option>
                                 <option value="Delhi">Delhi</option>
                                 <option value="Mumbai">Mumbai</option>
                                 <option value="Chennai">Chennai</option>
@@ -144,9 +144,9 @@ const GovtJobs = () => {
                             <select
                                 value={filters.sort}
                                 onChange={(e) => handleFilterChange("sort", e.target.value)}
-                                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             >
-                                <option value="All">Sort by</option>
+                                                                <option value="All">Sort by</option>
                                 <option value="recent">Recent First</option>
                                 <option value="deadline">Nearest Deadline</option>
                             </select>
@@ -155,56 +155,84 @@ const GovtJobs = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                    {govtJobs?.map((job) => (
-                        <div key={job._id} className="bg-white border-2 border-[#015990] rounded-lg p-4 shadow-md hover:scale-105 transition-transform relative">
-                            {isAuthenticated && user?.role === "admin" && (
-                                <button 
-                                    className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-                                    onClick={() => handleDeleteJob(job._id)}
-                                >
-                                    <FaTrash className="w-5 h-5" />
-                                </button>
-                            )}
-                            
-                            <h3 className="text-xl font-semibold mb-2">{job.jobTitle}</h3>
-                            <div className="text-sm text-gray-600 border-b border-gray-200 pb-2 mb-3">
-                                {job.organization}
-                            </div>
-                            <div className="text-sm text-gray-600 mb-2">
-                                Post: {job.postNames}
-                            </div>
-                            <div className="text-sm text-gray-600 mb-2">
-                                Qualification: {job.educationalQualifications}
-                            </div>
-                            <div className="text-sm text-gray-600 mb-2">
-                                Start: {job.applicationStartDate}
-                            </div>
-                            <div className="text-sm text-gray-600 mb-3">
-                                Close: {job.applicationEndDate}
-                            </div>
-                            <div className="flex justify-between items-center mt-4">
-                                <span className="bg-[#015990] text-white text-xs px-3 py-1 rounded">
-                                    {job.totalVacancies} posts
-                                </span>
-                                <button
-                                    className="text-[#015990] font-medium hover:underline"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        handleViewDetails(job._id);
-                                    }}
-                                >
-                                    View Details →
-                                </button>
-                            </div>
+                               {govtJobs?.length === 0 ? (
+                        <div className="col-span-full text-center py-10 text-gray-600 dark:text-gray-300">
+                            No items found matching your criteria. Try adjusting your filters or search term.
                         </div>
-                    ))}
+                    ) : (
+                        govtJobs?.map((item) => (
+            <div 
+                key={item._id} 
+                className="grid grid-rows-[auto_auto_1fr_auto] bg-white dark:bg-gray-800 border-2 border-[#015990] dark:border-gray-700 rounded-lg p-4 shadow-md hover:scale-105 transition-transform relative h-full"
+            >
+                {isAuthenticated && user?.role === 'admin' && (
+                    <button 
+                        className="absolute top-2 right-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-600"
+                        onClick={() => handleDeleteItem(item._id)}
+                    >
+                        <FaTrash className="w-5 h-5" />
+                    </button>
+                )}
+                {/* Title Section */}
+                <h3 className="text-xl font-semibold mb-2 dark:text-white line-clamp-2 min-h-[3.5rem]">
+                    {item.title || item.jobTitle}
+                </h3>
+                {/* Institute/Organization with Border */}
+                <div className="text-sm text-gray-600 dark:text-gray-300 pb-2 mb-3 border-b border-gray-200 dark:border-gray-600 line-clamp-1">
+                    {item.institute || item.organization}
                 </div>
-
+                {/* Content Section */}
+                <div className="grid gap-2 mb-4">
+                    {item.location && (
+                        <div className="text-sm text-gray-600 dark:text-gray-300">
+                            Location: {item.location}
+                        </div>
+                    )}
+                    {item.postNames && (
+                        <div className="text-sm text-gray-600 dark:text-gray-300">
+                            Post: {item.postNames}
+                        </div>
+                    )}
+                    {item.educationalQualifications && (
+                        <div className="text-sm text-gray-600 dark:text-gray-300">
+                            Qualification: {item.educationalQualifications}
+                        </div>
+                    )}
+                    {item.applicationStartDate && (
+                        <div className="text-sm text-gray-600 dark:text-gray-300">
+                            Start: {item.applicationStartDate}
+                        </div>
+                    )}
+                    {item.last_date || item.applicationEndDate ? (
+                        <div className="text-sm text-gray-600 dark:text-gray-300">
+                            {item.last_date ? `Last Date: ${formatDate(item.last_date)}` : `Close: ${item.applicationEndDate}`}
+                        </div>
+                    ) : null}
+                </div>
+                {/* Footer Section */}
+                <div className="flex justify-between items-center pt-3 border-t border-gray-200 dark:border-gray-600">
+                    <span className="bg-[#015990] dark:bg-blue-600 text-white text-xs px-3 py-1 rounded">
+                        {item.category || (item.totalVacancies ? `${item.totalVacancies} posts` : 'General')}
+                    </span>
+                    <button
+                        className="text-[#015990] dark:text-blue-400 font-medium hover:underline"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            handleViewDetails(item._id);
+                        }}
+                    >
+                        View Details →
+                    </button>
+                </div>
+            </div>
+        ))
+    )}
+</div>
                 {totalPages > 1 && (
                     <div className="flex justify-center items-center gap-4 my-8">
                         <button
-                            className={`px-4 py-2 bg-[#015990] text-white rounded ${
-                                currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-[#015990]"
+                            className={`px-4 py-2 bg-[#015990] dark:bg-blue-600 text-white rounded ${
+                                currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
                             }`}
                             onClick={() => handlePageChange(currentPage - 1)}
                             disabled={currentPage === 1}
@@ -212,12 +240,12 @@ const GovtJobs = () => {
                             Previous
                         </button>
                         
-                        <div className="text-gray-600">
+                        <div className="text-gray-600 dark:text-gray-300">
                             Page {currentPage} of {totalPages}
                         </div>
 
                         <button
-                            className={`px-4 py-2 bg-[#015990] text-white rounded ${
+                            className={`px-4 py-2 bg-[#015990] dark:bg-blue-600 text-white rounded ${
                                 currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
                             }`}
                             onClick={() => handlePageChange(currentPage + 1)}

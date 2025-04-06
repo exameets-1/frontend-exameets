@@ -1,50 +1,27 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { FaArrowLeft, FaEdit, FaSave, FaPlus, FaTrash } from 'react-icons/fa';
+import { FaEdit } from 'react-icons/fa';
 import { fetchSingleJob, updateJob } from '../../store/slices/jobSlice';
 import Spinner from '../Spinner/Spinner';
+import EditJobModal from '../../modals/EditModals/EditJobModal';
 import { toast } from 'react-toastify';
+
+const formatDate = (dateString) => {
+  if (!dateString) return "Not specified";
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+};
 
 const JobDetails = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedJob, setEditedJob] = useState({
-    jobTitle: '',
-    category: 'IT',
-    positionType: 'Full-Time',
-    companyName: '',
-    companyOverview: '',
-    positionSummary: '',
-    keyResponsibilities: [],
-    education: [],
-    experience: '',
-    languages: [],
-    frameworks: [],
-    databases: [],
-    methodologies: [],
-    softSkills: [],
-    preferredQualifications: [],
-    benefits: [],
-    submissionMethod: 'email',
-    contactEmail: '',
-    applicationPortalLink: '',
-    jobReferenceNumber: '',
-    equalOpportunityStatement: '',
-    startDate: '',
-    applicationDeadline: '',
-    city: '',
-    state: '',
-    country: '',
-    slug: '',
-    isFeatured: false,
-    keywords: [],
-    searchDescription: '',
-    faq: [],
-    createdAt: '',
-  });
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const job = useSelector((state) => state.jobs.singleJob);
   const loading = useSelector((state) => state.jobs.loading);
@@ -55,500 +32,256 @@ const JobDetails = () => {
     if (id) dispatch(fetchSingleJob(id));
   }, [dispatch, id]);
 
-  useEffect(() => {
-    if (job) {
-      setEditedJob({
-        ...job,
-        keyResponsibilities: job.keyResponsibilities || [],
-        education: job.education || [],
-        languages: job.languages || [],
-        frameworks: job.frameworks || [],
-        databases: job.databases || [],
-        methodologies: job.methodologies || [],
-        softSkills: job.softSkills || [],
-        preferredQualifications: job.preferredQualifications || [],
-        benefits: job.benefits || [],
-        keywords: job.keywords || [],
-        faq: job.faq || [],
-      });
-    }
-  }, [job]);
-
-  const handleApply = () => {
-    if (editedJob.submissionMethod === 'portal') {
-      window.open(editedJob.applicationPortalLink, '_blank');
-    } else if (editedJob.submissionMethod === 'email') {
-      window.location.href = `mailto:${editedJob.contactEmail}?subject=Application for ${editedJob.jobTitle}`;
-    }
-  };
-
   const handleBack = () => navigate(-1);
-  const handleEdit = () => setIsEditing(true);
+  const handleEdit = () => setShowEditModal(true);
 
-  const handleSave = async () => {
+  const handleUpdateJob = async (updatedData) => {
     try {
-      await dispatch(updateJob({ jobId: id, updatedData: editedJob }));
-      setIsEditing(false);
+      await dispatch(updateJob({ jobId: id, updatedData }));
+      setShowEditModal(false);
       toast.success('Job updated successfully');
+      dispatch(fetchSingleJob(id));
     } catch (error) {
-      console.error('Failed to update job:', error);
       toast.error('Failed to update job');
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditedJob(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleArrayInputChange = (field, value) => {
-    const items = value.split('\n').filter(item => item.trim());
-    setEditedJob(prev => ({ ...prev, [field]: items }));
-  };
-
-  const handleFAQChange = (index, field, value) => {
-    const updatedFAQ = [...editedJob.faq];
-    updatedFAQ[index][field] = value;
-    setEditedJob(prev => ({ ...prev, faq: updatedFAQ }));
-  };
-
-  const handleAddFAQ = () => {
-    setEditedJob(prev => ({
-      ...prev,
-      faq: [...prev.faq, { question: '', answer: '' }]
-    }));
-  };
-
-  const handleRemoveFAQ = (index) => {
-    const updatedFAQ = editedJob.faq.filter((_, i) => i !== index);
-    setEditedJob(prev => ({ ...prev, faq: updatedFAQ }));
+  const renderArrayAsList = (array, emptyMessage = "None specified") => {
+    if (!array || array.length === 0) {
+      return <p className="text-gray-500 dark:text-white-400">{emptyMessage}</p>;
+    }
+    return (
+      <ul className="list-disc pl-5 space-y-2">
+        {array.map((item, index) => (
+          <li key={index} className="text-gray-700 dark:text-gray-200">{item}</li>
+        ))}
+      </ul>
+    );
   };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><Spinner /></div>;
-  if (error) return <ErrorDisplay onBack={handleBack} />;
-  if (!editedJob) return <NoJobFound onBack={handleBack} />;
-
-
-  if (!editedJob) return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-      <p className="text-gray-600 text-lg">No job details found</p>
-      <button 
-        onClick={handleBack}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-      >
-        Go Back
-      </button>
-    </div>
-  );
+  if (error) return <div className="max-w-6xl mx-auto p-6">Error: {error}</div>;
+  if (!job) return <div className="max-w-6xl mx-auto p-6">No job found</div>;
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-6">
-      <div className="flex justify-between items-center mb-6">
-        <button
+    <div className="relative max-w-6xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-lg shadow-md text-gray-900 dark:text-gray-100">
+      <div className="flex justify-between items-start mb-6">
+        <button 
           onClick={handleBack}
-          className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
+          className="flex items-center gap-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
         >
-          <FaArrowLeft className="inline-block" /> Back to Jobs
+          ← Back to Jobs
         </button>
-        
         {isAuthenticated && user?.role === 'admin' && (
-          isEditing ? (
-            <button
-              onClick={handleSave}
-              className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
-            >
-              <FaSave /> Save Changes
-            </button>
-          ) : (
-            <button
-              onClick={handleEdit}
-              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-            >
-              <FaEdit /> Edit Job
-            </button>
-          )
+          <button 
+            onClick={handleEdit}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+          >
+            <FaEdit /> Edit Job
+          </button>
         )}
       </div>
-  
-      {/* Job Header */}
-      <div className="bg-[#015990] text-white rounded-lg p-6 mb-6">
-        <div className="text-center">
-          {isEditing ? (
-            <input
-              type="text"
-              name="jobTitle"
-              value={editedJob.jobTitle}
-              onChange={handleInputChange}
-              className="w-full text-2xl font-bold bg-transparent border-b border-white/50 focus:outline-none text-center"
-            />
-          ) : (
-            <h1 className="text-2xl font-bold mb-2">{editedJob.jobTitle}</h1>
-          )}
-          <p className="text-sm opacity-80">
-            {isEditing ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <input
-                  type="text"
-                  name="companyName"
-                  value={editedJob.companyName}
-                  onChange={handleInputChange}
-                  className="bg-transparent border-b border-white/50"
-                  placeholder="Company Name"
-                />
-                <select
-                  name="category"
-                  value={editedJob.category}
-                  onChange={handleInputChange}
-                  className="bg-transparent border-b border-white/50"
-                >
-                  <option value="IT">IT</option>
-                  <option value="NON-IT">Non-IT</option>
-                </select>
-                <select
-                  name="positionType"
-                  value={editedJob.positionType}
-                  onChange={handleInputChange}
-                  className="bg-transparent border-b border-white/50"
-                >
-                  <option value="Full-Time">Full-Time</option>
-                  <option value="Part-Time">Part-Time</option>
-                  <option value="Contract">Contract</option>
-                </select>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    name="city"
-                    value={editedJob.city}
-                    onChange={handleInputChange}
-                    className="bg-transparent border-b border-white/50"
-                    placeholder="City"
-                  />
-                  <input
-                    type="text"
-                    name="state"
-                    value={editedJob.state}
-                    onChange={handleInputChange}
-                    className="bg-transparent border-b border-white/50"
-                    placeholder="State"
-                  />
-                  <input
-                    type="text"
-                    name="country"
-                    value={editedJob.country}
-                    onChange={handleInputChange}
-                    className="bg-transparent border-b border-white/50"
-                    placeholder="Country"
-                  />
-                </div>
-              </div>
-            ) : (
-              `${editedJob.companyName} • ${editedJob.category} • ${editedJob.positionType} • ${editedJob.city}, ${editedJob.state}, ${editedJob.country}`
-            )}
-          </p>
-        </div>
+
+      <div className="bg-[#015590] dark:bg-[#013b64] rounded-t-lg p-4 mb-6 flex items-center justify-center flex-col">
+        <h1 className="text-2xl font-bold text-white text-center">{job.jobTitle}</h1>
+        <p className="mt-2 text-white text-center">{job.companyName}</p>
       </div>
-  
-      <div className="space-y-8">
-        {/* Company Overview */}
-        <section className="pb-8 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Company Overview</h2>
-          {isEditing ? (
-            <textarea
-              name="companyOverview"
-              value={editedJob.companyOverview}
-              onChange={handleInputChange}
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              rows="4"
-            />
-          ) : (
-            <p className="text-gray-600 leading-relaxed">{editedJob.companyOverview}</p>
-          )}
-        </section>
-  
-        {/* Position Details */}
-        <section className="pb-8 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Position Details</h2>
-          <div className="space-y-6">
-            <div>
-              <h3 className="font-semibold text-gray-700 mb-3">Position Summary</h3>
-              {isEditing ? (
-                <textarea
-                  name="positionSummary"
-                  value={editedJob.positionSummary}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows="4"
-                />
-              ) : (
-                <p className="text-gray-600 leading-relaxed">{editedJob.positionSummary}</p>
-              )}
-            </div>
-  
-            <div>
-              <h3 className="font-semibold text-gray-700 mb-3">Key Responsibilities</h3>
-              {isEditing ? (
-                <textarea
-                  value={editedJob.keyResponsibilities.join('\n')}
-                  onChange={(e) => handleArrayInputChange('keyResponsibilities', e.target.value)}
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows="4"
-                />
-              ) : (
-                <ul className="list-disc pl-6 space-y-3">
-                  {editedJob.keyResponsibilities.map((resp, index) => (
-                    <li key={index} className="text-gray-600">{resp}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </div>
-        </section>
-  
-        {/* Qualifications */}
-        <section className="pb-8 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Qualifications</h2>
-          <div className="space-y-6">
-            <div>
-              <h3 className="font-semibold text-gray-700 mb-3">Education</h3>
-              {isEditing ? (
-                <textarea
-                  value={editedJob.education.join('\n')}
-                  onChange={(e) => handleArrayInputChange('education', e.target.value)}
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows="3"
-                />
-              ) : (
-                <ul className="list-disc pl-6 space-y-3">
-                  {editedJob.education.map((edu, index) => (
-                    <li key={index} className="text-gray-600">{edu}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-  
-            <div>
-              <h3 className="font-semibold text-gray-700 mb-3">Experience</h3>
-              {isEditing ? (
-                <input
-                  type="text"
-                  name="experience"
-                  value={editedJob.experience}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              ) : (
-                <p className="text-gray-600">{editedJob.experience}</p>
-              )}
-            </div>
-  
-            <div>
-              <h3 className="font-semibold text-gray-700 mb-3">Technical Skills</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {['languages', 'frameworks', 'databases', 'methodologies'].map((skillType) => (
-                  <div key={skillType} className="space-y-2">
-                    <h4 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
-                      {skillType}
-                    </h4>
-                    {isEditing ? (
-                      <input
-                        value={editedJob[skillType].join(', ')}
-                        onChange={(e) => {
-                          const skills = e.target.value.split(',').map(s => s.trim());
-                          setEditedJob(prev => ({ ...prev, [skillType]: skills }));
-                        }}
-                        className="w-full p-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    ) : (
-                      <ul className="list-disc pl-5 space-y-1">
-                        {editedJob[skillType].map((skill, index) => (
-                          <li key={index} className="text-gray-600 text-sm">{skill}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-  
-            <div>
-              <h3 className="font-semibold text-gray-700 mb-3">Soft Skills</h3>
-              {isEditing ? (
-                <input
-                  value={editedJob.softSkills.join(', ')}
-                  onChange={(e) => {
-                    const skills = e.target.value.split(',').map(s => s.trim());
-                    setEditedJob(prev => ({ ...prev, softSkills: skills }));
-                  }}
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {editedJob.softSkills.map((skill, index) => (
-                    <span key={index} className="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700">
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-  
-            <div>
-              <h3 className="font-semibold text-gray-700 mb-3">Benefits</h3>
-              {isEditing ? (
-                <textarea
-                  value={editedJob.benefits.join('\n')}
-                  onChange={(e) => handleArrayInputChange('benefits', e.target.value)}
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows="3"
-                />
-              ) : (
-                <ul className="list-disc pl-6 space-y-3">
-                  {editedJob.benefits.map((benefit, index) => (
-                    <li key={index} className="text-gray-600">{benefit}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </div>
-        </section>
-  
-        {/* SEO Section */}
-        <section className="pb-8 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">SEO Details</h2>
-          <div className="space-y-6">
-            <div>
-              <h3 className="font-semibold text-gray-700 mb-3">Search Description</h3>
-              {isEditing ? (
-                <textarea
-                  name="searchDescription"
-                  value={editedJob.searchDescription}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows="3"
-                />
-              ) : (
-                <p className="text-gray-600">{editedJob.searchDescription}</p>
-              )}
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-700 mb-3">Keywords</h3>
-              {isEditing ? (
-                <textarea
-                  value={editedJob.keywords.join('\n')}
-                  onChange={(e) => handleArrayInputChange('keywords', e.target.value)}
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows="3"
-                />
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {editedJob.keywords.map((keyword, index) => (
-                    <span key={index} className="bg-gray-100 px-3 py-1 rounded-full text-sm">
-                      {keyword}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-          {/* Slug */}
+
+      {/* Category & Position Type */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <div className="grid grid-cols-2 gap-4">
           <div>
-            <h3 className="font-semibold text-gray-700 mb-3">Slug</h3>
-            {isEditing ? (
-              <input
-                type="text"
-                name="slug"
-                value={editedJob.slug}
-                onChange={handleInputChange}
-                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            ) : (
-              <p className="text-gray-600">{editedJob.slug}</p>
-            )}
+            <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-2">Category</h2>
+            <p className="text-gray-700 dark:text-gray-300">{job.category}</p>
           </div>
-        </section>
-  
-        {/* FAQ Section */}
-        <section className="pb-8 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">FAQ</h2>
-          {isEditing ? (
-            <div className="space-y-4">
-              {editedJob.faq.map((faq, index) => (
-                <div key={index} className="space-y-2">
-                  <input
-                    type="text"
-                    value={faq.question}
-                    onChange={(e) => handleFAQChange(index, 'question', e.target.value)}
-                    className="w-full p-2 border rounded"
-                    placeholder="Question"
-                  />
-                  <textarea
-                    value={faq.answer}
-                    onChange={(e) => handleFAQChange(index, 'answer', e.target.value)}
-                    className="w-full p-2 border rounded"
-                    placeholder="Answer"
-                    rows="2"
-                  />
-                  <button
-                    onClick={() => handleRemoveFAQ(index)}
-                    className="text-red-500 text-sm flex items-center gap-1"
-                  >
-                    <FaTrash /> Remove
-                  </button>
-                </div>
-              ))}
-              <button
-                onClick={handleAddFAQ}
-                className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-1"
-              >
-                <FaPlus /> Add FAQ
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {editedJob.faq.map((faq, index) => (
-                <div key={index}>
-                  <h3 className="font-semibold">{faq.question}</h3>
-                  <p className="text-gray-600">{faq.answer}</p>
-                </div>
-              ))}
+          <div>
+            <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-2">Position Type</h2>
+            <p className="text-gray-700 dark:text-gray-300">{job.positionType}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Location */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Location</h2>
+        <p className="text-gray-700 dark:text-gray-300">
+          {job.city}, {job.state}, {job.country}
+        </p>
+      </section>
+
+      {/* Company Overview */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Company Overview</h2>
+        <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">{job.companyOverview}</p>
+      </section>
+
+      {/* Position Summary */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Position Summary</h2>
+        <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">{job.positionSummary}</p>
+      </section>
+
+      {/* Key Responsibilities */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Key Responsibilities</h2>
+        {renderArrayAsList(job.keyResponsibilities)}
+      </section>
+
+      {/* Experience & Education */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-2">Experience Required</h2>
+            <p className="text-gray-700 dark:text-gray-300">{job.experience}</p>
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-2">Education Requirements</h2>
+            {renderArrayAsList(job.education)}
+          </div>
+        </div>
+      </section>
+
+      {/* Technical Skills */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Technical Skills</h2>
+        <div className="space-y-6">
+          {job.languages?.length > 0 && (
+            <div>
+              <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">Languages</h3>
+              {renderArrayAsList(job.languages)}
             </div>
           )}
-        </section>
-  
-        {/* Application Details */}
-        <section className="pb-8">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Application Details</h2>
-          <div className="space-y-6">
-            {/* ... existing application details fields ... */}
+          {job.frameworks?.length > 0 && (
             <div>
-              <label className="block font-semibold text-gray-700 mb-3">Featured Job</label>
-              {isEditing ? (
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={editedJob.isFeatured}
-                    onChange={(e) => setEditedJob(prev => ({ ...prev, isFeatured: e.target.checked }))}
-                    className="form-checkbox"
-                  />
-                  <span>Mark as featured</span>
-                </label>
-              ) : (
-                <p className="text-gray-600">{editedJob.isFeatured ? 'Yes' : 'No'}</p>
-              )}
+              <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">Frameworks</h3>
+              {renderArrayAsList(job.frameworks)}
             </div>
+          )}
+          {job.databases?.length > 0 && (
+            <div>
+              <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">Databases</h3>
+              {renderArrayAsList(job.databases)}
+            </div>
+          )}
+          {job.methodologies?.length > 0 && (
+            <div>
+              <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">Methodologies</h3>
+              {renderArrayAsList(job.methodologies)}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Soft Skills & Preferred Qualifications */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-2">Soft Skills</h2>
+            {renderArrayAsList(job.softSkills)}
           </div>
+        </div>
+      </section>
+
+            {/* Benefits */}
+            <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Benefits</h2>
+        {renderArrayAsList(job.benefits)}
+      </section>
+
+      {/* Benefits */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Preferred Qualifications</h2>
+        {renderArrayAsList(job.preferredQualifications)}
+      </section>
+
+      {/* Important Dates */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Important Dates</h2>
+        <ul className="space-y-3">
+          {job.startDate && (
+            <li className="flex justify-between items-center border-b pb-2 border-gray-200 dark:border-gray-700">
+              <span className="font-medium">Start Date:</span>
+              <span>{formatDate(job.startDate)}</span>
+            </li>
+          )}
+          <li className="flex justify-between items-center">
+            <span className="font-medium">Application Deadline:</span>
+            <span>{formatDate(job.applicationDeadline)}</span>
+          </li>
+        </ul>
+      </section>
+
+      {/* Reference & Equal Opportunity */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-2">Reference Number</h2>
+            <p className="text-gray-700 dark:text-gray-300">{job.jobReferenceNumber}</p>
+          </div>
+        </div>
+      </section>
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Equal Opportunity</h2>
+        <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">{job.equalOpportunityStatement}</p>
+      </section>
+
+      {/* Application Section */}
+      <section className="mb-8">
+        {job.submissionMethod === 'email' ? (
+          <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <p className="text-gray-700 dark:text-gray-300">
+              To apply, please send your resume to: {' '}
+              <a href={`mailto:${job.contactEmail}`} className="text-blue-600 dark:text-blue-400 hover:underline">
+                {job.contactEmail}
+              </a>
+            </p>
+          </div>
+        ) : (
+          <div className="text-center">
+            <a
+              href={job.applicationPortalLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors"
+            >
+              Apply Now
+            </a>
+          </div>
+        )}
+      </section>
+
+      {/* Featured Badge */}
+      {job.isFeatured && (
+        <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm">
+          Featured Job
+        </div>
+      )}
+
+      {/* FAQ */}
+      {job.faq?.length > 0 && (
+        <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+          <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Frequently Asked Questions</h2>
+          <ul className="space-y-4">
+            {job.faq.map((item) => (
+              <li key={item._id} className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                <strong className="text-gray-800 dark:text-gray-200">Q:</strong> {item.question}<br />
+                <strong className="text-gray-800 dark:text-gray-200 mt-2 block">A:</strong> {item.answer}
+              </li>
+            ))}
+          </ul>
         </section>
-      </div>
-  
-      {/* Apply Button */}
-      <div className="mt-12 text-center border-t border-gray-200 pt-8">
-        <button
-          onClick={handleApply}
-          className="bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors text-lg font-semibold w-full md:w-auto"
-        >
-          {editedJob.submissionMethod === 'email' ? 'Apply via Email' : 'Apply via Portal'}
-        </button>
-      </div>
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <EditJobModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          job={job}
+          jobId={id}
+          onUpdate={handleUpdateJob}
+        />
+      )}
     </div>
   );
 };

@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
-import { FaWhatsapp, FaFacebook, FaInstagram, FaTwitter, FaLinkedin } from 'react-icons/fa';
+import { FaWhatsapp, FaInstagram, FaTwitter, FaLinkedin, FaTelegram } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
-import './Footer.css';
 
 const motivationalQuotes = [
   "Success is not final, failure is not fatal: It is the courage to continue that counts. – Winston Churchill",
@@ -122,55 +121,69 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer className="bg-[#015990] text-white">
-      <div className="footer-container">
-        <div className="footer-title">
-        <h1 className="font-bold text-[25px] text-white text-center" style={{ fontFamily: 'Arial, sans-serif' }}>
-  Exameets
-</h1>  </div>
-
-        <div className="footer-links">
-          <Link to="/contact-us">Contact Us</Link>
-          <span>|</span>
-          <Link to="/about-us">About Us</Link>
-          <span>|</span>
-          <Link to="/community">Community</Link>
-          <span>|</span>
-          <Link to="/privacy-policy">Privacy Policy</Link>
-          <span>|</span>
-          <Link to="/team">Our Team</Link>
+    <footer className="bg-[#015990] dark:bg-gray-950 text-white dark:text-gray-100 w-full">
+      <div className="max-w-7xl mx-auto px-4">
+        {/* Title */}
+        <div className="text-center py-4">
+          <h1 className="font-bold text-2xl text-white dark:text-gray-100 font-sans">Exameets</h1>
         </div>
 
-        <div className="footer-bottom">
-          <div className="left-side">
-            <p>© 2025 Exameets. All Rights Reserved.</p>
+        {/* Links */}
+        <div className="flex flex-wrap justify-center gap-4 py-4">
+          <Link to="/contact-us" className="text-white dark:text-gray-100 no-underline hover:underline">Contact Us</Link>
+          <span className="text-white dark:text-gray-100">|</span>
+          <Link to="/about-us" className="text-white dark:text-gray-100 no-underline hover:underline">About Us</Link>
+          <span className="text-white dark:text-gray-100">|</span>
+          <Link to="/community" className="text-white dark:text-gray-100 no-underline hover:underline">Community</Link>
+          <span className="text-white dark:text-gray-100">|</span>
+          <Link to="/privacy-policy" className="text-white dark:text-gray-100 no-underline hover:underline">Privacy Policy</Link>
+          <span className="text-white dark:text-gray-100">|</span>
+          <Link to="/team" className="text-white dark:text-gray-100 no-underline hover:underline">Our Team</Link>
+        </div>
+
+        {/* Bottom Section */}
+        <div className="flex justify-between items-center px-8 py-4 border-t dark:border-gray-700 border-white border-opacity-10 max-md:flex-col max-md:items-center max-md:gap-4">
+          <div className="text-sm">
+            <p className="text-white dark:text-gray-100"> 2025 Exameets. All Rights Reserved.</p>
           </div>
-          <div className="middle-side">
-          <p>Developed in Partnership with <Link className='ceerasLink' href="https://www.ceeras.in/" target="_blank" rel="noopener noreferrer">Ceeras  </Link></p>
+          
+          <div className="text-sm">
+            <p className="text-white dark:text-gray-100">Developed in Partnership with{' '}
+              <a 
+                href="https://www.ceeras.in/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:underline text-white dark:text-gray-100"
+              >
+                Ceeras
+              </a>
+            </p>
           </div>
-          <div className="right-side">
-            <p>‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ </p>
-            <a href="https://wa.me/9014185655" target="_blank" rel="noopener noreferrer">
+          
+          <div className="flex gap-4">
+            <a href="https://whatsapp.com/channel/0029VaksJ72Lo4hmldL0yl41" target="_blank" rel="noopener noreferrer">
               <FaWhatsapp size={24} />
             </a>
-            <a href="https://www.facebook.com/profile.php?id=100093111888181" target="_blank" rel="noopener noreferrer">
-              <FaFacebook size={24} />
-            </a>
-            <a href="https://www.instagram.com/ceeras_official/" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.instagram.com/exameets/" target="_blank" rel="noopener noreferrer">
               <FaInstagram size={24} />
             </a>
-            <a href="https://x.com/ceeras_official" target="_blank" rel="noopener noreferrer">
+            <a href="https://x.com/exameets" target="_blank" rel="noopener noreferrer">
               <FaTwitter size={24} />
             </a>
-            <a href="https://www.linkedin.com/company/ceeras-official/" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.linkedin.com/company/exameets/" target="_blank" rel="noopener noreferrer">
               <FaLinkedin size={24} />
+            </a>
+            <a href="https://t.me/exameetschannel" target="_blank" rel="noopener noreferrer">
+              <FaTelegram size={24} />
             </a>
           </div>
         </div>
 
-
-        <div className="footer-quotes">
-          <div className={`quote-text ${isVisible ? 'fade-in' : 'fade-out'}`}>
+        {/* Quotes */}
+        <div className="border-t dark:border-gray-700 pt-2">
+          <div className={`text-center transition-opacity duration-1000 min-h-[2em] ${
+            isVisible ? 'opacity-100' : 'opacity-0'
+          }`}>
             {currentQuote}
           </div>
         </div>

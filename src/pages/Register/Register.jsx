@@ -3,11 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { register, clearAllUserErrors } from "../../store/slices/userSlice.js";
 import { toast } from "react-toastify";
-import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
-import { auth } from "../../firebase/config";
 import PreferencesModal from "../../components/PreferencesModal/PreferencesModal.jsx";
 import useScrollToTop from "../../hooks/useScrollToTop";
-import "./Register.css";
 
 const Register = () => {
   useScrollToTop();
@@ -27,7 +24,6 @@ const Register = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpVerified, setOtpVerified] = useState(false);
-  const [verificationId, setVerificationId] = useState("");
   const [resendTimer, setResendTimer] = useState(0);
   const [emailOtpSent, setEmailOtpSent] = useState(false);
   const [emailOtp, setEmailOtp] = useState("");
@@ -92,20 +88,6 @@ const Register = () => {
     return () => clearInterval(interval);
   }, [emailResendTimer]);
 
-  const generateRecaptcha = () => {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        auth,
-        "recaptcha-container",
-        {
-          size: "invisible",
-          siteKey: import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY,
-          enterprise: true,
-        }
-      );
-    }
-  };
-
   const handleSendOTP = async () => {
     if (!phone) {
       toast.error("Please enter your phone number");
@@ -134,18 +116,23 @@ const Register = () => {
         return;
       }
 
-      generateRecaptcha();
-      const formattedPhone = `+91${phone}`;
-      const appVerifier = window.recaptchaVerifier;
-      const confirmationResult = await signInWithPhoneNumber(
-        auth,
-        formattedPhone,
-        appVerifier
-      );
-      setVerificationId(confirmationResult);
-      setOtpSent(true);
-      toast.success("OTP sent successfully!");
-      setResendTimer(60);
+      // Implement Twilio OTP sending logic here
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/phone/send-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ phone: `+91${phone}` }),
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        setOtpSent(true);
+        toast.success("OTP sent successfully!");
+        setResendTimer(60);
+      } else {
+        toast.error(data.message || "Failed to send OTP");
+      }
     } catch (error) {
       console.error("Error sending OTP:", error);
       toast.error("Failed to send OTP. Please try again.");
@@ -200,6 +187,73 @@ const Register = () => {
     }
   };
 
+  const verifyPhoneOTP = async () => {
+    if (!otp || otp.length !== 6) {
+      toast.error("Please enter a valid OTP");
+      return false;
+    }
+
+    try {
+      // Implement Twilio OTP verification logic here
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/phone/verify-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ 
+          phone: `+91${phone}`,
+          otp 
+        }),
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        setOtpVerified(true);
+        return true;
+      } else {
+        toast.error(data.message || "Invalid phone OTP");
+        return false;
+      }
+    } catch (error) {
+      console.error("Error verifying phone OTP:", error);
+      toast.error("Failed to verify phone OTP");
+      return false;
+    }
+  };
+
+  const verifyEmailOTP = async () => {
+    if (!emailOtp || emailOtp.length !== 6) {
+      toast.error("Please enter a valid email OTP");
+      return false;
+    }
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/email/verify-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ 
+          email,
+          otp: emailOtp 
+        }),
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        setEmailVerified(true);
+        return true;
+      } else {
+        toast.error("Invalid email OTP");
+        return false;
+      }
+    } catch (error) {
+      console.error("Error verifying email OTP:", error);
+      toast.error("Failed to verify email OTP");
+      return false;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -227,35 +281,14 @@ const Register = () => {
 
     // First verify email OTP
     if (!emailVerified) {
-      try {
-        const emailResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/email/verify-otp`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, otp: emailOtp }),
-        });
-        const emailData = await emailResponse.json();
-        if (!emailData.success) {
-          toast.error("Invalid email OTP");
-          return;
-        }
-        setEmailVerified(true);
-      } catch (error) {
-        toast.error("Failed to verify email OTP");
-        return;
-      }
+      const emailVerificationResult = await verifyEmailOTP();
+      if (!emailVerificationResult) return;
     }
 
     // Then verify phone OTP
     if (!otpVerified) {
-      try {
-        await verificationId.confirm(otp);
-        setOtpVerified(true);
-      } catch (error) {
-        toast.error("Invalid phone OTP");
-        return;
-      }
+      const phoneVerificationResult = await verifyPhoneOTP();
+      if (!phoneVerificationResult) return;
     }
 
     if (!Object.values(passwordValidation).every(Boolean)) {
@@ -293,13 +326,13 @@ const Register = () => {
   };
 
   return (
-    <div className="form">
-      <section className="sign-up-section">
+    <div className="flex justify-center p-5 bg-white dark:bg-gray-800">
+      <section className="w-full max-w-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
         <form onSubmit={handleSubmit}>
-          <h2>Register</h2>
+          <h2 className="text-2xl text-center text-[#015990] dark:text-gray-100 mb-8">Register</h2>
 
-          <div className="section">
-            <label>Full Name</label>
+          <div className="mb-5 ">
+            <label className="block text-[#015990] font-medium mb-2 dark:text-gray-100 " htmlFor="name">Full Name</label>
             <input
               type="text"
               id="name"
@@ -307,27 +340,30 @@ const Register = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
             />
           </div>
 
-          <div className="section">
-            <label>Date of Birth</label>
+          <div className="mb-5">
+            <label className="block text-[#015990] font-medium mb-2 dark:text-gray-100 " htmlFor="dob">Date of Birth</label>
             <input
               type="date"
               id="dob"
               value={dob}
               onChange={(e) => setDob(e.target.value)}
               required
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"              
             />
           </div>
 
-          <div className="section">
-            <label>Gender</label>
+          <div className="mb-5">
+            <label className="block text-[#015990] font-medium mb-2 dark:text-gray-100" htmlFor="gender">Gender</label>
             <select
               id="gender"
               value={gender}
               onChange={(e) => setGender(e.target.value)}
               required
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
             >
               <option value="">Select Gender</option>
               <option value="male">Male</option>
@@ -336,10 +372,13 @@ const Register = () => {
             </select>
           </div>
 
-          <div className="section">
-            <label>Phone Number</label>
-            <div className="phone-section">
-              <select id="country-code">
+          <div className="mb-5">
+            <label className="block text-[#015990] dark:text-gray-100 font-medium mb-2" htmlFor="phone">Phone Number</label>
+            <div className="flex gap-2">
+              <select 
+                id="country-code"
+                className="border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
+              >
                 <option value="+91">+91</option>
               </select>
               <input
@@ -356,12 +395,13 @@ const Register = () => {
                 maxLength="10"
                 required
                 disabled={otpVerified}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
               />
             </div>
           </div>
 
-          <div className="section">
-            <label>Email ID</label>
+          <div className="mb-5">
+            <label className="block text-[#015990] font-medium mb-2 dark:text-gray-100 " htmlFor="email">Email ID</label>
             <input
               type="email"
               id="email"
@@ -370,10 +410,11 @@ const Register = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={emailVerified}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
             />
           </div>
 
-          <div className="otp-section">
+          <div className="flex items-center gap-2 mb-5">
             <input
               type="text"
               placeholder="Enter Mobile OTP"
@@ -381,6 +422,7 @@ const Register = () => {
               onChange={(e) => handleOtpChange(e, setOtp)}
               maxLength="6"
               required={otpSent}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
             />
             {!otpVerified && (
               <>
@@ -389,18 +431,20 @@ const Register = () => {
                     type="button" 
                     onClick={handleSendOTP}
                     disabled={sendingPhoneOtp}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
                   >
                     {sendingPhoneOtp ? "Sending..." : "Send OTP"}
                   </button>
                 ) : (
                   <>
                     {resendTimer > 0 ? (
-                      <span>Resend in {resendTimer}s</span>
+                      <span className="text-gray-600 whitespace-nowrap">Resend in {resendTimer}s</span>
                     ) : (
                       <button 
                         type="button" 
                         onClick={handleSendOTP}
                         disabled={sendingPhoneOtp}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
                       >
                         {sendingPhoneOtp ? "Sending..." : "Resend"}
                       </button>
@@ -410,11 +454,11 @@ const Register = () => {
               </>
             )}
             {otpVerified && (
-              <span className="verification-success">Verified</span>
+              <span className="text-green-600 text-sm">Verified</span>
             )}
           </div>
 
-          <div className="otp-section">
+          <div className="flex items-center gap-2 mb-5">
             <input
               type="text"
               placeholder="Enter Email OTP"
@@ -422,6 +466,7 @@ const Register = () => {
               onChange={(e) => handleOtpChange(e, setEmailOtp)}
               maxLength="6"
               required={emailOtpSent}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
             />
             {!emailVerified && (
               <>
@@ -430,18 +475,20 @@ const Register = () => {
                     type="button" 
                     onClick={handleSendEmailOTP}
                     disabled={sendingEmailOtp}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
                   >
                     {sendingEmailOtp ? "Sending..." : "Send OTP"}
                   </button>
                 ) : (
                   <>
                     {emailResendTimer > 0 ? (
-                      <span>Resend in {emailResendTimer}s</span>
+                      <span className="text-gray-600 whitespace-nowrap">Resend in {emailResendTimer}s</span>
                     ) : (
                       <button 
                         type="button" 
                         onClick={handleSendEmailOTP}
                         disabled={sendingEmailOtp}
+                        className="p-2 bg-[#015990] text-white border-none rounded cursor-pointer whitespace-nowrap hover:bg-blue-900 disabled:bg-gray-400"
                       >
                         {sendingEmailOtp ? "Sending..." : "Resend"}
                       </button>
@@ -451,60 +498,66 @@ const Register = () => {
               </>
             )}
             {emailVerified && (
-              <span className="verification-success">Verified</span>
+              <span className="text-green-600 text-sm">Verified</span>
             )}
           </div>
 
-          <div className="password-section">
+          <div className="mb-2 text-[#015990] dark:text-gray-100 font-medium">
             <label>Create Password</label>
           </div>
-          <div className="password-box">
+          <div className="mb-4">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Enter Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
             />
           </div>
 
-          <div className="password-box">
+          <div className="mb-4">
             <input
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Re-enter Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
             />
           </div>
 
-          <div className="password-validation">
-            <p className={passwordValidation.minLength ? "valid" : ""}>
+          <div className="mt-2 mb-4 text-xs text-gray-600">
+            <p className={`mb-1 ${passwordValidation.minLength ? "text-green-600" : ""}`}>
               ✓ At least 8 characters
             </p>
-            <p className={passwordValidation.hasUpper ? "valid" : ""}>
+            <p className={`mb-1 ${passwordValidation.hasUpper ? "text-green-600" : ""}`}>
               ✓ At least one uppercase letter
             </p>
-            <p className={passwordValidation.hasLower ? "valid" : ""}>
+            <p className={`mb-1 ${passwordValidation.hasLower ? "text-green-600" : ""}`}>
               ✓ At least one lowercase letter
             </p>
-            <p className={passwordValidation.hasNumber ? "valid" : ""}>
+            <p className={`mb-1 ${passwordValidation.hasNumber ? "text-green-600" : ""}`}>
               ✓ At least one number
             </p>
-            <p className={passwordValidation.hasSpecial ? "valid" : ""}>
+            <p className={`mb-1 ${passwordValidation.hasSpecial ? "text-green-600" : ""}`}>
               ✓ At least one special character
             </p>
-            <p className={passwordValidation.matches ? "valid" : ""}>
+            <p className={`mb-1 ${passwordValidation.matches ? "text-green-600" : ""}`}>
               ✓ Passwords match
             </p>
           </div>
           
-          <button type="submit" className="next-btn" disabled={loading}>
+          <button 
+            type="submit" 
+            className="w-full py-3 mt-2 bg-[#015990] text-white border-none dark:bg-gray-950 dark:text-gray-100 rounded cursor-pointer text-base hover:bg-gray-950 disabled:bg-gray-400"
+            disabled={loading}
+          >
             {loading ? "Registering..." : "Next"}
           </button>
         </form>
-        <div className="register-link">
-          Already having an account? <Link to="/login">Sign in</Link>
+        <div className="mt-4 text-center">
+          Already having an account? <Link to="/login" className="text-[#015990] dark:text-gray-100 ">Sign in</Link>
         </div>
       </section>
 
@@ -516,8 +569,6 @@ const Register = () => {
           }}
         />
       )}
-
-      <div id="recaptcha-container"></div>
     </div>
   );
 };

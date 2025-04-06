@@ -57,9 +57,16 @@ import SelectedJobs from "./pages/SelectedJobs/SelectedJobs";
 
 import SocialModal from "./components/SocialModal";
 
-const ThemeContext = createContext();
+// Create ThemeContext
+export const ThemeContext = createContext();
 
-export const useTheme = () => useContext(ThemeContext);
+function useTheme() {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error("useTheme must be used within a ThemeProvider");
+  }
+  return context;
+}
 
 // Initialize EmailJS
 init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
@@ -81,15 +88,22 @@ const TrackPageView = () => {
   return null;
 };
 
-const App = () => {
+function App() {
   const dispatch = useDispatch();
   const [darkMode, setDarkMode] = useState(() => {
-    const savedTheme = localStorage.getItem("theme");
-    return (
-      savedTheme === "dark" ||
-      (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)
-    );
+    const saved = localStorage.getItem('darkMode');
+    return saved ? JSON.parse(saved) : false;
   });
+
+  useEffect(() => {
+    const html = document.documentElement;
+    if (darkMode) {
+      html.classList.add('dark');
+    } else {
+      html.classList.remove('dark');
+    }
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+  }, [darkMode]);
 
   useEffect(() => {
     const handleOnline = () => {
@@ -143,23 +157,13 @@ const App = () => {
     dispatch(getUser());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  }, [darkMode]);
-
   const toggleDarkMode = () => {
     setDarkMode((prev) => !prev);
   };
 
   return (
-    <>
-      <ThemeContext.Provider value={{ darkMode, toggleDarkMode }}>
+    <ThemeContext.Provider value={{ darkMode, setDarkMode }}>
+      <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
         <Router>
           <TrackPageView />
           <Navbar />
@@ -263,9 +267,10 @@ const App = () => {
           </CookieConsent>
           <SocialModal />
         </Router>
-      </ThemeContext.Provider>
-    </>
+      </div>
+    </ThemeContext.Provider>
   );
-};
+}
 
 export default App;
+export { useTheme };

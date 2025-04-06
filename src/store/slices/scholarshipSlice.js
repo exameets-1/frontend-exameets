@@ -238,17 +238,19 @@ export const deleteScholarship = (id) => async (dispatch) => {
     }
 };
 
-export const updateScholarship = (scholarshipId, updatedData) => async (dispatch) => {
+export const updateScholarship = (payload) => async (dispatch) => {
   try {
     dispatch(scholarshipSlice.actions.updateScholarshipRequest());
     const response = await axios.put(
-      `${import.meta.env.VITE_BACKEND_URL}/api/v1/scholarship/update/${scholarshipId}`,
-      updatedData,
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/scholarship/update/${payload.scholarshipId}`,
+      payload.updatedData,
       { withCredentials: true }
     );
     dispatch(scholarshipSlice.actions.updateScholarshipSuccess(response.data));
+    return response.data;
   } catch (error) {
     dispatch(scholarshipSlice.actions.updateScholarshipFailed(error.response.data.message));
+    throw error.response.data.message;
   }
 };
 

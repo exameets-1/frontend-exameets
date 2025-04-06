@@ -6,7 +6,6 @@ import { fetchLatestAdmissions } from '../../store/slices/admissionSlice';
 import { fetchLatestInternships } from '../../store/slices/internshipSlice';
 import { fetchLatestScholarships } from '../../store/slices/scholarshipSlice';
 import { fetchLatestResults } from '../../store/slices/resultSlice'; 
-import './SelectedJobs.css';
 
 export default function SelectedJobs() {
   const { matchedJobs, loading, user } = useSelector((state) => state.user);
@@ -130,59 +129,73 @@ export default function SelectedJobs() {
 
     if (!data.length) {
       return (
-        <div className="no-jobs">
-          <p>No Matched Content Found</p>
-          <p>Update your preferences to see content that matches your interests.</p>
+        <div className="text-center py-6 text-gray-500 dark:text-gray-400">
+          <p className="text-lg mb-2">No Matched Content Found</p>
+          <p className="text-sm">Update your preferences to see content that matches your interests.</p>
         </div>
       );
     }
-
+  
     return (
-      <div className="teams-table-container">
-        <div className="scrollable-content">
-          <table className="teams-table">
-            <tbody>
-              {data.map((item) => (
-                <tr 
-                  key={item._id}
-                  onClick={() => handleItemClick(item._id)}
-                  className="clickable-row"
-                >
-                  <td>{getEntryTitle(item, type)}</td>
-                  <td>
-                    <button className="verify-button">View</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="h-96 overflow-y-auto rounded-lg">
+        <table className="w-full">
+          <tbody>
+            {data.map((item) => (
+              <tr
+                key={item._id}
+                className="hover:bg-blue-50 dark:hover:bg-gray-600 even:bg-gray-50 dark:even:bg-gray-700 transition-colors border-b border-gray-200 dark:border-gray-600"
+              >
+                <td className="p-3 text-gray-700 dark:text-gray-100">
+                  {getEntryTitle(item, type)}
+                </td>
+                <td className="p-3">
+                  <button 
+                    onClick={() => handleItemClick(item._id)}
+                    className="inline-block px-4 py-2 bg-[#015990] dark:bg-gray-800 text-white rounded-md hover:bg-blue-800 dark:hover:bg-gray-700 transition-colors text-sm"
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     );
   };
 
   return (
-    <>
-      <div className="teams-container">
-        <div className="teams-wrapper">
-          <div className="selected-jobs-header">
-          <h2>For You</h2>
-          </div>
-          <div className="notification-type">
-            <h2>Preference Selected: {user?.preferences?.notifications_about}</h2>
-            </div>
-          {isLoading ? (
-            <div className="loading-spinner">
-              <div className="spinner"></div>
-            </div>
-          ) : (
-            renderContent()
-          )}
-          <div className="view-all">
-            <button onClick={handleViewAll} className="verify-button">View All</button>
-          </div>
+    <div className="h-full bg-gray-100 dark:bg-gray-800 p-5">
+      <div className="h-full max-w-6xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-5 flex flex-col">
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 text-center">
+            For You
+          </h2>
+          <h2 className="text-xl text-gray-600 dark:text-gray-300 text-center mb-6">
+            Preference Selected: {user?.preferences?.notifications_about}
+          </h2>
         </div>
+
+        {isLoading ? (
+          <div className="flex justify-center items-center h-40">
+            <div className="w-10 h-10 border-4 border-[#015990] border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          <>
+            <div className="flex-1">  
+              {renderContent()}
+            </div>
+            <div className="mt-6 text-center">
+              <button 
+                onClick={handleViewAll}
+                className="px-6 py-2 bg-[#155990] dark:bg-gray-800 text-white rounded-md hover:bg-blue-800 dark:hover:bg-gray-700 transition-colors"
+              >
+                View All
+              </button>
+            </div>
+          </>
+        )}
       </div>
-    </>
+    </div>
   );
 }

@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { updatePassword, resetUpdate } from "../../store/slices/updateProfileSlice";
 import { FaEye, FaEyeSlash, FaCheck, FaTimes } from "react-icons/fa";
 import { toast } from "react-toastify";
-import "./UpdatePassword.css";
 
 const UpdatePassword = () => {
   const [oldPassword, setOldPassword] = useState("");
@@ -68,13 +67,16 @@ const UpdatePassword = () => {
   };
 
   return (
-    <div className="update-password-container">
-      <div className="update-password-card">
-        
-        <form onSubmit={handleSubmit} className="update-password-form">
-          <div className="form-group">
-            <label>Current Password</label>
-            <div className="password-input-group">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-8 flex justify-center items-start">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 sm:p-8 w-full max-w-[500px] mt-4 sm:mt-8">
+        <h2 className="text-[#1a365d] dark:text-white text-2xl sm:text-[1.75rem] font-semibold text-center mb-6 sm:mb-8">
+          Update Password
+        </h2>
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            <label className="text-gray-700 dark:text-gray-300 text-sm font-medium">Current Password</label>
+            <div className="relative flex items-center">
               <input
                 type={showOldPassword ? "text" : "password"}
                 id="oldPassword"
@@ -82,11 +84,11 @@ const UpdatePassword = () => {
                 value={oldPassword}
                 onChange={(e) => setOldPassword(e.target.value)}
                 required
-                className="password-input"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:border-blue-400 dark:focus:border-blue-500 focus:ring-3 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all dark:bg-gray-700 dark:text-white"
               />
               <button
                 type="button"
-                className="password-toggle"
+                className="absolute right-3 bg-transparent border-none text-gray-700 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
                 onClick={() => setShowOldPassword(!showOldPassword)}
               >
                 {showOldPassword ? <FaEyeSlash /> : <FaEye />}
@@ -94,9 +96,9 @@ const UpdatePassword = () => {
             </div>
           </div>
 
-          <div className="form-group">
-            <label>New Password</label>
-            <div className="password-input-group">
+          <div className="flex flex-col gap-2">
+            <label className="text-gray-700 dark:text-gray-300 text-sm font-medium">New Password</label>
+            <div className="relative flex items-center">
               <input
                 type={showNewPassword ? "text" : "password"}
                 id="newPassword"
@@ -104,11 +106,11 @@ const UpdatePassword = () => {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
-                className="password-input"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:border-blue-400 dark:focus:border-blue-500 focus:ring-3 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all dark:bg-gray-700 dark:text-white"
               />
               <button
                 type="button"
-                className="password-toggle"
+                className="absolute right-3 bg-transparent border-none text-gray-700 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
                 onClick={() => setShowNewPassword(!showNewPassword)}
               >
                 {showNewPassword ? <FaEyeSlash /> : <FaEye />}
@@ -116,9 +118,9 @@ const UpdatePassword = () => {
             </div>
           </div>
 
-          <div className="form-group">
-            <label>Confirm New Password</label>
-            <div className="password-input-group">
+          <div className="flex flex-col gap-2">
+            <label className="text-gray-700 dark:text-gray-300 text-sm font-medium">Confirm New Password</label>
+            <div className="relative flex items-center">
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 id="confirmPassword"
@@ -126,11 +128,11 @@ const UpdatePassword = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                className="password-input"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:border-blue-400 dark:focus:border-blue-500 focus:ring-3 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all dark:bg-gray-700 dark:text-white"
               />
               <button
                 type="button"
-                className="password-toggle"
+                className="absolute right-3 bg-transparent border-none text-gray-700 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
@@ -138,35 +140,35 @@ const UpdatePassword = () => {
             </div>
           </div>
 
-          <div className="password-requirements">
-            <h3>Password Requirements:</h3>
-            <ul>
-              <li className={validations.minLength ? 'valid' : 'invalid'}>
-                {validations.minLength ? <FaCheck /> : <FaTimes />}
+          <div className="bg-gray-50 dark:bg-gray-700 p-4 sm:p-6 rounded-lg my-4">
+            <h3 className="text-gray-800 dark:text-gray-200 text-base mb-4">Password Requirements:</h3>
+            <ul className="list-none p-0 m-0 flex flex-col gap-3">
+              <li className={`flex items-center gap-2 text-sm ${validations.minLength ? 'text-green-800 dark:text-green-400' : 'text-red-800 dark:text-red-400'}`}>
+                {validations.minLength ? <FaCheck className="text-green-500 dark:text-green-400" /> : <FaTimes className="text-red-500 dark:text-red-400" />}
                 At least 8 characters
               </li>
-              <li className={validations.hasUpper ? 'valid' : 'invalid'}>
-                {validations.hasUpper ? <FaCheck /> : <FaTimes />}
+              <li className={`flex items-center gap-2 text-sm ${validations.hasUpper ? 'text-green-800 dark:text-green-400' : 'text-red-800 dark:text-red-400'}`}>
+                {validations.hasUpper ? <FaCheck className="text-green-500 dark:text-green-400" /> : <FaTimes className="text-red-500 dark:text-red-400" />}
                 At least one uppercase letter
               </li>
-              <li className={validations.hasLower ? 'valid' : 'invalid'}>
-                {validations.hasLower ? <FaCheck /> : <FaTimes />}
+              <li className={`flex items-center gap-2 text-sm ${validations.hasLower ? 'text-green-800 dark:text-green-400' : 'text-red-800 dark:text-red-400'}`}>
+                {validations.hasLower ? <FaCheck className="text-green-500 dark:text-green-400" /> : <FaTimes className="text-red-500 dark:text-red-400" />}
                 At least one lowercase letter
               </li>
-              <li className={validations.hasNumber ? 'valid' : 'invalid'}>
-                {validations.hasNumber ? <FaCheck /> : <FaTimes />}
+              <li className={`flex items-center gap-2 text-sm ${validations.hasNumber ? 'text-green-800 dark:text-green-400' : 'text-red-800 dark:text-red-400'}`}>
+                {validations.hasNumber ? <FaCheck className="text-green-500 dark:text-green-400" /> : <FaTimes className="text-red-500 dark:text-red-400" />}
                 At least one number
               </li>
-              <li className={validations.hasSpecial ? 'valid' : 'invalid'}>
-                {validations.hasSpecial ? <FaCheck /> : <FaTimes />}
+              <li className={`flex items-center gap-2 text-sm ${validations.hasSpecial ? 'text-green-800 dark:text-green-400' : 'text-red-800 dark:text-red-400'}`}>
+                {validations.hasSpecial ? <FaCheck className="text-green-500 dark:text-green-400" /> : <FaTimes className="text-red-500 dark:text-red-400" />}
                 At least one special character
               </li>
-              <li className={validations.passwordsMatch ? 'valid' : 'invalid'}>
-                {validations.passwordsMatch ? <FaCheck /> : <FaTimes />}
+              <li className={`flex items-center gap-2 text-sm ${validations.passwordsMatch ? 'text-green-800 dark:text-green-400' : 'text-red-800 dark:text-red-400'}`}>
+                {validations.passwordsMatch ? <FaCheck className="text-green-500 dark:text-green-400" /> : <FaTimes className="text-red-500 dark:text-red-400" />}
                 Passwords match
               </li>
-              <li className={validations.isDifferent ? 'valid' : 'invalid'}>
-                {validations.isDifferent ? <FaCheck /> : <FaTimes />}
+              <li className={`flex items-center gap-2 text-sm ${validations.isDifferent ? 'text-green-800 dark:text-green-400' : 'text-red-800 dark:text-red-400'}`}>
+                {validations.isDifferent ? <FaCheck className="text-green-500 dark:text-green-400" /> : <FaTimes className="text-red-500 dark:text-red-400" />}
                 Different from current password
               </li>
             </ul>
@@ -174,7 +176,7 @@ const UpdatePassword = () => {
 
           <button
             type="submit"
-            className="update-button"
+            className="bg-blue-500 text-white py-3.5 rounded-lg font-semibold hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-all disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed hover:-translate-y-px"
             disabled={loading || !Object.values(validations).every(Boolean)}
           >
             {loading ? "Updating Password..." : "Update Password"}

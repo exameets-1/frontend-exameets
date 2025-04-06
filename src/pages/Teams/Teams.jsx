@@ -6,8 +6,7 @@ import { fetchTeams, clearTeamErrors, deleteTeam, createTeam } from "../../store
 import Spinner from "../../components/Spinner/Spinner";
 import { FaTrash } from "react-icons/fa";
 import useScrollToTop from "../../hooks/useScrollToTop";
-import AddTeamModal from "../../components/AddTeamModal/AddTeamModal"; // Import the modal component
-//import "./Teams.css";
+import AddTeamModal from "../../modals/AddModals/AddTeamModal";
 
 const Teams = () => {
     useScrollToTop();
@@ -15,7 +14,7 @@ const Teams = () => {
     const { isAuthenticated, user } = useSelector((state) => state.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         if (error) {
@@ -67,67 +66,73 @@ const Teams = () => {
     if (loading) return <Spinner />;
 
     return (
-        <div className="teams-container">
-            <div className="teams-wrapper">
-                {isAuthenticated && user?.role === 'manager' && (
-                    <button
-                        className="mb-6 bg-[#015990] text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
-                        onClick={() => setIsModalOpen(true)}
-                    >
-                        Add Team Member
-                    </button>
-                )}
-
-                <div className="teams-table-container">
-                    <table className="teams-table">
-                        <thead>
-                            <tr>
-                                <th>Sl.No</th>
-                                <th>Name</th>
-                                <th>Role</th>
-                                <th>Verify</th>
-                                {isAuthenticated && user?.role === 'manager' && <th>Delete</th>}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {teams?.map((team, index) => (
-                                <tr key={team._id}>
-                                    <td>{index + 1}</td>
-                                    <td>{team.name}</td>
-                                    <td>{team.position}</td>
-                                    <td>
-                                        <button
-                                            onClick={(e) => handleVerify(team._id, e)}
-                                            className="verify-button"
-                                        >
-                                            Verify
-                                        </button>
-                                    </td>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-5">
+            <div className="max-w-7xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                <div className="p-6">
+                    {isAuthenticated && user?.role === 'manager' && (
+                        <button
+                            className="mb-6 bg-[#005792] dark:bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-[#004579] dark:hover:bg-blue-700 transition-colors"
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            Add Team Member
+                        </button>
+                    )}
+    
+                    <div className="overflow-x-auto">
+                        <table className="w-full border-collapse">
+                            <thead>
+                                <tr className="bg-[#005792] dark:bg-gray-950 text-white">
+                                    <th className="p-3 text-left font-semibold">Sl.No</th>
+                                    <th className="p-3 text-left font-semibold">Name</th>
+                                    <th className="p-3 text-left font-semibold">Role</th>
+                                    <th className="p-3 text-left font-semibold">Verify</th>
                                     {isAuthenticated && user?.role === 'manager' && (
-                                        <td>
-                                            <button
-                                                className="delete-button"
-                                                onClick={(e) => handleDelete(team._id, e)}
-                                            >
-                                                <FaTrash />
-                                            </button>
-                                        </td>
+                                        <th className="p-3 text-left font-semibold">Delete</th>
                                     )}
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {teams?.map((team, index) => (
+                                    <tr 
+                                        key={team._id}
+                                        className="hover:bg-gray-50 dark:hover:bg-gray-700 even:bg-blue-50 dark:even:bg-gray-700 border-b border-gray-200 dark:border-gray-600"
+                                    >
+                                        <td className="p-3 dark:text-white">{index + 1}</td>
+                                        <td className="p-3 dark:text-white">{team.name}</td>
+                                        <td className="p-3 dark:text-white">{team.position}</td>
+                                        <td className="p-3">
+                                            <button
+                                                onClick={(e) => handleVerify(team._id, e)}
+                                                className="bg-[#005792] dark:bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-[#004579] dark:hover:bg-gray-700 transition-colors"
+                                            >
+                                                Verify
+                                            </button>
+                                        </td>
+                                        {isAuthenticated && user?.role === 'manager' && (
+                                            <td className="p-3">
+                                                <button
+                                                    className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-500 p-2 transition-colors"
+                                                    onClick={(e) => handleDelete(team._id, e)}
+                                                >
+                                                    <FaTrash />
+                                                </button>
+                                            </td>
+                                        )}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-
-            {/* Add Team Modal */}
+    
             <AddTeamModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={handleAddTeam}
             />
         </div>
-    );
+    );    
 };
 
 export default Teams;

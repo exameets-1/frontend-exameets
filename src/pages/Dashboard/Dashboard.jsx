@@ -9,7 +9,6 @@ import MyProfile from "../../components/MyProfile/MyProfile";
 import UpdateProfile from "../../components/UpdateProfile/UpdateProfile";
 import UpdatePassword from "../../components/UpdatePassword/UpdatePassword";
 import DeleteAccount from "../../components/DeleteAccount/DeleteAccount";
-import './Dashboard.css';
 
 const Dashboard = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -54,19 +53,32 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="user-dashboard">
-      <div className="user-dashboard-container">
-        <div className="user-dashboard-header">
-          <h1>Dashboard</h1>
-          <p>
-            Welcome, <span>{user && user.name}</span>!
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8 flex justify-between items-center">
+          <h1 className="text-2xl font-semibold text-[#005587] dark:text-gray-400 mr-4">Dashboard</h1>
+          <p className="text-gray-600 dark:text-gray-300">
+            Welcome, <span className="text-[#005587] dark:text-gray-400 font-medium">{user && user.name}</span> !
           </p>
         </div>
-
-        <div className="user-dashboard-content">
-          <div className={`user-sidebar ${isMenuOpen ? "menu-visible" : ""}`}>
-            <h4>Manage Account</h4>
-            <div className="user-sidebar-links">
+  
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Mobile Menu Toggle */}
+          <div className="md:hidden flex justify-end p-4">
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-[#005587] dark:text-blue-400 text-2xl"
+            >
+              <LuMoveRight className={`transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} />
+            </button>
+          </div>
+  
+          {/* Sidebar */}
+          <div className={`w-full md:w-72 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 h-fit absolute md:static z-10 ${isMenuOpen ? 'block' : 'hidden'} md:block`}>
+            <h4 className="text-lg font-semibold text-[#005587] dark:text-gray-400 mb-6 pb-4 border-b-2 border-gray-100 dark:border-gray-700">
+              Manage Account
+            </h4>
+            <div className="flex flex-col gap-2">
               {menuItems.map((item, index) => (
                 <button
                   key={index}
@@ -74,40 +86,40 @@ const Dashboard = () => {
                     setActiveComponent(item.component);
                     setIsMenuOpen(false);
                   }}
-                  className={`user-sidebar-link ${
-                    activeComponent === item.component ? "link-active" : ""
+                  className={`flex items-center p-3 rounded-lg transition-colors ${
+                    activeComponent === item.component 
+                      ? 'bg-[#005587] dark:bg-gray-950 text-white'
+                      : 'text-gray-600 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-[#005587] dark:hover:text-gray-400'
                   }`}
                 >
                   {item.icon}
-                  <span>{item.name}</span>
+                  <span className="ml-3">{item.name}</span>
                 </button>
               ))}
               <button
                 onClick={handleLogout}
-                className="user-sidebar-link user-logout-button"
+                className="flex items-center p-3 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-700 transition-colors"
               >
                 <FaSignOutAlt />
-                <span>Logout</span>
+                <span className="ml-3">Logout</span>
               </button>
               <button
                 onClick={() => {
                   setActiveComponent("Delete Account");
                   setIsMenuOpen(false);
                 }}
-                className="user-sidebar-link user-delete-button"
+                className="flex items-center p-3 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-700 transition-colors"
               >
                 <FaTrash />
-                <span>Delete Account</span>
+                <span className="ml-3">Delete Account</span>
               </button>
             </div>
           </div>
-
-          <div className="user-content-area">
-            <div className="user-sidebar-toggle" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-              <LuMoveRight className={isMenuOpen ? "menu-rotated" : ""} />
-            </div>
-            <div className="user-content-header">
-              <h2>{activeComponent}</h2>
+  
+          {/* Main Content */}
+          <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8">
+            <div className="mb-8 pb-4 border-b-2 border-gray-100 dark:border-gray-700">
+              <h2 className="text-xl font-semibold text-[#005587] dark:text-gray-400">{activeComponent}</h2>
             </div>
             {(() => {
               switch (activeComponent) {

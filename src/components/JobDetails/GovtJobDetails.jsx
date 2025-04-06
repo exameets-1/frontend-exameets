@@ -1,19 +1,27 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { FaArrowLeft, FaEdit, FaSave, FaPlus, FaTrash } from 'react-icons/fa';
+import { FaEdit } from 'react-icons/fa';
 import { fetchSingleGovtJob, updateGovtJob } from '../../store/slices/govtJobSlice';
 import Spinner from '../Spinner/Spinner';
+import EditGovtJobModal from '../../modals/EditModals/EditGovtJobModal';
 import { toast } from 'react-toastify';
+
+const formatDate = (dateString) => {
+  if (!dateString) return "Not specified";
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+};
 
 const GovtJobDetails = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedJob, setEditedJob] = useState(null);
-  const [currentArrayInputs, setCurrentArrayInputs] = useState({});
-  const [currentFAQ, setCurrentFAQ] = useState({ question: '', answer: '' });
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const { job, loading, error } = useSelector((state) => state.govtJobs);
   const { isAuthenticated, user } = useSelector((state) => state.user);
@@ -22,400 +30,304 @@ const GovtJobDetails = () => {
     if (id) dispatch(fetchSingleGovtJob(id));
   }, [dispatch, id]);
 
-  useEffect(() => {
-    if (job) {
-      // Initialize all array fields to empty arrays if undefined
-      const initializedJob = { 
-        faq: [],
-        postNames: [],
-        educationalQualifications: [],
-        additionalRequirements: [],
-        vacancyPostNames: [],
-        vacancyCounts: [],
-        vacancyPayScales: [],
-        selectionProcess: [],
-        howToApplyOnlineSteps: [],
-        howToApplyOfflineSteps: [],
-        requiredDocuments: [],
-        examSubjects: [],
-        examQuestionCounts: [],
-        examMarks: [],
-        examDurations: [],
-        keywords: [],
-        ...job 
-      };
-      setEditedJob(initializedJob);
-    }
-  }, [job]);
-
   const handleBack = () => navigate(-1);
+  const handleEdit = () => setShowEditModal(true);
 
-  const handleEdit = () => setIsEditing(true);
-
-  const handleSave = async () => {
+  const handleUpdateJob = async ({ jobId, updatedData }) => {
     try {
-      // Clean FAQ data and convert isFeatured to boolean before sending
-      const cleanedData = {
-        ...editedJob,
-        faq: editedJob.faq.map(faq => ({
-          question: faq.question,
-          answer: faq.answer,
-          ...(faq._id && { _id: faq._id })
-        })),
-        isFeatured: Boolean(editedJob.isFeatured)
-      };
-
-      const result = await dispatch(updateGovtJob({
-        jobId: id,
-        updatedData: cleanedData
-      })).unwrap();
-
-      if (result?.error) {
-        console.error('Update failed:', result.error);
-        toast.error('Failed to update govt job');
-      } else {
-        setIsEditing(false);
-        toast.success('Govt job updated successfully');
-      }
+      await dispatch(updateGovtJob({ jobId, updatedData }));
+      setShowEditModal(false);
+      toast.success('Job updated successfully');
+      dispatch(fetchSingleGovtJob(id));
     } catch (error) {
-      console.error('Save error:', error);
-      let errorMessage;
-      
-      if (error?.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error?.message) {
-        errorMessage = error.message;
-      } else if (error?.toString()) {
-        errorMessage = error.toString();
-      } else {
-        errorMessage = 'An unexpected error occurred';
-      }
-
-      alert(`Update failed: ${errorMessage}`);
+      toast.error('Failed to update job');
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value, type } = e.target;
-    const newValue = type === 'checkbox' ? e.target.checked : value;
-    setEditedJob(prev => ({ ...prev, [name]: newValue }));
-  };
-
-  const handleArrayChange = (field, value) => {
-    setCurrentArrayInputs(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleAddArrayItem = (field) => {
-    if (!currentArrayInputs[field]?.trim()) return;
-    setEditedJob(prev => ({
-      ...prev,
-      [field]: [...prev[field], currentArrayInputs[field].trim()]
-    }));
-    setCurrentArrayInputs(prev => ({ ...prev, [field]: '' }));
-  };
-
-  const handleRemoveArrayItem = (field, index) => {
-    setEditedJob(prev => ({
-      ...prev,
-      [field]: prev[field].filter((_, i) => i !== index)
-    }));
-  };
-
-  const handleFAQChange = (e) => {
-    const { name, value } = e.target;
-    setCurrentFAQ(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleAddFAQ = () => {
-    if (!currentFAQ.question.trim() || !currentFAQ.answer.trim()) return;
-    setEditedJob(prev => ({
-      ...prev,
-      faq: [...prev.faq, { ...currentFAQ }]
-    }));
-    setCurrentFAQ({ question: '', answer: '' });
-  };
-
-  const handleRemoveFAQ = (index) => {
-    setEditedJob(prev => ({
-      ...prev,
-      faq: prev.faq.filter((_, i) => i !== index)
-    }));
-  };
-
-  const renderEditableField = (field, label, type = 'text') => {
-    // Handle array fields except FAQ
-    if (Array.isArray(editedJob[field]) && field !== 'faq') {
-      return (
-        <div className="space-y-2">
-          <div className="flex flex-wrap gap-2 mb-2">
-            {editedJob[field].map((item, index) => (
-              <div key={index} className="bg-blue-100 px-2 py-1 rounded flex items-center gap-2">
-                <span>{item}</span>
-                {isEditing && (
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveArrayItem(field, index)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <FaTrash size={12} />
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-          {isEditing && (
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={currentArrayInputs[field] || ''}
-                onChange={(e) => handleArrayChange(field, e.target.value)}
-                placeholder={`Add ${label.toLowerCase()}`}
-                className="flex-1 p-2 border rounded"
-              />
-              <button
-                type="button"
-                onClick={() => handleAddArrayItem(field)}
-                className="px-3 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                <FaPlus />
-              </button>
-            </div>
-          )}
-        </div>
-      );
+  const renderArrayAsList = (array, emptyMessage = "None specified") => {
+    if (!array || array.length === 0) {
+      return <p className="text-gray-500 dark:text-white-400">{emptyMessage}</p>;
     }
-
-    // FAQ Handling
-    if (field === 'faq') {
-      return (
-        <div className="space-y-4">
-          <div className="flex gap-4">
-            <input
-              type="text"
-              name="question"
-              value={currentFAQ.question}
-              onChange={handleFAQChange}
-              placeholder="Question"
-              className="flex-1 p-2 border rounded"
-            />
-            <input
-              type="text"
-              name="answer"
-              value={currentFAQ.answer}
-              onChange={handleFAQChange}
-              placeholder="Answer"
-              className="flex-1 p-2 border rounded"
-            />
-            <button
-              type="button"
-              onClick={handleAddFAQ}
-              className="px-3 bg-blue-500 text-white rounded"
-            >
-              <FaPlus />
-            </button>
-          </div>
-          {editedJob.faq.map((item, index) => (
-            <div key={index} className="bg-gray-100 p-3 rounded">
-              <div className="flex justify-between items-center mb-2">
-                <strong>{item.question}</strong>
-                <button
-                  onClick={() => handleRemoveFAQ(index)}
-                  className="text-red-500"
-                >
-                  <FaTrash size={14} />
-                </button>
-              </div>
-              <p>{item.answer}</p>
-            </div>
-          ))}
-        </div>
-      );
-    }
-
-    // Regular input fields
     return (
-      <input
-        type={type}
-        name={field}
-        value={editedJob[field] || ''}
-        onChange={handleInputChange}
-        className="w-full p-2 border rounded"
-      />
+      <ul className="list-disc pl-5 space-y-2">
+        {array.map((item, index) => (
+          <li key={index} className="text-gray-700 dark:text-gray-200">{item}</li>
+        ))}
+      </ul>
     );
   };
 
-  const renderSection = (title, fields) => (
-    <section className="my-6 p-4 border-b border-gray-200">
-      <h2 className="text-xl font-semibold text-blue-800 border-b-2 border-blue-800 pb-2 mb-4">
-        {title}
-      </h2>
-      <div className="space-y-4">
-        {fields.map(([field, label, fieldType]) => (
-          <div key={field} className="space-y-2">
-            <label className="block font-medium">{label}</label>
-            {isEditing ? (
-              fieldType === 'checkbox' ? (
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    name={field}
-                    checked={editedJob[field]}
-                    onChange={handleInputChange}
-                    className="w-4 h-4"
-                  />
-                  <span>{label}</span>
-                </div>
-              ) : (
-                renderEditableField(field, label, fieldType)
-              )
-            ) : (
-              <div className="text-gray-700">
-                {Array.isArray(editedJob[field]) ? (
-                  field === 'faq' ? (
-                    <div className="space-y-4">
-                      {editedJob.faq.map((faq, index) => (
-                        <div key={index} className="bg-gray-100 p-4 rounded">
-                          <h3 className="font-medium">{faq.question}</h3>
-                          <p className="text-gray-600">{faq.answer}</p>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    editedJob[field].join(', ')
-                  )
-                ) : (
-                  editedJob[field]
-                )}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-
-  if (loading) return <Spinner />;
-  if (error) return <div>Error: {error}</div>;
-  if (!editedJob) return <div>No job found</div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center"><Spinner /></div>;
+  if (error) return <div className="max-w-6xl mx-auto p-6">Error: {error}</div>;
+  if (!job) return <div className="max-w-6xl mx-auto p-6">No job found</div>;
 
   return (
-    <div className="max-w-6xl mx-auto p-5 bg-white rounded-lg shadow-md my-8">
-      <div className="flex justify-between items-center mb-8">
-        <button onClick={handleBack} className="flex items-center text-blue-800">
-          <FaArrowLeft className="mr-2" /> Back
+    <div className="relative max-w-6xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-lg shadow-md text-gray-900 dark:text-gray-100">
+      <div className="flex justify-between items-start mb-6">
+        <button 
+          onClick={handleBack}
+          className="flex items-center gap-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+        >
+          ← Back to Govt Jobs
         </button>
         {isAuthenticated && user?.role === 'admin' && (
-          isEditing ? (
-            <button onClick={handleSave} className="bg-green-600 text-white px-4 py-2 rounded">
-              <FaSave className="mr-2" /> Save
-            </button>
-          ) : (
-            <button onClick={handleEdit} className="bg-blue-600 text-white px-4 py-2 rounded">
-              <FaEdit className="mr-2" /> Edit
-            </button>
-          )
+          <button 
+            onClick={handleEdit}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+          >
+            <FaEdit /> Edit Job
+          </button>
         )}
       </div>
-
-      {/* Basic Information */}
-      {renderSection('Basic Information', [
-        ['jobTitle', 'Job Title'],
-        ['jobOverview', 'Job Overview', 'textarea'],
-        ['organization', 'Organization'],
-        ['totalVacancies', 'Total Vacancies'],
-        ['jobLocation', 'Job Location'],
-      ])}
-
+  
+      <div className="bg-[#015590] dark:bg-[#013b64] rounded-t-lg p-4 mb-6 flex items-center justify-center flex-col">
+        <h1 className="text-2xl font-bold text-white text-center">{job.jobTitle}</h1>
+        <p className="mt-2 text-white text-center">{job.organization}</p>
+      </div>
+  
+      {/* Job Overview */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Job Overview</h2>
+        <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">{job.jobOverview}</p>
+      </section>
+  
+      {/* Job Location & Vacancies */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Job Location</h2>
+        <p className="text-gray-700 dark:text-gray-300">{job.jobLocation || "Not specified"}</p>
+      </section>
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Total Vacancies</h2>
+        <p className="text-gray-700 dark:text-gray-300">{job.totalVacancies || "Not specified"}</p>
+      </section>
+  
       {/* Important Dates */}
-      {renderSection('Important Dates', [
-        ['notificationReleaseDate', 'Notification Release Date'],
-        ['applicationStartDate', 'Application Start Date'],
-        ['applicationEndDate', 'Application End Date'],
-        ['examInterviewDate', 'Exam/Interview Date'],
-      ])}
-
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Important Dates</h2>
+        <ul className="space-y-3">
+          {[
+            ['Notification Release Date', job.notificationReleaseDate],
+            ['Application Start Date', job.applicationStartDate],
+            ['Application End Date', job.applicationEndDate],
+            ['Exam/Interview Date', job.examInterviewDate],
+          ].map(([label, date], index) => (
+            <li
+              key={index}
+              className={`flex justify-between items-center ${index < 3 ? 'border-b pb-2 border-gray-200 dark:border-gray-700' : ''}`}
+            >
+              <span className="font-medium">{label}:</span>
+              <span>{formatDate(date)}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+  
       {/* Eligibility Criteria */}
-      {renderSection('Eligibility Criteria', [
-        ['educationalQualifications', 'Educational Qualifications'],
-        ['ageLimitMin', 'Minimum Age'],
-        ['ageLimitMax', 'Maximum Age'],
-        ['ageRelaxation', 'Age Relaxation'],
-        ['additionalRequirements', 'Additional Requirements'],
-      ])}
-
-      {/* Vacancy Details */}
-      {renderSection('Vacancy Details', [
-        ['vacancyPostNames', 'Post Names'],
-        ['vacancyCounts', 'Vacancy Counts'],
-        ['vacancyPayScales', 'Pay Scales'],
-      ])}
-
-      {/* Application Details */}
-      {renderSection('Application Details', [
-        ['applicationMode', 'Application Mode'],
-        ['applicationFeeGeneral', 'Application Fee (General)'],
-        ['applicationFee_SC_ST_PWD', 'Application Fee (SC/ST/PWD)'],
-        ['applicationFeePaymentMode', 'Payment Mode'],
-      ])}
-
-      {/* Selection Process */}
-      {renderSection('Selection Process', [
-        ['selectionProcess', 'Selection Process Steps'],
-      ])}
-
-      {/* How to Apply */}
-      {renderSection('How to Apply', [
-        ['howToApplyOnlineSteps', 'Online Application Steps'],
-        ['howToApplyOfflineSteps', 'Offline Application Steps'],
-        ['requiredDocuments', 'Required Documents'],
-      ])}
-
-      {/* Exam Details */}
-      {renderSection('Exam Details', [
-        ['examSubjects', 'Exam Subjects'],
-        ['examQuestionCounts', 'Question Counts'],
-        ['examMarks', 'Marks Distribution'],
-        ['examDurations', 'Exam Durations'],
-      ])}
-
-      {/* Links */}
-      {renderSection('Important Links', [
-        ['notificationPDFLink', 'Notification PDF Link', 'url'],
-        ['applyOnlineLink', 'Apply Online Link', 'url'],
-        ['officialWebsiteLink', 'Official Website', 'url'],
-      ])}
-
-      {/* FAQ Section */}
-      <section className="my-6 p-4 border-b border-gray-200">
-        <h2 className="text-xl font-semibold text-blue-800 border-b-2 border-blue-800 pb-2 mb-4">
-          FAQs
-        </h2>
-        {isEditing ? (
-          renderEditableField('faq', 'FAQs')
-        ) : (
-          <div className="space-y-4">
-            {editedJob.faq.map((faq, index) => (
-              <div key={index} className="bg-gray-100 p-4 rounded">
-                <h3 className="font-medium">{faq.question}</h3>
-                <p className="text-gray-600">{faq.answer}</p>
-              </div>
-            ))}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Eligibility Criteria</h2>
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">Educational Qualifications</h3>
+            {renderArrayAsList(job.educationalQualifications)}
           </div>
-        )}
+          <div>
+            <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">Age Limit</h3>
+            <div className="space-y-1 text-gray-700 dark:text-gray-300">
+              <p>Minimum: {job.ageLimitMin || "Not specified"}</p>
+              <p>Maximum: {job.ageLimitMax || "Not specified"}</p>
+              <p>Age Relaxation: {job.ageRelaxation || "Not specified"}</p>
+            </div>
+          </div>
+          <div>
+            <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">Additional Requirements</h3>
+            {renderArrayAsList(job.additionalRequirements)}
+          </div>
+        </div>
       </section>
-
-      {/* Additional Fields */}
-      <section className="my-6 p-4 border-b border-gray-200">
-        <h2 className="text-xl font-semibold text-blue-800 border-b-2 border-blue-800 pb-2 mb-4">
-          Additional Information
-        </h2>
-        {renderSection('Additional Information', [
-          ['keywords', 'Keywords'],
-          ['searchDescription', 'Search Description', 'textarea'],
-          ['slug', 'Slug'],
-          ['isFeatured', 'Featured Job', 'checkbox'],
-        ])}
+  
+      {/* Vacancy Details */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Vacancy Details</h2>
+        <table className="w-full">
+          <thead>
+            <tr className="bg-gray-100 dark:bg-gray-800">
+              <th className="px-4 py-2 text-center">Post Name</th>
+              <th className="px-4 py-2 text-center">Vacancy Count</th>
+              <th className="px-4 py-2 text-center">Pay Scale</th>
+            </tr>
+          </thead>
+          <tbody>
+            {job.vacancyPostNames?.map((postName, index) => (
+              <tr key={index} className="border-t border-b border-gray-200 dark:border-gray-700">
+                <td className="px-4 py-2 text-center">{postName}</td>
+                <td className="px-4 py-2 text-center">{job.vacancyCounts?.[index]}</td>
+                <td className="px-4 py-2 text-center">{job.vacancyPayScales?.[index]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
+  
+      {/* Application Details */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Application Details</h2>
+        <ul className="space-y-3">
+          {[
+            ['Application Mode', job.applicationMode],
+            ['Application Fee (General)', job.applicationFeeGeneral],
+            ['Application Fee (SC/ST/PWD)', job.applicationFee_SC_ST_PWD],
+            ['Payment Mode', job.applicationFeePaymentMode],
+          ].map(([label, value], index) => (
+            <li
+              key={index}
+              className={`flex justify-between items-center ${index < 3 ? 'border-b pb-2 border-gray-200 dark:border-gray-700' : ''}`}
+            >
+              <span className="font-medium">{label}:</span>
+              <span>{value || "Not specified"}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+  
+      {/* Selection Process */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Selection Process</h2>
+        {renderArrayAsList(job.selectionProcess)}
+      </section>
+  
+      {/* How to Apply */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">How to Apply</h2>
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-lg font-medium dark:text-white mb-2">Online Application Steps</h3>
+            {renderArrayAsList(job.howToApplyOnlineSteps)}
+          </div>
+          <div>
+            <h3 className="text-lg font-medium dark:text-white mb-2">Offline Application Steps</h3>
+            {renderArrayAsList(job.howToApplyOfflineSteps)}
+          </div>
+          <div>
+            <h3 className="text-lg font-medium dark:text-white mb-2">Required Documents</h3>
+            {renderArrayAsList(job.requiredDocuments)}
+          </div>
+        </div>
+      </section>
+  
+      {/* Exam Details */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Exam Details</h2>
+        <table className="w-full">
+          <thead>
+            <tr className="bg-gray-100 dark:bg-gray-800">
+              <th className="px-4 py-2 text-left">Exam Subject</th>
+              <th className="px-4 py-2 text-left">Question Count</th>
+              <th className="px-4 py-2 text-left">Marks Distribution</th>
+              <th className="px-4 py-2 text-left">Exam Duration</th>
+            </tr>
+          </thead>
+          <tbody>
+            {job.examSubjects?.map((subject, index) => (
+              <tr key={index} className="border-t border-b border-gray-200 dark:border-gray-700">
+                <td className="px-4 py-2">{subject}</td>
+                <td className="px-4 py-2">{job.examQuestionCounts?.[index]}</td>
+                <td className="px-4 py-2">{job.examMarks?.[index]}</td>
+                <td className="px-4 py-2">{job.examDurations?.[index]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+  
+      {/* Important Links */}
+      <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Important Links</h2>
+        <ul className="space-y-3">
+          {job.notificationPDFLink && (
+            <li className="flex justify-between items-center border-b pb-2 border-gray-200 dark:border-gray-700">
+              <span className="font-medium">Notification PDF:</span>
+              <a href={job.notificationPDFLink} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300" target="_blank" rel="noopener noreferrer">
+                Download
+              </a>
+            </li>
+          )}
+          {job.applyOnlineLink && (
+            <li className="flex justify-between items-center border-b pb-2 border-gray-200 dark:border-gray-700">
+              <span className="font-medium">Apply Online:</span>
+              <a href={job.applyOnlineLink} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300" target="_blank" rel="noopener noreferrer">
+                Visit
+              </a>
+            </li>
+          )}
+          {job.officialWebsiteLink && (
+            <li className="flex justify-between items-center">
+              <span className="font-medium">Official Website:</span>
+              <a href={job.officialWebsiteLink} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300" target="_blank" rel="noopener noreferrer">
+                Visit
+              </a>
+            </li>
+          )}
+        </ul>
+      </section>
+  
+      {/* FAQ */}
+      {job.faq?.length > 0 && (
+        <section className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+          <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Frequently Asked Questions</h2>
+          <ul className="space-y-4">
+            {job.faq.map((item, index) => (
+              <li key={index} className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                <strong className="text-gray-800 dark:text-gray-200">Q:</strong> {item.question}<br />
+                <strong className="text-gray-800 dark:text-gray-200 mt-2 block">A:</strong> {item.answer}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+  
+      {/* Keywords */}
+      <section className="mb-8">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Keywords</h2>
+        <div className="flex flex-wrap gap-2">
+          {job.keywords?.map((keyword, index) => (
+            <span key={index} className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm">
+              {keyword}
+            </span>
+          ))}
+        </div>
+      </section>
+  
+      {/* Featured Badge */}
+      {job.isFeatured && (
+        <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm">
+          Featured Job
+        </div>
+      )}
+  
+      {/* Apply Button */}
+      {job.applyOnlineLink && (
+        <div className="text-center mt-8">
+          <a
+            href={job.applyOnlineLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors"
+          >
+            Apply Now
+          </a>
+        </div>
+      )}
+  
+      {/* Edit Modal */}
+      {showEditModal && (
+        <EditGovtJobModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          job={job}
+          jobId={id}
+          onUpdate={handleUpdateJob}
+        />
+      )}
     </div>
   );
 };

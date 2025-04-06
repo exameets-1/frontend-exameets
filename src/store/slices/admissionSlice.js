@@ -219,17 +219,20 @@ export const deleteAdmission = (id) => async(dispatch) => {
 
 export const updateAdmission = ({ admissionId, updatedData }) => async (dispatch) => {
     try {
-        dispatch(admissionSlice.actions.updateAdmissionRequest());
-        const { data } = await axios.put(
-            `${import.meta.env.VITE_BACKEND_URL}/api/v1/admission/update/${admissionId}`,
-            updatedData,
-            { withCredentials: true }
-        );
-        dispatch(admissionSlice.actions.updateAdmissionSuccess(data));
-        return data;
+      dispatch(admissionSlice.actions.updateAdmissionRequest());
+      const { data } = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/admission/update/${admissionId}`,
+        updatedData,
+        { withCredentials: true }
+      );
+      dispatch(admissionSlice.actions.updateAdmissionSuccess(data));
+      return data;
     } catch (error) {
-        dispatch(admissionSlice.actions.updateAdmissionFailure(error.response?.data?.message || "Failed to update admission"));
+      const errorMessage = error.response?.data?.message || "Failed to update admission";
+      dispatch(admissionSlice.actions.updateAdmissionFailure(errorMessage));
+      // Throw error to trigger catch in component
+      throw new Error(errorMessage);
     }
-};
+  };
 
 export default admissionSlice.reducer;

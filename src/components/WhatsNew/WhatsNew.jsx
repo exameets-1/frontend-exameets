@@ -10,7 +10,6 @@ import { fetchLatestAdmissions } from '../../store/slices/admissionSlice';
 import { performGlobalSearch, clearSearchResults } from '../../store/slices/globalSearchSlice';
 import { Link } from 'react-router-dom';
 import { Search } from 'lucide-react';
-import './WhatsNew.css';
 import { fetchLatestYears } from "../../store/slices/previousSlice"; // Import the function
 
 const WhatsNew = () => {
@@ -144,72 +143,79 @@ const WhatsNew = () => {
         }) : 
         latestEntries;
 
-    return (
-        <div className="teams-container">
-            <div className="teams-wrapper">
-                <div className="whats-new-header">
-                    <h2>What&lsquo;s New</h2>
-                </div>
-                
-                <div className="search-box">
-                    <Search className="search-icon" size={20} />
-                    <input
-                        type="text"
-                        placeholder="        Search across all sections..."
-                        value={searchTerm}
-                        onChange={handleSearchChange}
-                    />
-                </div>
-    
-                <div className="teams-table-container">
-                    <div className="scrollable-content">
-                        {isLoading ? (
-                            <div className="loading-spinner">
-                            <div className="spinner"></div>
-                          </div>
-                        ) : searchError ? (
-                            <div className="error-text">
-                                {searchError}
-                            </div>
-                        ) : displayEntries.length === 0 ? (
-                            <div className="no-entries-text">
-                                {searchTerm.trim() !== '' ? 'No results found' : 'No entries available'}
-                            </div>
-                        ) : (
-                            <table className="teams-table">
-                                <tbody>
-                                    {displayEntries.map((entry, index) => (
-                                        <tr 
-                                            key={entry._id || index}
-                                            className="clickable-row"
-                                        >
-                                            
-                                            <td>{getEntryTitle(entry)}</td>
-                                        
-                                            <td>
-                                                <Link 
-                                                    to={getEntryLink(entry)}
-                                                    className="verify-button"
-                                                >
-                                                    View
-                                                </Link>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        )}
+        return (
+          <div className="h-full bg-gray-100 dark:bg-gray-800 p-5">
+            <div className="h-full max-w-6xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-5 flex flex-col">
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 text-center">
+                  What's New
+                </h2>
+              </div>
+        
+              <div className="relative mb-6">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
+                <input
+                  type="text"
+                  placeholder="         Search across all sections..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
+                />
+              </div>
+        
+              <div className="flex-1">
+                <div className="h-96 overflow-y-auto rounded-lg">
+                  {isLoading ? (
+                    <div className="flex justify-center items-center h-40">
+                      <div className="w-10 h-10 border-4 border-[#015990] border-t-transparent rounded-full animate-spin"></div>
                     </div>
+                  ) : searchError ? (
+                    <div className="text-center py-6 text-red-500 dark:text-red-400">
+                      {searchError}
+                    </div>
+                  ) : displayEntries.length === 0 ? (
+                    <div className="text-center py-6 text-gray-500 dark:text-gray-400">
+                      {searchTerm.trim() !== '' ? 'No results found' : 'No entries available'}
+                    </div>
+                  ) : (
+                    <table className="w-full">
+                      <tbody>
+                        {displayEntries.map((entry, index) => (
+                          <tr
+                            key={entry._id || index}
+                            className="hover:bg-blue-50 dark:hover:bg-gray-600 even:bg-gray-50 dark:even:bg-gray-700 transition-colors border-b border-gray-200 dark:border-gray-600"
+                          >
+                            <td className="p-3 text-gray-700 dark:text-gray-100">
+                              {getEntryTitle(entry)}
+                            </td>
+                            <td className="p-3">
+                              <Link
+                                to={getEntryLink(entry)}
+                                className="inline-block px-4 py-2 bg-[#015990] dark:bg-gray-800 text-white rounded-md hover:bg-blue-800 dark:hover:bg-gray-700 transition-colors text-sm"
+                              >
+                                View
+                              </Link>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
-                
-                <div className="view-all">
-                    <Link to="/whatsnew">
-                        <button className="verify-button">View All</button>
-                    </Link>
-                </div>
+              </div>
+        
+              <div className="mt-6 text-center">
+                <Link to="/whatsnew">
+                  <button 
+                    className="px-6 py-2 bg-[#015990] dark:bg-gray-800 text-white rounded-md hover:bg-blue-800 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    View All
+                  </button>
+                </Link>
+              </div>
             </div>
-        </div>
-    );
+          </div>
+        );
 };
 
 export default WhatsNew;

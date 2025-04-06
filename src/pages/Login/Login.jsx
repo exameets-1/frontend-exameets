@@ -7,7 +7,6 @@ import { MdOutlineMailOutline } from "react-icons/md";
 import { RiLock2Fill } from "react-icons/ri";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
-import "./Login.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -71,7 +70,7 @@ const Login = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/password/send-otp`, {
+      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/forgotpassword/send-otp`, {
         email: forgotEmail
       });
       toast.success(data.message);
@@ -79,6 +78,7 @@ const Login = () => {
       setShowOTPModal(true);
       setResendTimer(120); // 2 minutes
     } catch (error) {
+      console.error("Error sending OTP:", error);
       toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
@@ -89,7 +89,7 @@ const Login = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/password/verify-otp`, {
+      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/forgotpassword/verify-otp`, {
         email: forgotEmail,
         otp
       });
@@ -110,7 +110,7 @@ const Login = () => {
     }
     try {
       setLoading(true);
-      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/password/reset-password`, {
+      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/forgotpassword/reset-password`, {
         email: forgotEmail,
         otp,
         newPassword
@@ -140,14 +140,14 @@ const Login = () => {
   }, [resendTimer]);
 
   return (
-    <div className="login-form">
-      <div className="login-section">
-        <h2>Welcome Back!</h2>
+    <div className="login-form bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+      <div className="login-section bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+        <h2 className="text-gray-900 dark:text-white">Welcome Back!</h2>
         <form onSubmit={handleLogin}>
           <div className="section">
-            <label htmlFor="">Email Address</label>
-            <div className="input-group">
-              <MdOutlineMailOutline className="icon" />
+            <label htmlFor="" className="text-gray-700 dark:text-gray-300">Email Address</label>
+            <div className="input-group bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
+              <MdOutlineMailOutline className="icon text-gray-600 dark:text-gray-400" />
               <input
                 type="email"
                 id="email"
@@ -155,14 +155,15 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
               />
             </div>
           </div>
 
           <div className="section">
-            <label htmlFor="">Password</label>
-            <div className="input-group">
-              <RiLock2Fill className="icon" />
+            <label htmlFor="" className="text-gray-700 dark:text-gray-300">Password</label>
+            <div className="input-group bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
+              <RiLock2Fill className="icon text-gray-600 dark:text-gray-400" />
               <input
                 type={showPassword ? "text" : "password"}
                 id="password"
@@ -170,12 +171,13 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
               />
               <div
-                className="password-toggle"
+                className="password-toggle bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                {showPassword ? <FaEyeSlash className="icon text-gray-600 dark:text-gray-400" /> : <FaEye className="icon text-gray-600 dark:text-gray-400" />}
               </div>
             </div>
           </div>
@@ -184,43 +186,44 @@ const Login = () => {
             <a href="#" onClick={(e) => {
               e.preventDefault();
               setShowForgotModal(true);
-            }}>
+            }} className="text-blue-600 dark:text-gray-400 hover:text-blue-800 dark:hover:text-gray-300">
               Forgot Password?
             </a>
           </div>
 
           <button
             type="submit"
-            className="submit-button"
+            className="submit-button bg-blue-600 dark:bg-gray-700 text-white hover:bg-blue-700 dark:hover:bg-gray-950"
             disabled={authLoading}
           >
             {authLoading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        <div className="register-link">
-          Don&lsquo;t have an account? <Link to="/register">Sign up</Link>
+        <div className="register-link text-gray-600 dark:text-gray-400">
+          Don&lsquo;t have an account? <Link to="/register" className="text-gray-600 dark:text-gray-400 hover:text-blue-800 dark:hover:text-gray-300">Sign up</Link>
         </div>
       </div>
 
       {/* Forgot Password Modal */}
       {showForgotModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <button className="close-button" onClick={() => setShowForgotModal(false)}>×</button>
-            <h3 className="modal-header">Forgot Password</h3>
+        <div className="modal bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+          <div className="modal-content bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+            <button className="close-button text-gray-600 dark:text-gray-400" onClick={() => setShowForgotModal(false)}>×</button>
+            <h3 className="modal-header text-gray-900 dark:text-white">Forgot Password</h3>
             <form onSubmit={handleForgotPassword}>
               <div className="section">
-                <label>Email Address</label>
+                <label className="text-gray-700 dark:text-gray-300">Email Address</label>
                 <input
                   type="email"
                   placeholder="Enter your email"
                   value={forgotEmail}
                   onChange={(e) => setForgotEmail(e.target.value)}
                   required
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
                 />
               </div>
-              <button type="submit" className="submit-button" disabled={loading}>
+              <button type="submit" className="submit-button bg-blue-600 dark:bg-gray-700 text-white hover:bg-blue-700 dark:hover:bg-gray-950" disabled={loading}>
                 {loading ? "Sending..." : "Send OTP"}
               </button>
             </form>
@@ -230,28 +233,29 @@ const Login = () => {
 
       {/* OTP Verification Modal */}
       {showOTPModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <button className="close-button" onClick={() => setShowOTPModal(false)}>×</button>
-            <h3 className="modal-header">Enter OTP</h3>
+        <div className="modal bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+          <div className="modal-content bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+            <button className="close-button text-gray-600 dark:text-gray-400" onClick={() => setShowOTPModal(false)}>×</button>
+            <h3 className="modal-header text-gray-900 dark:text-white">Enter OTP</h3>
             <form onSubmit={handleVerifyOTP}>
               <div className="section">
-                <label>OTP</label>
+                <label className="text-gray-700 dark:text-gray-300">OTP</label>
                 <input
                   type="text"
                   placeholder="Enter OTP"
                   value={otp}
                   onChange={(e) => setOTP(e.target.value)}
                   required
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
                 />
               </div>
               {resendTimer > 0 && (
-                <div className="timer">
+                <div className="timer text-gray-600 dark:text-gray-400">
                   Resend OTP in {Math.floor(resendTimer / 60)}:
                   {(resendTimer % 60).toString().padStart(2, '0')}
                 </div>
               )}
-              <button type="submit" className="submit-button" disabled={loading}>
+              <button type="submit" className="submit-button bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-800" disabled={loading}>
                 {loading ? "Verifying..." : "Verify OTP"}
               </button>
             </form>
@@ -261,23 +265,24 @@ const Login = () => {
 
       {/* Reset Password Modal */}
       {showResetModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <button className="close-button" onClick={() => setShowResetModal(false)}>×</button>
-            <h3 className="modal-header">Reset Password</h3>
+        <div className="modal bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+          <div className="modal-content bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+            <button className="close-button text-gray-600 dark:text-gray-400" onClick={() => setShowResetModal(false)}>×</button>
+            <h3 className="modal-header text-gray-900 dark:text-white">Reset Password</h3>
             <form onSubmit={handleResetPassword}>
               <div className="section">
-                <label>New Password</label>
-                <div className="input-group">
+                <label className="text-gray-700 dark:text-gray-300">New Password</label>
+                <div className="input-group bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter new password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     required
-                  />
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
+                    />
                   <div
-                    className="password-toggle"
+                    className="password-toggle bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -285,18 +290,19 @@ const Login = () => {
                 </div>
               </div>
               <div className="section">
-                <label>Confirm Password</label>
-                <div className="input-group">
+                <label className="text-gray-700 dark:text-gray-300">Confirm Password</label>
+                <div className="input-group bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="Confirm new password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
                   />
                 </div>
               </div>
-              <button type="submit" className="submit-button" disabled={loading}>
+              <button type="submit" className="submit-button bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-800" disabled={loading}>
                 {loading ? "Resetting..." : "Reset Password"}
               </button>
             </form>
