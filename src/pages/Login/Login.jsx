@@ -140,14 +140,16 @@ const Login = () => {
   }, [resendTimer]);
 
   return (
-    <div className="login-form bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-      <div className="login-section bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-        <h2 className="text-gray-900 dark:text-white">Welcome Back!</h2>
+    <div className="flex justify-center items-center p-5 bg-white dark:bg-gray-800 min-h-screen">
+      <div className="w-full max-w-lg bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
+        <h2 className="text-center text-2xl font-semibold text-[#005587] dark:text-white mb-8">Welcome Back!</h2>
         <form onSubmit={handleLogin}>
-          <div className="section">
-            <label htmlFor="" className="text-gray-700 dark:text-gray-300">Email Address</label>
-            <div className="input-group bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
-              <MdOutlineMailOutline className="icon text-gray-600 dark:text-gray-400" />
+          <div className="mb-5">
+            <label htmlFor="email" className="block font-medium text-[#005587] dark:text-gray-300 mb-2">Email Address</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <MdOutlineMailOutline className="text-[#005587] dark:text-gray-400" />
+              </div>
               <input
                 type="email"
                 id="email"
@@ -155,15 +157,17 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#005587] focus:ring-1 focus:ring-[#005587] transition-colors"
               />
             </div>
           </div>
 
-          <div className="section">
-            <label htmlFor="" className="text-gray-700 dark:text-gray-300">Password</label>
-            <div className="input-group bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
-              <RiLock2Fill className="icon text-gray-600 dark:text-gray-400" />
+          <div className="mb-5">
+            <label htmlFor="password" className="block font-medium text-[#005587] dark:text-gray-300 mb-2">Password</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <RiLock2Fill className="text-[#005587] dark:text-gray-400" />
+              </div>
               <input
                 type={showPassword ? "text" : "password"}
                 id="password"
@@ -171,59 +175,86 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
+                className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#005587] focus:ring-1 focus:ring-[#005587] transition-colors"
               />
               <div
-                className="password-toggle bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <FaEyeSlash className="icon text-gray-600 dark:text-gray-400" /> : <FaEye className="icon text-gray-600 dark:text-gray-400" />}
+                {showPassword ? 
+                  <FaEyeSlash className="text-[#005587] dark:text-gray-400" /> : 
+                  <FaEye className="text-[#005587] dark:text-gray-400" />
+                }
               </div>
             </div>
           </div>
 
-          <div className="forgot-password">
-            <a href="#" onClick={(e) => {
-              e.preventDefault();
-              setShowForgotModal(true);
-            }} className="text-blue-600 dark:text-gray-400 hover:text-blue-800 dark:hover:text-gray-300">
+          <div className="text-right -mt-2 mb-5">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                setShowForgotModal(true);
+              }}
+              className="text-sm text-[#005587] dark:text-gray-400 hover:underline focus:outline-none"
+            >
               Forgot Password?
-            </a>
+            </button>
           </div>
 
           <button
             type="submit"
-            className="submit-button bg-blue-600 dark:bg-gray-700 text-white hover:bg-blue-700 dark:hover:bg-gray-950"
+            className={`w-full py-3 rounded-lg font-medium transition-colors ${
+              authLoading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-[#005587] hover:bg-[#004670] dark:bg-blue-700 dark:hover:bg-blue-800 text-white"
+            }`}
             disabled={authLoading}
           >
             {authLoading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        <div className="register-link text-gray-600 dark:text-gray-400">
-          Don&lsquo;t have an account? <Link to="/register" className="text-gray-600 dark:text-gray-400 hover:text-blue-800 dark:hover:text-gray-300">Sign up</Link>
+        <div className="text-center mt-5 text-gray-600 dark:text-gray-400">
+          Don&lsquo;t have an account?{" "}
+          <Link to="/register" className="text-[#005587] dark:text-gray-400 font-medium hover:underline">
+            Sign up
+          </Link>
         </div>
       </div>
 
       {/* Forgot Password Modal */}
       {showForgotModal && (
-        <div className="modal bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-          <div className="modal-content bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-            <button className="close-button text-gray-600 dark:text-gray-400" onClick={() => setShowForgotModal(false)}>×</button>
-            <h3 className="modal-header text-gray-900 dark:text-white">Forgot Password</h3>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="relative bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-11/12 max-w-md">
+            <button 
+              className="absolute right-5 top-5 text-2xl text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200" 
+              onClick={() => setShowForgotModal(false)}
+            >
+              ×
+            </button>
+            <h3 className="text-xl font-semibold text-[#005587] dark:text-white text-center mb-6">Forgot Password</h3>
             <form onSubmit={handleForgotPassword}>
-              <div className="section">
-                <label className="text-gray-700 dark:text-gray-300">Email Address</label>
+              <div className="mb-5">
+                <label className="block font-medium text-[#005587] dark:text-gray-300 mb-2">Email Address</label>
                 <input
                   type="email"
                   placeholder="Enter your email"
                   value={forgotEmail}
                   onChange={(e) => setForgotEmail(e.target.value)}
                   required
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#005587] focus:ring-1 focus:ring-[#005587]"
                 />
               </div>
-              <button type="submit" className="submit-button bg-blue-600 dark:bg-gray-700 text-white hover:bg-blue-700 dark:hover:bg-gray-950" disabled={loading}>
+              <button 
+                type="submit" 
+                className={`w-full py-3 rounded-lg font-medium text-white ${
+                  loading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-[#005587] hover:bg-[#004670] dark:bg-blue-700 dark:hover:bg-blue-800"
+                }`}
+                disabled={loading}
+              >
                 {loading ? "Sending..." : "Send OTP"}
               </button>
             </form>
@@ -233,29 +264,42 @@ const Login = () => {
 
       {/* OTP Verification Modal */}
       {showOTPModal && (
-        <div className="modal bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-          <div className="modal-content bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-            <button className="close-button text-gray-600 dark:text-gray-400" onClick={() => setShowOTPModal(false)}>×</button>
-            <h3 className="modal-header text-gray-900 dark:text-white">Enter OTP</h3>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="relative bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-11/12 max-w-md">
+            <button 
+              className="absolute right-5 top-5 text-2xl text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200" 
+              onClick={() => setShowOTPModal(false)}
+            >
+              ×
+            </button>
+            <h3 className="text-xl font-semibold text-[#005587] dark:text-white text-center mb-6">Enter OTP</h3>
             <form onSubmit={handleVerifyOTP}>
-              <div className="section">
-                <label className="text-gray-700 dark:text-gray-300">OTP</label>
+              <div className="mb-5">
+                <label className="block font-medium text-[#005587] dark:text-gray-300 mb-2">OTP</label>
                 <input
                   type="text"
                   placeholder="Enter OTP"
                   value={otp}
                   onChange={(e) => setOTP(e.target.value)}
                   required
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#005587] focus:ring-1 focus:ring-[#005587]"
                 />
               </div>
               {resendTimer > 0 && (
-                <div className="timer text-gray-600 dark:text-gray-400">
+                <div className="text-center text-sm text-gray-600 dark:text-gray-400 mb-4">
                   Resend OTP in {Math.floor(resendTimer / 60)}:
                   {(resendTimer % 60).toString().padStart(2, '0')}
                 </div>
               )}
-              <button type="submit" className="submit-button bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-800" disabled={loading}>
+              <button 
+                type="submit" 
+                className={`w-full py-3 rounded-lg font-medium text-white ${
+                  loading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-[#005587] hover:bg-[#004670] dark:bg-blue-700 dark:hover:bg-blue-800"
+                }`}
+                disabled={loading}
+              >
                 {loading ? "Verifying..." : "Verify OTP"}
               </button>
             </form>
@@ -265,44 +309,60 @@ const Login = () => {
 
       {/* Reset Password Modal */}
       {showResetModal && (
-        <div className="modal bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-          <div className="modal-content bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-            <button className="close-button text-gray-600 dark:text-gray-400" onClick={() => setShowResetModal(false)}>×</button>
-            <h3 className="modal-header text-gray-900 dark:text-white">Reset Password</h3>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="relative bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-11/12 max-w-md">
+            <button 
+              className="absolute right-5 top-5 text-2xl text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200" 
+              onClick={() => setShowResetModal(false)}
+            >
+              ×
+            </button>
+            <h3 className="text-xl font-semibold text-[#005587] dark:text-white text-center mb-6">Reset Password</h3>
             <form onSubmit={handleResetPassword}>
-              <div className="section">
-                <label className="text-gray-700 dark:text-gray-300">New Password</label>
-                <div className="input-group bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
+              <div className="mb-5">
+                <label className="block font-medium text-[#005587] dark:text-gray-300 mb-2">New Password</label>
+                <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter new password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     required
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
-                    />
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#005587] focus:ring-1 focus:ring-[#005587]"
+                  />
                   <div
-                    className="password-toggle bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    {showPassword ? 
+                      <FaEyeSlash className="text-[#005587] dark:text-gray-400" /> : 
+                      <FaEye className="text-[#005587] dark:text-gray-400" />
+                    }
                   </div>
                 </div>
               </div>
-              <div className="section">
-                <label className="text-gray-700 dark:text-gray-300">Confirm Password</label>
-                <div className="input-group bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
+              <div className="mb-5">
+                <label className="block font-medium text-[#005587] dark:text-gray-300 mb-2">Confirm Password</label>
+                <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="Confirm new password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#015990] focus:ring-1 focus:ring-[#015990]"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none focus:border-[#005587] focus:ring-1 focus:ring-[#005587]"
                   />
                 </div>
               </div>
-              <button type="submit" className="submit-button bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-800" disabled={loading}>
+              <button 
+                type="submit" 
+                className={`w-full py-3 rounded-lg font-medium text-white ${
+                  loading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-[#005587] hover:bg-[#004670] dark:bg-blue-700 dark:hover:bg-blue-800"
+                }`}
+                disabled={loading}
+              >
                 {loading ? "Resetting..." : "Reset Password"}
               </button>
             </form>
