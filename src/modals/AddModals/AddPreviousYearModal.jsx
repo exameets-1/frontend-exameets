@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaTimes, FaPlus, FaTrash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 
@@ -21,6 +21,7 @@ const AddPreviousYearModal = ({ isOpen, onClose, onSubmit }) => {
 
     const [formData, setFormData] = useState(initialFormData);
     const [currentInputs, setCurrentInputs] = useState({ keyword: '' });
+    const [isFormValid, setIsFormValid] = useState(false);
     const { isAuthenticated, user } = useSelector((state) => state.user);
 
     const categories = [
@@ -38,6 +39,24 @@ const AddPreviousYearModal = ({ isOpen, onClose, onSubmit }) => {
     const difficultyLevels = ["Easy", "Medium", "Hard", "Very Hard"];
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 20 }, (_, i) => currentYear - i);
+
+    // Validate form whenever formData changes
+    useEffect(() => {
+        const requiredFields = [
+            'title', 
+            'exam_name', 
+            'description', 
+            'subject', 
+            'category', 
+            'difficulty_level', 
+            'paper_link',
+            'searchDescription',
+            'slug'
+        ];
+        
+        const isValid = requiredFields.every(field => formData[field].trim() !== '');
+        setIsFormValid(isValid);
+    }, [formData]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -77,6 +96,19 @@ const AddPreviousYearModal = ({ isOpen, onClose, onSubmit }) => {
         onSubmit(formData);
     };
 
+    // Handle keypress to prevent form submission on Enter
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            
+            // If Enter is pressed in keyword input, add the keyword
+            if (e.target.placeholder === 'Add keyword' && currentInputs.keyword.trim()) {
+                handleArrayAdd('keywords', currentInputs.keyword);
+                setCurrentInputs(prev => ({ ...prev, keyword: '' }));
+            }
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -89,7 +121,7 @@ const AddPreviousYearModal = ({ isOpen, onClose, onSubmit }) => {
                     </button>
                 </div>
     
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="p-6 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
     
                         {/* Title and Exam Name */}
@@ -276,7 +308,12 @@ const AddPreviousYearModal = ({ isOpen, onClose, onSubmit }) => {
                             {isAuthenticated && user?.role === 'admin' ? (
                                 <button
                                     type="submit"
-                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                    disabled={!isFormValid}
+                                    className={`px-6 py-2 rounded-lg ${
+                                        isFormValid 
+                                            ? 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer' 
+                                            : 'bg-blue-300 text-gray-100 cursor-not-allowed'
+                                    }`}
                                 >
                                     Add Paper
                                 </button>

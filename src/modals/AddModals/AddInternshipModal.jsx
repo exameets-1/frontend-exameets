@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaTimes, FaPlus, FaTrash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 
@@ -27,10 +27,35 @@ const AddInternshipModal = ({ isOpen, onClose, onSubmit }) => {
     const [formData, setFormData] = useState(initialFormData);
     const [currentInputs, setCurrentInputs] = useState({
         skill: '',
-        eligibility: ''
+        eligibility: '',
+        keyword: ''
     });
+    const [isFormValid, setIsFormValid] = useState(false);
 
     const { isAuthenticated, user } = useSelector((state) => state.user);
+
+    // Define required fields
+    const requiredFields = [
+        'internship_type', 'title', 'start_date', 'duration', 
+        'organization', 'location', 'description', 'last_date'
+    ];
+
+    // Validate form on data change
+    useEffect(() => {
+        const checkFormValidity = () => {
+            // Check if all required fields are filled
+            const allRequiredFieldsFilled = requiredFields.every(field => 
+                formData[field] && formData[field].toString().trim() !== ''
+            );
+            
+            // Additional check for array fields
+            const hasSkills = formData.skills_required.length > 0;
+            
+            setIsFormValid(allRequiredFieldsFilled && hasSkills);
+        };
+        
+        checkFormValidity();
+    }, [formData]);
 
     const arrayFields = {
         skills_required: { label: 'Skills Required', type: 'text' },
@@ -44,7 +69,7 @@ const AddInternshipModal = ({ isOpen, onClose, onSubmit }) => {
 
     const handleAddItem = (field) => {
         const inputField = field === 'skills_required' ? 'skill' : 
-                          field === 'eligibility_criteria' ? 'eligibility' : field;
+                          field === 'eligibility_criteria' ? 'eligibility' : 'keyword';
         
         if (!currentInputs[inputField]?.trim()) return;
         
@@ -72,6 +97,13 @@ const AddInternshipModal = ({ isOpen, onClose, onSubmit }) => {
         }
     };
 
+    // Prevent form submission on Enter key
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && e.target.type !== 'textarea') {
+            e.preventDefault();
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         onSubmit(formData);
@@ -89,61 +121,79 @@ const AddInternshipModal = ({ isOpen, onClose, onSubmit }) => {
                     </button>
                 </div>
     
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="p-6 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
     
                         {/* Input Field Generator */}
                         {[
-                            { label: "Title", name: "title" },
-                            { label: "Organization", name: "organization" },
-                            { label: "Field", name: "field" },
-                            { label: "Start Date", name: "start_date" },
-                            { label: "Last Date to Apply", name: "last_date" },
-                            { label: "Duration", name: "duration" },
-                            { label: "Stipend", name: "stipend" },
-                            { label: "Location", name: "location" },
-                            { label: "Qualification", name: "qualification" },
-                            { label: "Application Link", name: "application_link", type: "url" },
-                            { label: "Slug", name: "slug" }
-                        ].map(({ label, name, type = "text" }) => (
+                            { label: "Title", name: "title", required: true },
+                            { label: "Organization", name: "organization", required: true },
+                            { label: "Field", name: "field", required: false },
+                            { label: "Start Date", name: "start_date", type: "date", required: true },
+                            { label: "Last Date to Apply", name: "last_date", type: "date", required: true },
+                            { label: "Duration", name: "duration", required: true },
+                            { label: "Stipend", name: "stipend", required: false },
+                            { label: "Location", name: "location", required: true },
+                            { label: "Qualification", name: "qualification", required: false },
+                            { label: "Application Link", name: "application_link", type: "url", required: false },
+                            { label: "Slug", name: "slug", required: false }
+                        ].map(({ label, name, type = "text", required }) => (
                             <div key={name} className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    {label} {required && <span className="text-red-500">*</span>}
+                                </label>
                                 <input
                                     type={type}
                                     name={name}
                                     value={formData[name]}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    required={required}
+                                    className={`w-full px-4 py-2 border ${
+                                        required && !formData[name] ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+                                    } dark:bg-gray-800 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
                                 />
+                                {required && !formData[name] && (
+                                    <p className="text-red-500 text-xs mt-1">This field is required</p>
+                                )}
                             </div>
                         ))}
     
                         {/* Internship Type */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Internship Type</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Internship Type <span className="text-red-500">*</span>
+                            </label>
                             <select
                                 name="internship_type"
                                 value={formData.internship_type}
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                                className={`w-full px-4 py-2 border ${
+                                    !formData.internship_type ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+                                } dark:bg-gray-800 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
                             >
                                 <option value="">Select Internship Type</option>
                                 <option value="On-Site">On-Site</option>
                                 <option value="Remote">Remote</option>
                             </select>
+                            {!formData.internship_type && (
+                                <p className="text-red-500 text-xs mt-1">This field is required</p>
+                            )}
                         </div>
     
                         {/* Array Fields */}
                         {Object.entries(arrayFields).map(([field, config]) => (
                             <div key={field} className="md:col-span-2 space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{config.label}</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    {config.label} {field === 'skills_required' && <span className="text-red-500">*</span>}
+                                </label>
                                 <div className="flex gap-2">
                                     <input
                                         type="text"
-                                        value={field === 'skills_required' ? currentInputs.skill : field === 'eligibility_criteria' ? currentInputs.eligibility : currentInputs[field]}
+                                        value={currentInputs[field === 'skills_required' ? 'skill' : field === 'eligibility_criteria' ? 'eligibility' : 'keyword']}
                                         onChange={(e) => handleArrayChange(
                                             field === 'skills_required' ? 'skill' : 
-                                            field === 'eligibility_criteria' ? 'eligibility' : field,
+                                            field === 'eligibility_criteria' ? 'eligibility' : 'keyword',
                                             e.target.value
                                         )}
                                         className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -171,6 +221,9 @@ const AddInternshipModal = ({ isOpen, onClose, onSubmit }) => {
                                         </div>
                                     ))}
                                 </div>
+                                {field === 'skills_required' && formData[field].length === 0 && (
+                                    <p className="text-red-500 text-xs mt-1">At least one skill is required</p>
+                                )}
                             </div>
                         ))}
     
@@ -180,15 +233,22 @@ const AddInternshipModal = ({ isOpen, onClose, onSubmit }) => {
                             { name: "searchDescription", label: "Search Description", required: false }
                         ].map(({ name, label, required }) => (
                             <div key={name} className="md:col-span-2 space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    {label} {required && <span className="text-red-500">*</span>}
+                                </label>
                                 <textarea
                                     name={name}
                                     value={formData[name]}
                                     onChange={handleChange}
                                     rows={4}
-                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                                    className={`w-full px-4 py-2 border ${
+                                        required && !formData[name] ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+                                    } dark:bg-gray-800 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y`}
                                     required={required}
                                 />
+                                {required && !formData[name] && (
+                                    <p className="text-red-500 text-xs mt-1">This field is required</p>
+                                )}
                             </div>
                         ))}
     
@@ -219,7 +279,12 @@ const AddInternshipModal = ({ isOpen, onClose, onSubmit }) => {
                             {isAuthenticated && user?.role === 'admin' ? (
                                 <button
                                     type="submit"
-                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                    disabled={!isFormValid}
+                                    className={`px-6 py-2 ${
+                                        isFormValid 
+                                        ? 'bg-blue-600 hover:bg-blue-700' 
+                                        : 'bg-blue-300 cursor-not-allowed'
+                                    } text-white rounded-lg`}
                                 >
                                     Add Internship
                                 </button>

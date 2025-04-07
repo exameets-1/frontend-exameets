@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FaTimes, FaPlus, FaTrash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types'; // Import PropTypes
+import PropTypes from 'prop-types';
 
 const AddATeamMemberModal = ({ isOpen, onClose, onSubmit }) => {
     const initialFormData = {
@@ -18,13 +18,32 @@ const AddATeamMemberModal = ({ isOpen, onClose, onSubmit }) => {
 
     const [formData, setFormData] = useState(initialFormData);
     const [currentCertificate, setCurrentCertificate] = useState('');
-    const [uploading, setUploading] = useState(false); // State for upload status
+    const [uploading, setUploading] = useState(false);
     const { isAuthenticated, user } = useSelector((state) => state.user);
+
+    // Check if all required fields are filled
+    const isFormValid = () => {
+        return (
+            formData.name.trim() !== '' &&
+            formData.position.trim() !== '' &&
+            formData.description.trim() !== '' &&
+            formData.strengths.trim() !== '' &&
+            formData.linkedin.trim() !== '' &&
+            formData.github.trim() !== ''
+        );
+    };
+
+    // Prevent form submission on Enter key
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
         if (files) {
-            handleImageUpload(name, files[0]); // Handle image upload
+            handleImageUpload(name, files[0]);
         } else {
             setFormData(prev => ({
                 ...prev,
@@ -55,7 +74,7 @@ const AddATeamMemberModal = ({ isOpen, onClose, onSubmit }) => {
             const data = await response.json();
             setFormData(prev => ({
                 ...prev,
-                [fieldName]: data.secure_url // Save the Cloudinary URL in the form data
+                [fieldName]: data.secure_url
             }));
         } catch {
             alert('Failed to upload image. Please try again.');
@@ -90,7 +109,7 @@ const AddATeamMemberModal = ({ isOpen, onClose, onSubmit }) => {
                 ...prev,
                 certificates: [...prev.certificates, data.secure_url]
             }));
-            setCurrentCertificate(null); // Reset to null instead of empty string
+            setCurrentCertificate(null);
         } catch {
             alert('Failed to upload certificate. Please try again.');
         } finally {
@@ -117,6 +136,10 @@ const AddATeamMemberModal = ({ isOpen, onClose, onSubmit }) => {
             return;
         }
 
+        if (!isFormValid()) {
+            return;
+        }
+
         const formattedData = {
             ...formData,
             postedBy: user._id
@@ -137,7 +160,7 @@ const AddATeamMemberModal = ({ isOpen, onClose, onSubmit }) => {
                     </button>
                 </div>
     
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="p-6 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Name and Position */}
                         <div className="space-y-2">
@@ -299,7 +322,12 @@ const AddATeamMemberModal = ({ isOpen, onClose, onSubmit }) => {
                             {isAuthenticated && user?.role === 'manager' ? (
                                 <button
                                     type="submit"
-                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                    disabled={!isFormValid() || uploading}
+                                    className={`px-6 py-2 rounded-lg ${
+                                        isFormValid() && !uploading
+                                            ? 'bg-blue-600 text-white hover:bg-blue-700'
+                                            : 'bg-blue-300 text-white cursor-not-allowed'
+                                    }`}
                                 >
                                     Add Team Member
                                 </button>
@@ -321,9 +349,9 @@ const AddATeamMemberModal = ({ isOpen, onClose, onSubmit }) => {
 };
 
 AddATeamMemberModal.propTypes = {
-    isOpen: PropTypes.bool.isRequired, // Validate isOpen as a required boolean
-    onClose: PropTypes.func.isRequired, // Validate onClose as a required function
-    onSubmit: PropTypes.func.isRequired, // Validate onSubmit as a required function
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
 };
 
 export default AddATeamMemberModal;

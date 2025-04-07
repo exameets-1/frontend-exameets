@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { FaTimes, FaPlus, FaTrash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
@@ -33,6 +33,7 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
         linkType: '',
         link: ''
     });
+    const [isFormValid, setIsFormValid] = useState(false);
 
     const { isAuthenticated, user } = useSelector((state) => state.user);
 
@@ -56,6 +57,16 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
         },
         keywords: { label: 'Keywords', type: 'text' }
     };
+
+    // Validate form data
+    useEffect(() => {
+        const requiredFields = ['title', 'organization', 'advertisementNumber', 'vacancies', 'officialWebsite', 'slug'];
+        const areRequiredFieldsFilled = requiredFields.every(field => formData[field].trim() !== '');
+        const hasImportantDates = formData.importantDates.length > 0;
+        const hasExamDetails = formData.examDetails.length > 0;
+        
+        setIsFormValid(areRequiredFieldsFilled && hasImportantDates && hasExamDetails);
+    }, [formData]);
 
     const handleArrayChange = (field, value) => {
         setCurrentInputs(prev => ({ ...prev, [field]: value }));
@@ -104,7 +115,16 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit(formData);
+        if (isFormValid) {
+            onSubmit(formData);
+        }
+    };
+
+    // Prevent form submission on Enter key
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+        }
     };
 
     if (!isOpen) return null;
@@ -119,23 +139,26 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
                     </button>
                 </div>
     
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="p-6 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Basic Information */}
                         <div className="space-y-6">
                             {[
-                                { label: "Title", name: "title" },
-                                { label: "Organization", name: "organization" },
-                                { label: "Advertisement Number", name: "advertisementNumber" },
-                                { label: "Vacancies", name: "vacancies" }
-                            ].map(({ label, name }) => (
+                                { label: "Title", name: "title", required: true },
+                                { label: "Organization", name: "organization", required: true },
+                                { label: "Advertisement Number", name: "advertisementNumber", required: true },
+                                { label: "Vacancies", name: "vacancies", required: true }
+                            ].map(({ label, name, required }) => (
                                 <div key={name} className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{label}</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                                        {label} {required && <span className="text-red-500">*</span>}
+                                    </label>
                                     <input
                                         type="text"
                                         name={name}
                                         value={formData[name]}
                                         onChange={handleChange}
+                                        required={required}
                                         className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                 </div>
@@ -145,16 +168,19 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
                         {/* Website and Slug */}
                         <div className="space-y-6">
                             {[
-                                { label: "Official Website", name: "officialWebsite", type: "url" },
-                                { label: "Slug", name: "slug" }
-                            ].map(({ label, name, type = "text" }) => (
+                                { label: "Official Website", name: "officialWebsite", type: "url", required: true },
+                                { label: "Slug", name: "slug", required: true }
+                            ].map(({ label, name, type = "text", required }) => (
                                 <div key={name} className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{label}</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                                        {label} {required && <span className="text-red-500">*</span>}
+                                    </label>
                                     <input
                                         type={type}
                                         name={name}
                                         value={formData[name]}
                                         onChange={handleChange}
+                                        required={required}
                                         className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                 </div>
@@ -164,7 +190,9 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
                         {/* Array Fields */}
                         {Object.entries(arrayFields).map(([field, config]) => (
                             <div key={field} className="md:col-span-2 space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{config.label}</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                                    {config.label} {(field === 'importantDates' || field === 'examDetails') && <span className="text-red-500">*</span>}
+                                </label>
     
                                 {config.type === 'object' ? (
                                     <div className="space-y-4">
@@ -269,6 +297,13 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
                             </label>
                         </div>
                     </div>
+                    
+                    {/* Validation message */}
+                    {!isFormValid && (
+                        <div className="text-red-500 text-sm">
+                            Please fill in all required fields and add at least one entry for Important Dates and Exam Details.
+                        </div>
+                    )}
     
                     <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
                         <div className="flex justify-end gap-4">
@@ -282,7 +317,8 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
                             {isAuthenticated && user?.role === 'admin' ? (
                                 <button
                                     type="submit"
-                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                    disabled={!isFormValid}
+                                    className={`px-6 py-2 ${isFormValid ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-400 cursor-not-allowed'} text-white rounded-lg`}
                                 >
                                     Add Admit Card
                                 </button>
@@ -302,6 +338,7 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
         </div>
     );
 };
+
 AddAdmitCardModal.propTypes = {
     isOpen: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,

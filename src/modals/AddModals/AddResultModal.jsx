@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaTimes, FaPlus, FaTrash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 
@@ -33,7 +33,6 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
     const [formData, setFormData] = useState(initialFormData);
     const [currentInputs, setCurrentInputs] = useState({
         nextStep: '',
-
         importantDateEvent: '',
         importantDateDate: '',
         stepToCheck: '',
@@ -41,6 +40,7 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
         cutoffMark: '',
         documentRequired: ''
     });
+    const [isFormValid, setIsFormValid] = useState(false);
 
     const { isAuthenticated, user } = useSelector((state) => state.user);
 
@@ -51,8 +51,14 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
         importantDates: { label: 'Important Dates', type: 'object', fields: ['event', 'date'] },
         cutoffMarks: { label: 'Cutoff Marks', type: 'object', fields: ['category', 'marks'] },
         keywords: { label: 'Keywords', type: 'text' },
-        
     };
+
+    // Form validation
+    useEffect(() => {
+        const requiredFields = ['title', 'organization', 'postName', 'resultDate', 'officialWebsite'];
+        const isValid = requiredFields.every(field => formData[field].trim() !== '');
+        setIsFormValid(isValid);
+    }, [formData]);
 
     const handleArrayChange = (field, value) => {
         setCurrentInputs(prev => ({ ...prev, [field]: value }));
@@ -105,7 +111,16 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit(formData);
+        if (isFormValid) {
+            onSubmit(formData);
+        }
+    };
+
+    // Handle key press to prevent form submission on Enter
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+        }
     };
 
     if (!isOpen) return null;
@@ -123,19 +138,25 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
                     </button>
                 </div>
     
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="p-6 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Basic Information */}
                         <div className="space-y-6">
                             {["title", "organization", "postName", "totalVacancies"].map((field) => (
                                 <div key={field} className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">{field.replace(/([A-Z])/g, " $1")}</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
+                                        {field.replace(/([A-Z])/g, " $1")}
+                                        {["title", "organization", "postName"].includes(field) && (
+                                            <span className="text-red-500 ml-1">*</span>
+                                        )}
+                                    </label>
                                     <input
                                         type="text"
                                         name={field}
                                         value={formData[field]}
                                         onChange={handleChange}
                                         className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                        required={["title", "organization", "postName"].includes(field)}
                                     />
                                 </div>
                             ))}
@@ -144,7 +165,9 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
                         {/* Dates and Links */}
                         <div className="space-y-6">
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Result Date</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Result Date<span className="text-red-500 ml-1">*</span>
+                                </label>
                                 <input
                                     type="text"
                                     name="resultDate"
@@ -152,16 +175,20 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                                     placeholder="DD/MM/YYYY"
+                                    required
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Official Website</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Official Website<span className="text-red-500 ml-1">*</span>
+                                </label>
                                 <input
                                     type="url"
                                     name="officialWebsite"
                                     value={formData.officialWebsite}
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                    required
                                 />
                             </div>
                             <div className="space-y-2">
@@ -191,10 +218,16 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
                                                 <input
                                                     key={subField}
                                                     type="text"
-                                                    value={currentInputs[`${field}${subField}`]}
+                                                    value={currentInputs[`${field}${subField}`] || ''}
                                                     onChange={(e) => handleArrayChange(`${field}${subField}`, e.target.value)}
                                                     placeholder={`Add ${subField}`}
                                                     className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            handleAddObjectItem(field);
+                                                        }
+                                                    }}
                                                 />
                                             ))}
                                             <button
@@ -229,10 +262,16 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
                                         <div className="flex gap-2">
                                             <input
                                                 type="text"
-                                                value={currentInputs[field]}
+                                                value={currentInputs[field] || ''}
                                                 onChange={(e) => handleArrayChange(field, e.target.value)}
                                                 placeholder={`Add ${config.label.toLowerCase()}`}
                                                 className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        handleAddItem(field);
+                                                    }
+                                                }}
                                             />
                                             <button
                                                 type="button"
@@ -321,7 +360,8 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
                             {isAuthenticated && user?.role === 'admin' ? (
                                 <button
                                     type="submit"
-                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                    className={`px-6 py-2 ${isFormValid ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-300 cursor-not-allowed'} text-white rounded-lg`}
+                                    disabled={!isFormValid}
                                 >
                                     Add Result
                                 </button>

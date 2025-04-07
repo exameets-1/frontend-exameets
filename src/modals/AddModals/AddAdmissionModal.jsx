@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { FaTimes } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { FaTimes, FaPlus, FaTrash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
-import { FaPlus, FaTrash } from 'react-icons/fa';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
     const initialFormData = {
@@ -23,9 +24,7 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
     };
 
     const [formData, setFormData] = useState(initialFormData);
-    const [currentInputs, setCurrentInputs] = useState({
-        keyword: ''
-      });
+    const [currentInputs, setCurrentInputs] = useState({ keyword: '' });
     const { isAuthenticated, user } = useSelector((state) => state.user);
 
     const categories = [
@@ -40,6 +39,43 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
         'Other'
     ];
 
+    const isValidUrl = (url) => {
+        try {
+            new URL(url);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    };
+
+    const isFormValid = () => {
+        const requiredFields = [
+            'title',
+            'institute',
+            'description',
+            'eligibility_criteria',
+            'course',
+            'application_link',
+            'start_date',
+            'last_date',
+            'category',
+            'fees',
+            'location',
+            'searchDescription',
+            'slug',
+        ];
+
+        for (const field of requiredFields) {
+            if (!formData[field]?.trim()) return false;
+        }
+
+        if (formData.searchDescription.length > 160) return false;
+        if (!isValidUrl(formData.application_link)) return false;
+        if (!Array.isArray(formData.keywords)) return false;
+
+        return true;
+    };
+
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
@@ -51,16 +87,22 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
     const handleArrayAdd = (field, value) => {
         if (!value.trim()) return;
         setFormData(prev => ({
-          ...prev,
-          [field]: [...prev[field], value.trim()]
-      }));
+            ...prev,
+            [field]: [...prev[field], value.trim()]
+        }));
     };
-    
+
     const handleArrayRemove = (field, index) => {
         setFormData(prev => ({
-          ...prev,
-          [field]: prev[field].filter((_, i) => i !== index)
-       }));
+            ...prev,
+            [field]: prev[field].filter((_, i) => i !== index)
+        }));
+    };
+
+    const handleFormKeyDown = (e) => {
+        if (e.key === 'Enter' && e.target.tagName.toLowerCase() !== 'textarea') {
+            e.preventDefault();
+        }
     };
 
     const handleLogin = () => {
@@ -75,12 +117,46 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
             return;
         }
 
-        // Format dates if needed
-        const formattedData = {
-            ...formData,
-        };
+        // Client-side validations
+        const requiredFields = [
+            'title',
+            'institute',
+            'description',
+            'eligibility_criteria',
+            'course',
+            'application_link',
+            'start_date',
+            'last_date',
+            'category',
+            'fees',
+            'location',
+            'searchDescription',
+            'slug',
+        ];
 
-        onSubmit(formattedData);
+        for (const field of requiredFields) {
+            if (!formData[field]?.trim()) {
+                toast.error(`${field.replace('_', ' ').toUpperCase()} is required`);
+                return;
+            }
+        }
+
+        if (formData.searchDescription.length > 160) {
+            toast.error('Search description must be less than 160 characters');
+            return;
+        }
+
+        if (!isValidUrl(formData.application_link)) {
+            toast.error('Application link must be a valid URL');
+            return;
+        }
+
+        if (!Array.isArray(formData.keywords)) {
+            toast.error('Keywords must be an array');
+            return;
+        }
+
+        onSubmit(formData);
     };
 
     if (!isOpen) return null;
@@ -95,9 +171,12 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                     </button>
                 </div>
     
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <form 
+                    onSubmit={handleSubmit} 
+                    onKeyDown={handleFormKeyDown}
+                    className="p-6 space-y-6"
+                >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Title and Institute */}
                         {[
                             { name: 'title', label: 'Title', placeholder: 'Enter admission title' },
                             { name: 'institute', label: 'Institute', placeholder: 'Enter institute name' },
@@ -122,7 +201,6 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                             </div>
                         ))}
     
-                        {/* Category */}
                         <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Category</label>
                             <select
@@ -139,7 +217,6 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                             </select>
                         </div>
     
-                        {/* Application Link */}
                         <div className="md:col-span-2 space-y-2">
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Application Link</label>
                             <input
@@ -153,7 +230,6 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                             />
                         </div>
     
-                        {/* Eligibility Criteria */}
                         <div className="md:col-span-2 space-y-2">
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Eligibility Criteria</label>
                             <textarea
@@ -167,7 +243,6 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                             />
                         </div>
     
-                        {/* Description */}
                         <div className="md:col-span-2 space-y-2">
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Description</label>
                             <textarea
@@ -181,7 +256,6 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                             />
                         </div>
     
-                        {/* Search Description */}
                         <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Search Description</label>
                             <textarea
@@ -190,12 +264,15 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                                 onChange={handleChange}
                                 required
                                 rows={3}
-                                placeholder="Enter search description"
+                                placeholder="Enter search description (max 160 chars)"
                                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                                maxLength={160}
                             />
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                                {formData.searchDescription.length}/160 characters
+                            </span>
                         </div>
     
-                        {/* Featured Checkbox */}
                         <div className="md:col-span-2 space-y-2">
                             <label className="flex items-center gap-2 cursor-pointer">
                                 <input
@@ -209,7 +286,6 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                             </label>
                         </div>
     
-                        {/* Keywords */}
                         <div className="space-y-2 md:col-span-2">
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Keywords</label>
                             <div className="flex gap-2">
@@ -219,6 +295,15 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                                     className="flex-1 p-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded"
                                     value={currentInputs.keyword}
                                     onChange={(e) => setCurrentInputs(prev => ({ ...prev, keyword: e.target.value }))}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            if (currentInputs.keyword.trim()) {
+                                                handleArrayAdd('keywords', currentInputs.keyword);
+                                                setCurrentInputs(prev => ({ ...prev, keyword: '' }));
+                                            }
+                                        }
+                                    }}
                                 />
                                 <button
                                     type="button"
@@ -260,7 +345,8 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                             {isAuthenticated && user?.role === 'admin' ? (
                                 <button
                                     type="submit"
-                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled={!isFormValid()}
                                 >
                                     Add Admission
                                 </button>

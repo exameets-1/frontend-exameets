@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaTimes, FaPlus, FaTrash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 
@@ -34,7 +34,6 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
     slug: '',
     keywords: [],
     searchDescription: '',
-    
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -47,8 +46,31 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
     techSkill: { type: 'languages', value: '' },
     keyword: ''
   });
+  const [isFormValid, setIsFormValid] = useState(false);
 
   const { isAuthenticated, user } = useSelector((state) => state.user);
+
+  // Check if all required fields are filled
+  useEffect(() => {
+    const isValid = 
+      formData.jobTitle.trim() !== '' &&
+      formData.city.trim() !== '' &&
+      formData.state.trim() !== '' &&
+      formData.country.trim() !== '' &&
+      formData.companyName.trim() !== '' &&
+      formData.companyOverview.trim() !== '' &&
+      formData.positionSummary.trim() !== '' &&
+      formData.keyResponsibilities.length > 0 &&
+      formData.education.length > 0 &&
+      formData.experience.trim() !== '' &&
+      formData.softSkills.length > 0 &&
+      formData.benefits.length > 0 &&
+      formData.equalOpportunityStatement.trim() !== '' &&
+      ((formData.submissionMethod === 'email' && formData.contactEmail.trim() !== '') ||
+       (formData.submissionMethod === 'portal' && formData.applicationPortalLink.trim() !== ''));
+    
+    setIsFormValid(isValid);
+  }, [formData]);
 
   const handleNestedChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -67,6 +89,17 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
       ...prev,
       [field]: prev[field].filter((_, i) => i !== index)
     }));
+  };
+
+  // Prevent form submission on Enter key press
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      // For add buttons, we can trigger their click when Enter is pressed in their associated input
+      if (e.target.tagName === 'INPUT' && e.target.nextElementSibling?.tagName === 'BUTTON') {
+        e.target.nextElementSibling.click();
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -123,7 +156,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
           </button>
         </div>
   
-        <form onSubmit={handleSubmit} className="p-4 space-y-6">
+        <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="p-4 space-y-6">
           {/* Basic Information */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold dark:text-gray-100">Basic Information</h3>

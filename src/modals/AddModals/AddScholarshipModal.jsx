@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { FaPlus, FaTrash } from 'react-icons/fa';
@@ -25,6 +25,7 @@ const AddScholarshipModal = ({ isOpen, onClose, onSubmit }) => {
     const [currentInputs, setCurrentInputs] = useState({
         keyword: ''
     });
+    const [isFormValid, setIsFormValid] = useState(false);
     const { isAuthenticated, user } = useSelector((state) => state.user);
 
     const categories = [
@@ -57,6 +58,27 @@ const AddScholarshipModal = ({ isOpen, onClose, onSubmit }) => {
         'Other'
     ];
 
+    // Check form validity whenever formData changes
+    useEffect(() => {
+        const requiredFields = [
+            'title',
+            'organization',
+            'description',
+            'eligibility_criteria',
+            'amount',
+            'application_link',
+            'start_date',
+            'last_date',
+            'category',
+            'qualification',
+            'slug',
+            'searchDescription'
+        ];
+        
+        const allFieldsFilled = requiredFields.every(field => formData[field].trim() !== '');
+        setIsFormValid(allFieldsFilled);
+    }, [formData]);
+
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
@@ -84,6 +106,19 @@ const AddScholarshipModal = ({ isOpen, onClose, onSubmit }) => {
         window.location.href = '/login';
     };
 
+    // Prevent form submission on Enter key
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            
+            // If Enter is pressed in keyword field, add the keyword
+            if (e.target.name === 'keyword' && currentInputs.keyword.trim()) {
+                handleArrayAdd('keywords', currentInputs.keyword);
+                setCurrentInputs(prev => ({ ...prev, keyword: '' }));
+            }
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -91,6 +126,8 @@ const AddScholarshipModal = ({ isOpen, onClose, onSubmit }) => {
             handleLogin();
             return;
         }
+
+        if (!isFormValid) return;
 
         // Format dates if needed
         const formattedData = {
@@ -112,7 +149,7 @@ const AddScholarshipModal = ({ isOpen, onClose, onSubmit }) => {
                     </button>
                 </div>
     
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="p-6 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Title */}
                         <div className="space-y-2">
@@ -307,6 +344,7 @@ const AddScholarshipModal = ({ isOpen, onClose, onSubmit }) => {
                             <div className="flex gap-2">
                                 <input
                                     type="text"
+                                    name="keyword"
                                     placeholder="Add keyword"
                                     className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded dark:bg-gray-800 dark:text-white"
                                     value={currentInputs.keyword}
@@ -352,7 +390,10 @@ const AddScholarshipModal = ({ isOpen, onClose, onSubmit }) => {
                             {isAuthenticated && user?.role === 'admin' ? (
                                 <button
                                     type="submit"
-                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                    disabled={!isFormValid}
+                                    className={`px-6 py-2 rounded-lg ${isFormValid 
+                                        ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                                        : 'bg-blue-300 text-gray-100 cursor-not-allowed'}`}
                                 >
                                     Add Scholarship
                                 </button>
