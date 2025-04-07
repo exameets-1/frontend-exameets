@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../../App';
 import { UserCog } from 'lucide-react';
+
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAuthenticated, user } = useSelector((state) => state.user);
@@ -26,18 +27,6 @@ const Navbar = () => {
 
       {/* Logo and Menu */}
       <div className="flex items-center justify-between px-5 py-4 relative dark:bg-gray-800">
-        {/* Dark Mode Toggle (Mobile) */}
-        <button
-          onClick={toggleDarkMode}
-          className="text-2xl md:hidden absolute left-5"
-          style={{
-            color: darkMode ? '#fff' : '#000',
-            cursor: 'pointer'
-          }}
-        >
-          {darkMode ? '☀️' : '🌙'}
-        </button>
-
         {/* Logo */}
         <Link to="/" className="max-w-[350px] mx-auto">
           <img src={darkMode ? "/logo-final-dark.png" : "/logo-final.png"} alt="Exameets Logo" className="w-auto h-auto max-h-[250px]" />
@@ -86,17 +75,6 @@ const Navbar = () => {
           ): (
             // Desktop Menu Items
             <>
-              <button
-                onClick={toggleDarkMode}
-                className="hidden md:block text-2xl absolute left-5 top-5"
-                style={{
-                  color: darkMode ? '#fff' : '#000',
-                  cursor: 'pointer'
-                }}
-              >
-                {darkMode ? '☀️' : '🌙'}
-              </button>
-
               <div className="flex flex-col items-center m-4 group" onClick={closeMobileMenu}>
                 <Link to="/" className="flex flex-col items-center">
                   <div className="flex items-center justify-center w-[70px] h-[70px] bg-[#DFF1FF] rounded-full border-[3.5px] border-[#283D50]">
@@ -171,9 +149,20 @@ const Navbar = () => {
       </div>
 
       {/* Bottom Line */}
-      <div className={`bg-[#015990] dark:bg-gray-950 text-white dark:text-gray-100 h-auto min-h-[50px] py-2 flex flex-col md:flex-row items-center justify-between px-5`}>
+      <div className={`bg-[#015990] dark:bg-gray-950 text-white dark:text-gray-100 h-auto min-h-[50px] py-2 flex flex-col md:flex-row items-center justify-between px-5 relative`}>
+        {/* Dark Mode Toggle */}
+        <button
+          onClick={toggleDarkMode}
+          className="absolute right-4 rounded-full backdrop-blur-sm"
+          style={{
+            cursor: 'pointer'
+          }}
+        >
+          <span className="text-xl">{darkMode ? '| ☀️' : '| 🌙'}</span>
+        </button>
+
         {isAuthenticated ? (
-          <div className="w-full flex justify-between items-center">
+          <div className="w-full flex justify-between items-center pr-12">
             <p className="text-xl">Hi, {user.name}</p>
             <div className="flex items-center gap-4">
               <Link to="/dashboard" className="text-white dark:text-gray-100 no-underline flex items-center">
@@ -185,7 +174,7 @@ const Navbar = () => {
         ) : (
           <>
             <p className="text-xl mb-2 md:mb-0">Register to get the notifications you need</p>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 pr-12">
               <Link to="/login" className="text-xl text-white dark:text-gray-100 no-underline">Login</Link>
               <span className="text-xl">|</span>
               <Link to="/register" className="text-xl text-white dark:text-gray-100 no-underline">Register</Link>

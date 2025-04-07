@@ -53,28 +53,41 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8 flex justify-between items-center">
+        {/* Desktop Header */}
+        <div className="hidden md:flex bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8 justify-between items-center">
           <h1 className="text-2xl font-semibold text-[#005587] dark:text-gray-400 mr-4">Dashboard</h1>
           <p className="text-gray-600 dark:text-gray-300">
             Welcome, <span className="text-[#005587] dark:text-gray-400 font-medium">{user && user.name}</span> !
           </p>
         </div>
-  
+
         <div className="flex flex-col md:flex-row gap-8">
-          {/* Mobile Menu Toggle */}
-          <div className="md:hidden flex justify-end p-4">
+          {/* Mobile Header & Toggle */}
+          <div className="md:hidden flex justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-4">
+            <h1 className="text-xl font-semibold text-[#005587] dark:text-gray-400">Dashboard</h1>
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-[#005587] dark:text-blue-400 text-2xl"
+              className="text-[#005587] dark:text-blue-400 text-2xl p-2"
             >
               <LuMoveRight className={`transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} />
             </button>
           </div>
-  
-          {/* Sidebar */}
-          <div className={`w-full md:w-72 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 h-fit absolute md:static z-10 ${isMenuOpen ? 'block' : 'hidden'} md:block`}>
+
+          {/* Mobile Menu Backdrop */}
+          {isMenuOpen && (
+            <div 
+              className="fixed inset-0 bg-black/50 z-40 md:hidden"
+              onClick={() => setIsMenuOpen(false)}
+            />
+          )}
+
+          {/* Sidebar/Navigation */}
+          <div className={`fixed md:static inset-y-0 left-0 w-72 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 h-full md:h-fit
+            transform transition-transform duration-300 ease-in-out
+            ${isMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
+          >
             <h4 className="text-lg font-semibold text-[#005587] dark:text-gray-400 mb-6 pb-4 border-b-2 border-gray-100 dark:border-gray-700">
               Manage Account
             </h4>
@@ -115,9 +128,9 @@ const Dashboard = () => {
               </button>
             </div>
           </div>
-  
+
           {/* Main Content */}
-          <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8">
+          <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 md:p-8">
             <div className="mb-8 pb-4 border-b-2 border-gray-100 dark:border-gray-700">
               <h2 className="text-xl font-semibold text-[#005587] dark:text-gray-400">{activeComponent}</h2>
             </div>
