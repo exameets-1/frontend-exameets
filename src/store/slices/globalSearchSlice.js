@@ -36,7 +36,6 @@ const globalSearchSlice = createSlice({
             })
             .addCase(performGlobalSearch.fulfilled, (state, action) => {
                 state.loading = false;
-                console.log('Setting search results:', action.payload);
                 state.searchResults = Array.isArray(action.payload) ? action.payload : [];
                 state.error = null;
             })
