@@ -319,7 +319,7 @@ const AddATeamMemberModal = ({ isOpen, onClose, onSubmit }) => {
                             >
                                 Cancel
                             </button>
-                            {isAuthenticated && user?.role === 'manager' ? (
+                            {isAuthenticated && user?.role === 'admin' ? (
                                 <button
                                     type="submit"
                                     disabled={!isFormValid() || uploading}
