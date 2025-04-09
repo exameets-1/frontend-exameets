@@ -178,6 +178,14 @@ const Footer = () => {
             </a>
           </div>
         </div>
+        <div className="border-t dark:border-gray-700 border-white border-opacity-10 py-2 text-center text-sm">
+          <p className="text-white dark:text-gray-100">
+              Developed by{' '}
+            <a href="#" className="hover:underline">Santhosh Anantha</a>{' '}
+            and{' '}
+            <a href="#" className="hover:underline">Anusha Mayaluri</a>
+          </p>
+        </div>
 
         {/* Quotes */}
         <div className="border-t dark:border-gray-700 pt-2">
