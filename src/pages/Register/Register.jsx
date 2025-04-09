@@ -286,10 +286,10 @@ const Register = () => {
     }
 
     // Then verify phone OTP
-    if (!otpVerified) {
+    {/*if (!otpVerified) {
       const phoneVerificationResult = await verifyPhoneOTP();
       if (!phoneVerificationResult) return;
-    }
+    }*/}
 
     if (!Object.values(passwordValidation).every(Boolean)) {
       toast.error("Please ensure password meets all requirements");
