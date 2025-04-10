@@ -15,7 +15,7 @@ const AboutUs = () => {
               <span className="text-[#015990] dark:text-blue-300 font-semibold">
                 students, job seekers, and career-driven individuals
               </span>.
-              Whether you're preparing for an exam or gearing up for an interview, Exameets provides
+              Whether you&apos;re preparing for an exam or gearing up for an interview, Exameets provides
               the necessary resources and connections to make each step easier.
             </p>
       

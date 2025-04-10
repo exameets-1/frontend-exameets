@@ -285,6 +285,8 @@ const Register = () => {
       if (!emailVerificationResult) return;
     }
 
+    //Fix-me
+
     // Then verify phone OTP
     {/*if (!otpVerified) {
       const phoneVerificationResult = await verifyPhoneOTP();

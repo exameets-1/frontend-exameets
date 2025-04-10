@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaLinkedin, FaGithub } from "react-icons/fa";
 import { fetchSingleTeam } from "../../store/slices/teamSlice";
 import Spinner from "../Spinner/Spinner";
 import React from "react";
@@ -80,8 +80,35 @@ const TeamDetails = () => {
             />
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{team.name}</h1>
             <h2 className="text-xl text-gray-600 dark:text-gray-400 mb-2">{team.position}</h2>
-            <div className="text-gray-500 dark:text-gray-300 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
+            <div className="text-gray-500 dark:text-gray-300 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full mb-4">
               {team.duration} with company
+            </div>
+            
+            {/* Social Media Links */}
+            <div className="flex space-x-4 mb-2">
+              {team.linkedin && (
+                <a 
+                  href={team.linkedin} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors flex flex-col items-center"
+                >
+                  <FaLinkedin className="text-2xl mb-1" />
+                  <span className="text-xs text-gray-600 dark:text-gray-400">LinkedIn</span>
+                </a>
+              )}
+              
+              {team.github && (
+                <a 
+                  href={team.github} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-gray-800 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-100 transition-colors flex flex-col items-center"
+                >
+                  <FaGithub className="text-2xl mb-1" />
+                  <span className="text-xs text-gray-600 dark:text-gray-400">GitHub</span>
+                </a>
+              )}
             </div>
           </div>
 

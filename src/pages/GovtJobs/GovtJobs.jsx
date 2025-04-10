@@ -168,7 +168,7 @@ const GovtJobs = () => {
                 {isAuthenticated && user?.role === 'admin' && (
                     <button 
                         className="absolute top-2 right-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-600"
-                        onClick={() => handleDeleteItem(item._id)}
+                        onClick={() => handleDeleteJob(item._id)}
                     >
                         <FaTrash className="w-5 h-5" />
                     </button>
@@ -205,7 +205,7 @@ const GovtJobs = () => {
                     )}
                     {item.last_date || item.applicationEndDate ? (
                         <div className="text-sm text-gray-600 dark:text-gray-300">
-                            {item.last_date ? `Last Date: ${formatDate(item.last_date)}` : `Close: ${item.applicationEndDate}`}
+                            {item.last_date ? `Last Date: ${(item.last_date)}` : `Close: ${item.applicationEndDate}`}
                         </div>
                     ) : null}
                 </div>

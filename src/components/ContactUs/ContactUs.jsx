@@ -32,6 +32,7 @@ const ContactUs = () => {
         formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
         formData.append('cloud_name', import.meta.env.VITE_CLOUDINARY_NAME);
 
+        // eslint-disable-next-line no-useless-catch
         try {
             const uploadUrl = `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_NAME}/image/upload`;
             
@@ -62,6 +63,7 @@ const ContactUs = () => {
             if (formData.screenshot) {
                 try {
                     screenshotUrl = await uploadToCloudinary(formData.screenshot);
+                // eslint-disable-next-line no-unused-vars
                 } catch (error) {
                     setMessage('Failed to upload image. Please try again or submit without an image.');
                     setLoading(false);
@@ -96,6 +98,7 @@ const ContactUs = () => {
                 const fileInput = document.getElementById('screenshot');
                 if (fileInput) fileInput.value = '';
             }
+        // eslint-disable-next-line no-unused-vars
         } catch (error) {
             setMessage('Failed to send message. Please try again.');
         } finally {
@@ -108,11 +111,11 @@ const ContactUs = () => {
           {/* Introduction Section */}
           <section className="bg-white dark:bg-gray-800 p-5 md:p-8 rounded-lg shadow-md mb-10">
             <h2 className="text-[#015990] dark:text-blue-300 text-3xl md:text-4xl text-center mb-5 font-bold">
-              We're here to help!
+              We&apos;re here to help!
             </h2>
             <p className="text-gray-600 dark:text-gray-300 text-lg md:text-xl text-center mb-6">
               If you have any questions, feedback, or inquiries, feel free to reach out to us. 
-              We'd love to hear from you.
+              We&apos;d love to hear from you.
             </p>
             
             <h3 className="text-gray-800 dark:text-gray-200 text-2xl font-semibold mb-4">Contact us at:</h3>

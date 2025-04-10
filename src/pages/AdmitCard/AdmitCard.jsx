@@ -12,7 +12,6 @@ const AdmitCards = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filters, setFilters] = useState({ sort: 'recent' });
   const [currentPage, setCurrentPage] = useState(1);
 
   const { 
@@ -28,7 +27,7 @@ const AdmitCards = () => {
   // Reset to the first page when searchKeyword or filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearchKeyword, filters]);
+  }, [debouncedSearchKeyword]);
 
   // Fetch admit cards whenever debouncedSearchKeyword, filters, or currentPage changes
   useEffect(() => {

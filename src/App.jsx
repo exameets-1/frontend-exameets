@@ -157,10 +157,6 @@ function App() {
     dispatch(getUser());
   }, [dispatch]);
 
-  const toggleDarkMode = () => {
-    setDarkMode((prev) => !prev);
-  };
-
   return (
     <ThemeContext.Provider value={{ darkMode, setDarkMode }}>
       <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
