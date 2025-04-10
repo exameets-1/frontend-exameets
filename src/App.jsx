@@ -193,7 +193,7 @@ function App() {
             
             <Route path="/about-us" element={<AboutUs />} />
 
-            <Route path="/previousyears" element={<PreviousYear />} />
+            <Route path="/pyqs" element={<PreviousYear />} />
             <Route path="/pyqs/:subjectSlug" element={<SubjectPapers />} />
             <Route path="/pyqs/:subjectSlug/:year" element={<YearPapers />} />
             
