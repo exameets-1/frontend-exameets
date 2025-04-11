@@ -210,22 +210,30 @@ export const getUser = () => async (dispatch) => {
 
 export const logout = () => async (dispatch) => {
   try {
-    await axios.get(
+    const response = await axios.get(
       `${import.meta.env.VITE_BACKEND_URL}/api/v1/user/logout`,
       {
         withCredentials: true,
       }
     );
     
-    // Additional client-side cookie removal for extra security
+    // Clear cookies on all possible domains
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.exameets.in; secure; SameSite=None";
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.admin.exameets.in; secure; SameSite=None";
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; secure; SameSite=None";
     
     dispatch(userSlice.actions.logoutSuccess());
     
-    // Optionally force redirect to login page
-    // window.location.href = '/login';
+    // Force redirect to ensure page state is reset
+    window.location.href = '/login';
   } catch (error) {
+    console.error("Logout error:", error);
+    // Still attempt to clear cookies even if the API call fails
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.exameets.in; secure; SameSite=None";
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.admin.exameets.in; secure; SameSite=None";
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; secure; SameSite=None";
+    
+    dispatch(userSlice.actions.logoutSuccess());
     dispatch(userSlice.actions.logoutFailed(error.response?.data?.message));
   }
 };
