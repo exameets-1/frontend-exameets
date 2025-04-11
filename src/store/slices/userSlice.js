@@ -216,7 +216,15 @@ export const logout = () => async (dispatch) => {
         withCredentials: true,
       }
     );
+    
+    // Additional client-side cookie removal for extra security
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.exameets.in; secure; SameSite=None";
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; secure; SameSite=None";
+    
     dispatch(userSlice.actions.logoutSuccess());
+    
+    // Optionally force redirect to login page
+    // window.location.href = '/login';
   } catch (error) {
     dispatch(userSlice.actions.logoutFailed(error.response?.data?.message));
   }
