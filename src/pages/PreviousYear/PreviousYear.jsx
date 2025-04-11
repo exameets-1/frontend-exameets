@@ -43,7 +43,7 @@ const PreviousYear = () => {
     }, [error, message, dispatch]);
 
     const handleCardClick = (subject) => {
-        navigate(`/pyqs/${encodeURIComponent(subject)}`);
+        navigate(`/papers/${encodeURIComponent(subject)}`);
     };
 
     const handleAddPaper = async (paperData) => {
