@@ -164,7 +164,7 @@ export const register = createAsyncThunk(
           headers: { "Content-Type": "application/json" },
         }
       );
-      return response.data;
+      return response.data; 
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Registration failed");
     }
