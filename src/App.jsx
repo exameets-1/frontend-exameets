@@ -193,9 +193,9 @@ function App() {
             
             <Route path="/about-us" element={<AboutUs />} />
 
-            <Route path="/pyqs" element={<PreviousYear />} />
-            <Route path="/pyqs/:subjectSlug" element={<SubjectPapers />} />
-            <Route path="/pyqs/:subjectSlug/:year" element={<YearPapers />} />
+            <Route path="/papers" element={<PreviousYear />} />
+            <Route path="/papers/:subjectSlug" element={<SubjectPapers />} />
+            <Route path="/papers/:subjectSlug/:year" element={<YearPapers />} />
             
             <Route path="/govtjobs" element={<GovtJobs />} />
             <Route path="/govtjob/get/:id" element={<GovtJobDetails />} />

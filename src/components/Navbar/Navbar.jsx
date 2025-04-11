@@ -85,7 +85,7 @@ const Navbar = () => {
             <Link to="/jobs" onClick={closeMobileMenu} className={getNavItemStyle('/jobs')}>Tech Jobs</Link>
             <Link to="/internships" onClick={closeMobileMenu} className={getNavItemStyle('/internships')}>Internships</Link>
             <Link to="/admissions" onClick={closeMobileMenu} className={getNavItemStyle('/admissions')}>Admissions</Link>
-            <Link to="/previousyears" onClick={closeMobileMenu} className={getNavItemStyle('/previousyears')}>PYQs</Link>
+            <Link to="/papers" onClick={closeMobileMenu} className={getNavItemStyle('/papers')}>PYQs</Link>
             <Link to="/scholarships" onClick={closeMobileMenu} className={getNavItemStyle('/scholarships')}>Scholarships</Link>
           </div>
           
@@ -171,7 +171,7 @@ const Navbar = () => {
           </div>
 
           <div className="flex flex-col items-center m-4">
-            <Link to="/previousyears" className="flex flex-col items-center">
+            <Link to="/papers" className="flex flex-col items-center">
               <div className="flex items-center justify-center w-[70px] h-[70px] bg-[#DFF1FF] rounded-full border-[3.5px] border-[#283D50]">
                 <img src="/PYQ_Icon.svg" alt="PYQ" className="w-9 h-auto dark-image" />
               </div>

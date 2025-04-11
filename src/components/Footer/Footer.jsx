@@ -181,9 +181,9 @@ const Footer = () => {
         <div className="border-t dark:border-gray-700 border-white border-opacity-10 py-2 text-center text-sm">
           <p className="text-white dark:text-gray-100">
               Developed by{' '}
-            <a href="https://www.linkedin.com/in/santhosh-anantha-9b4603297/" target='_blank' rel="noopener noreferrer" className="hover:underline">Santhosh Anantha</a>{' '}
+            <a href="https://www.linkedin.com/in/mayaluri-anusha/" target='_blank' rel="noopener noreferrer" className="hover:underline">Anusha Mayaluri</a>{' '}
             and{' '}
-            <a href="https://www.linkedin.com/in/mayaluri-anusha/" target='_blank' rel="noopener noreferrer" className="hover:underline">Anusha Mayaluri</a>
+            <a href="https://www.linkedin.com/in/santhosh-anantha-9b4603297/" target='_blank' rel="noopener noreferrer" className="hover:underline">Santhosh Anantha</a>
           </p>
         </div>
 
