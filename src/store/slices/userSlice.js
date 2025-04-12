@@ -274,6 +274,7 @@ export const fetchMatchedJobs = ()  => async (dispatch) => {
     dispatch(userSlice.actions.fetchMatchedJobsSuccess(response.data));
     dispatch(userSlice.actions.clearAllErrors());
   } catch (error) {
+    console.log(error);
     dispatch(
       userSlice.actions.fetchMatchedJobsFailed(
         error.response?.data?.message || "Failed to fetch matched jobs"
