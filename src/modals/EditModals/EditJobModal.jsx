@@ -764,7 +764,7 @@ const EditJobModal = ({ isOpen, onClose, job, jobId, onUpdate }) => {
             >
               Cancel
             </button>
-           {isAuthenticated && user?.role === 'admin' ? (
+           {isAuthenticated && (user?.role === 'admin' || user?.role === 'manager') ? (
             <button
               type="submit"
               className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"

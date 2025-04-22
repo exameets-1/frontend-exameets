@@ -357,7 +357,7 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
                             >
                                 Cancel
                             </button>
-                            {isAuthenticated && user?.role === 'admin' ? (
+                            {isAuthenticated && (user?.role === 'admin' || user?.role === 'manager') ? (
                                 <button
                                     type="submit"
                                     className={`px-6 py-2 ${isFormValid ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-300 cursor-not-allowed'} text-white rounded-lg`}

@@ -111,7 +111,7 @@ const YearPapers = () => {
                                     </span>
                                 </div>
                             </div>
-                            {user?.role === "admin" && (
+                            {user?.role === "admin" || user?.role === "manager" && (
                                 <button
                                     onClick={() =>
                                         isEditing

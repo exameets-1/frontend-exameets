@@ -60,7 +60,7 @@ const SubjectPapers = () => {
                         key={paper._id}
                         className="grid grid-rows-[auto_auto_1fr_auto] bg-white dark:bg-gray-800 border-2 border-[#015990] dark:border-gray-600 rounded-lg p-4 shadow-md hover:scale-105 transition-transform relative h-full"
                     >
-                        {user?.role === "admin" && (
+                        {user?.role === "admin" || user?.role === "manager" && (
                             <button
                                 onClick={() => handleDelete(paper._id)}
                                 className="absolute top-2 right-2 text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-500"

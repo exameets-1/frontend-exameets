@@ -56,7 +56,7 @@ const AdmitCardDetails = () => {
         >
           ← Back to Admit Cards
         </button>
-        {isAuthenticated && user?.role === 'admin' && (
+        {isAuthenticated && (user?.role === 'admin' || user?.role === 'manager') && (
           <button 
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
             onClick={() => setIsEditModalOpen(true)}
@@ -198,7 +198,7 @@ const AdmitCardDetails = () => {
           <FaExternalLinkAlt /> Download Admit Card
         </button>
       </div>
-      {isAuthenticated && user?.role === 'admin' && (
+      {isAuthenticated && (user?.role === 'admin' || user?.role === 'manager') && (
     <EditAdmitCardModal
       isOpen={isEditModalOpen}
       onClose={() => setIsEditModalOpen(false)}

@@ -62,7 +62,7 @@ const InternshipDetails = () => {
         >
           ← Back to Internships
         </button>
-        {isAuthenticated && user?.role === 'admin' && (
+        {isAuthenticated && (user?.role === 'admin' || user?.role === 'manager') && (
           <button 
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
             onClick={handleEditClick}
@@ -212,7 +212,7 @@ const InternshipDetails = () => {
       </section>
 
       {/* Edit Modal */}
-      {isAuthenticated && user?.role === 'admin' && (
+      {isAuthenticated && (user?.role === 'admin' || user?.role === 'manager') && (
         <EditInternshipModal
           isOpen={isEditModalOpen}
           onClose={handleCloseModal}

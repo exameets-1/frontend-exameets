@@ -314,7 +314,7 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
                             >
                                 Cancel
                             </button>
-                            {isAuthenticated && user?.role === 'admin' ? (
+                            {isAuthenticated && (user?.role === 'admin' || user?.role === 'manager') ? (
                                 <button
                                     type="submit"
                                     disabled={!isFormValid}

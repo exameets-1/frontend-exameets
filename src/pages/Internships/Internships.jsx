@@ -100,7 +100,7 @@ const Internships = () => {
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
             <div className="max-w-7xl mx-auto">
-                {isAuthenticated && user?.role === 'admin' && (
+                {isAuthenticated && (user?.role === 'admin' || user?.role === 'manager') && (
                     <button 
                         className="mb-6 bg-[#015990] dark:bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
                         onClick={() => setIsModalOpen(true)}
@@ -168,7 +168,7 @@ const Internships = () => {
         key={internship._id} 
         className="grid grid-rows-[auto_auto_1fr_auto] bg-white dark:bg-gray-800 border-2 border-[#015990] dark:border-gray-700 rounded-lg p-4 shadow-md hover:scale-105 transition-transform relative h-full"
       >
-        {isAuthenticated && user?.role === 'admin' && (
+        {isAuthenticated && (user?.role === 'admin' || user?.role === 'manager') && (
           <button 
             className="absolute top-2 right-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-600"
             onClick={() => handleDeleteInternship(internship._id)}

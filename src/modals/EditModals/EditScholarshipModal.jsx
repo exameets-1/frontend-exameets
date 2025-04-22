@@ -368,7 +368,7 @@ const EditScholarshipModal = ({ isOpen, onClose, onSubmit, scholarship }) => {
                             >
                                 Cancel
                             </button>
-                            {isAuthenticated && user?.role === 'admin' ? (
+                            {isAuthenticated && (user?.role === 'admin' || user?.role === 'manager') ? (
                                 <button
                                     type="submit"
                                     className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
