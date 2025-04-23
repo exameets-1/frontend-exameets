@@ -231,7 +231,7 @@ export const fetchLatestScholarships = () => async (dispatch) => {
 export const deleteScholarship = (id) => async (dispatch) => {
     try {
         dispatch(scholarshipSlice.actions.deleteScholarshipRequest());
-        const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/scholarship/${id}`, { withCredentials: true });
+        const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/scholarship/delete/${id}`, { withCredentials: true });
         dispatch(scholarshipSlice.actions.deleteScholarshipSuccess({ message: response.data.message, id }));
     } catch (error) {
         dispatch(scholarshipSlice.actions.deleteScholarshipFailed(error.response?.data?.message || "Failed to delete scholarship"));

@@ -270,7 +270,7 @@ export const fetchLatestInternships = () => async (dispatch) => {
 export const deleteInternship = (id) => async (dispatch) => {
   try {
     dispatch(internshipSlice.actions.deleteInternshipRequest());
-    const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/${id}`, { withCredentials: true });
+    const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/delete/${id}`, { withCredentials: true });
     dispatch(internshipSlice.actions.deleteInternshipSuccess({ message: response.data.message, id }));
   } catch (error) {
     dispatch(internshipSlice.actions.deleteInternshipFailed(error.response?.data?.message || "Failed to delete internship"));
