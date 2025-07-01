@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice , createAsyncThunk} from "@reduxjs/toolkit";
 import axios from "axios";
 
 const resultSlice = createSlice({
@@ -102,6 +102,22 @@ const resultSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
         }
+    },
+    extraReducers: (builder) => {
+        builder
+            // Create AI Result
+            .addCase("createAiResult/pending", (state) => {
+                state.loading = true;
+            })
+            .addCase("createAiResult/fulfilled", (state, action) => {
+                state.loading = false;
+                state.results.unshift(action.payload.result);
+                state.message = action.payload.message;
+            })
+            .addCase("createAiResult/rejected", (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            });
     }
 });
 
@@ -126,6 +142,28 @@ export const {
     createResultSuccess,
     createResultFailed
 } = resultSlice.actions;
+
+
+export const createAiResult = createAsyncThunk(
+    "result/createAi",
+    async (resultData) => {
+        try {
+            const { data } = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/result/process`,
+                { resultDetails: resultData },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true,
+                }
+            );
+            return data;
+        } catch (error) {
+            throw error.response?.data?.message || "Failed to create AI result";
+        }
+    }
+);
 
 // Thunk Actions
 export const fetchResults = (params = {}) => async (dispatch) => {

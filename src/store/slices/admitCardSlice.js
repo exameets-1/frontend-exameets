@@ -79,6 +79,21 @@ const admitCardSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       });
+
+      builder
+          // Create AI Admit Card
+          .addCase(createAiAdmitCard.pending, (state) => {
+              state.loading = true;
+          })
+          .addCase(createAiAdmitCard.fulfilled, (state, action) => {
+              state.loading = false;
+              state.admitCards.unshift(action.payload.admitCard);
+              state.message = action.payload.message;
+          })
+          .addCase(createAiAdmitCard.rejected, (state, action) => {
+              state.loading = false;
+              state.error = action.error.message;
+          });
   }
 });
 
@@ -115,6 +130,27 @@ export const createAdmitCard = createAsyncThunk(
       return rejectWithValue(error.response.data.message);
     }
   }
+);
+
+export const createAiAdmitCard = createAsyncThunk(
+    "admitCard/createAi",
+    async (admitCardData) => {
+        try {
+            const { data } = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/admitcard/process`,
+                { admitCardDetails: admitCardData },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true,
+                }
+            );
+            return data;
+        } catch (error) {
+            throw error.response?.data?.message || "Failed to create AI admit card";
+        }
+    }
 );
 
 export const fetchAdmitCards = (params = {}) => async (dispatch) => {

@@ -121,8 +121,45 @@ const previousYearSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       });
+
+      builder
+            // Create AI Previous Year Paper
+            .addCase(createAiPreviousYear.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(createAiPreviousYear.fulfilled, (state, action) => {
+                state.loading = false;
+                state.previousYears.unshift(action.payload.previousYear);
+                state.message = action.payload.message;
+            })
+            .addCase(createAiPreviousYear.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            });
   },
 });
+
+
+export const createAiPreviousYear = createAsyncThunk(
+    "previousYear/createAi",
+    async (previousYearData) => {
+        try {
+            const { data } = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/pyqs/process`,
+                { paperDetails: previousYearData },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true,
+                }
+            );
+            return data;
+        } catch (error) {
+            throw error.response?.data?.message || "Failed to create AI previous year paper";
+        }
+    }
+);
 
 // Async Thunks
 export const fetchSubjects = createAsyncThunk(

@@ -3,7 +3,6 @@ import jobReducer from "./slices/jobSlice";
 import userReducer from "./slices/userSlice";
 import updateProfileReducer from "./slices/updateProfileSlice.js"
 import govtJobReducer from './slices/govtJobSlice.js'
-import examReducer from "./slices/examSlice.js";
 import internshipReducer from "./slices/internshipSlice.js";
 import previousYearReducer from './slices/previousSlice.js';
 import admissionReducer from './slices/admissionSlice.js';
@@ -21,7 +20,6 @@ const store = configureStore({
     govtJobs : govtJobReducer,
     internships : internshipReducer,
     previousYears : previousYearReducer,
-    exams : examReducer,
     admissions: admissionReducer,
     team: teamReducer,
     scholarships: scholarshipReducer,

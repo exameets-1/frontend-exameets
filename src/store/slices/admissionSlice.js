@@ -23,6 +23,27 @@ export const createAdmission = createAsyncThunk(
     }
 );
 
+export const createAiAdmission = createAsyncThunk(
+    "admission/createAi",
+    async (admissionData) => {
+        try {
+            const { data } = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/admission/process`,
+                { admissionDetails: admissionData },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true,
+                }
+            );
+            return data;
+        } catch (error) {
+            throw error.response?.data?.message || "Failed to create AI admission";
+        }
+    }
+);
+
 const admissionSlice = createSlice({
     name: "admissions",
     initialState: {
@@ -130,6 +151,21 @@ const admissionSlice = createSlice({
                 state.message = action.payload.message;
             })
             .addCase(createAdmission.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            });
+
+        builder
+            // Create AI Admission
+            .addCase(createAiAdmission.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(createAiAdmission.fulfilled, (state, action) => {
+                state.loading = false;
+                state.admissions.unshift(action.payload.admission);
+                state.message = action.payload.message;
+            })
+            .addCase(createAiAdmission.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
             });

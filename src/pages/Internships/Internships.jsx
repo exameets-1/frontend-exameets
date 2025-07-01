@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchInternships, deleteInternship, createInternship } from "../../store/slices/internshipSlice";
+import { fetchInternships, deleteInternship, createInternship, createAiInternship } from "../../store/slices/internshipSlice";
 import Spinner from "../../components/Spinner/Spinner";
 import { FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
 import AddInternshipModal from "../../modals/AddModals/AddInternshipModal";
+import AddAiInternship from "../../modals/AiModals/AddAiInternship";
 import useDebouncedSearch from "../../hooks/useDebouncedSearch"; // Import the custom hook
 
 const Internships = () => {
@@ -17,6 +18,7 @@ const Internships = () => {
     });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    const [isAiModalOpen, setIsAiModalOpen] = useState(false);
 
     const { 
         searchKeyword, 
@@ -87,6 +89,17 @@ const Internships = () => {
         }
     };
 
+        const handleAddAiInternship = async (jobData) => {
+            const result = await dispatch(createAiInternship(jobData));
+            if(!result.error) {
+                setIsAiModalOpen(false);
+                toast.success("AI Job created successfully");
+            }
+            else {
+                toast.error(result.error.message || "Failed to create AI job");
+            }
+        }
+
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
             setCurrentPage(newPage);
@@ -101,12 +114,19 @@ const Internships = () => {
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
             <div className="max-w-7xl mx-auto">
                 {isAuthenticated && (user?.role === 'admin' || user?.role === 'manager') && (
-                    <button 
+                    <><button 
                         className="mb-6 bg-[#015990] dark:bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
                         onClick={() => setIsModalOpen(true)}
                     >
                         Add Internship
                     </button>
+                    <button
+                        className="mb-6 bg-[#015990] dark:bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
+                        onClick={() => setIsAiModalOpen(true)}
+                    >
+                        Add AI Internship
+                    </button>
+                    </>
                 )}
     
                 <div className="bg-[#e6f4ff] dark:bg-gray-800 p-6 rounded-lg mb-8">
@@ -252,6 +272,11 @@ const Internships = () => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={handleCreateInternship}
+            />
+            <AddAiInternship
+                isOpen={isAiModalOpen}
+                onClose={() => setIsAiModalOpen(false)}
+                onSubmit={handleAddAiInternship}
             />
         </div>
     );

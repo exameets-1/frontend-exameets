@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchResults, deleteResult, createResult } from '../../store/slices/resultSlice';
+import { fetchResults, deleteResult, createResult, createAiResult } from '../../store/slices/resultSlice';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaTrash } from 'react-icons/fa';
 import Spinner from '../../components/Spinner/Spinner';
 import AddResultModal from '../../modals/AddModals/AddResultModal';
+import AddAiResult from '../../modals/AiModals/AddAiResult';
 import useDebouncedSearch from '../../hooks/useDebouncedSearch';
 
 const Results = () => {
@@ -13,6 +14,7 @@ const Results = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
 
   const { 
     searchKeyword, 
@@ -63,6 +65,17 @@ const Results = () => {
     }
   };
 
+      const handleAddAiResult = async (jobData) => {
+          const result = await dispatch(createAiResult(jobData));
+          if(!result.error) {
+              setIsAiModalOpen(false);
+              toast.success("AI Result created successfully");
+          }
+          else {
+              toast.error(result.error.message || "Failed to create AI Result");
+          }
+      }
+
   const handleViewDetails = (resultId) => {
     navigate(`/results/get/${resultId}`);
   };
@@ -86,12 +99,19 @@ const Results = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <div className="max-w-7xl mx-auto">
         {isAuthenticated && user?.role === 'admin' && (
-          <button 
+          <><button 
             className="mb-6 bg-[#015990] dark:bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
             onClick={() => setIsModalOpen(true)}
           >
             Add Government Exam Result
           </button>
+          <button 
+            className="mb-6 ml-4 bg-[#015990] dark:bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
+            onClick={() => setIsAiModalOpen(true)}
+          >
+            Add AI Result
+          </button>
+          </>
         )}
   
         <div className="bg-[#e6f4ff] dark:bg-gray-800 p-6 rounded-lg mb-8">
@@ -203,6 +223,11 @@ const Results = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleAddResult}
+      />
+      <AddAiResult 
+        isOpen={isAiModalOpen}
+        onClose={() => setIsAiModalOpen(false)}
+        onSubmit={handleAddAiResult}
       />
     </div>
   );  

@@ -23,6 +23,27 @@ export const createInternship = createAsyncThunk(
   }
 );
 
+export const createAiInternship = createAsyncThunk(
+    "internship/createAi",
+    async (internshipData) => {
+        try {
+            const { data } = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/process`,
+                { internshipDetails: internshipData },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true,
+                }
+            );
+            return data;
+        } catch (error) {
+            throw error.response?.data?.message || "Failed to create AI internship";
+        }
+    }
+);
+
 const internshipSlice = createSlice({
   name: "internships",
   initialState: {
@@ -177,6 +198,21 @@ const internshipSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       });
+
+      builder
+            // Create AI Internship
+            .addCase(createAiInternship.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(createAiInternship.fulfilled, (state, action) => {
+                state.loading = false;
+                state.internships.unshift(action.payload.internship);
+                state.message = action.payload.message;
+            })
+            .addCase(createAiInternship.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            });
   },
 });
 

@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAdmitCards, deleteAdmitCard, createAdmitCard } from '../../store/slices/admitCardSlice';
+import { fetchAdmitCards, deleteAdmitCard, createAdmitCard, createAiAdmitCard } from '../../store/slices/admitCardSlice';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaTrash } from 'react-icons/fa';
 import Spinner from '../../components/Spinner/Spinner';
 import AddAdmitCardModal from '../../modals/AddModals/AddAdmitCardModal'
+import AddAiAdmitCard from '../../modals/AiModals/AddAiAdmitCard';
 import useDebouncedSearch from '../../hooks/useDebouncedSearch'; // Import the custom hook
 
 const AdmitCards = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
   const { 
@@ -63,6 +65,16 @@ const AdmitCards = () => {
     }
   };
 
+  const handleAddAiAdmitCard = async (admitCardData) => {
+    const result = await dispatch(createAiAdmitCard(admitCardData));
+    if (!result.error) {
+      toast.success('AI Admit card created successfully!');
+      setIsAiModalOpen(false);
+    } else {
+      toast.error(result.error);
+    }
+  };
+
   const handleViewDetails = (admitCardId) => {
     navigate(`/admitcards/get/${admitCardId}`);
   };
@@ -87,12 +99,19 @@ const AdmitCards = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <div className="max-w-7xl mx-auto">
         {isAuthenticated && (user?.role === 'admin' || user?.role === 'manager') && (
-          <button 
+          <><button 
             className="mb-6 bg-[#015990] dark:bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
             onClick={() => setIsModalOpen(true)}
           >
             Add Admit Card
           </button>
+          <button 
+            className="mb-6 bg-[#015990] dark:bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
+            onClick={() => setIsAiModalOpen(true)}
+          >
+            Add AI Admit Card
+          </button>
+          </>
         )}
 
         <div className="bg-[#e6f4ff] dark:bg-gray-800 p-6 rounded-lg mb-8">
@@ -200,8 +219,24 @@ const AdmitCards = () => {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleAddAdmitCard}
       />
+      <AddAiAdmitCard 
+        isOpen={isAiModalOpen}
+        onClose={() => setIsAiModalOpen(false)}
+        onSubmit={handleAddAiAdmitCard}
+        />
     </div>
 );
 };
 
 export default AdmitCards;
+
+//Issue : When we try logging out, the token is not getting removed from cookies, so the user is not logged out properly.
+// Solution: Ensure that the logout action properly clears the token from cookies and updates the Redux state.
+// Ensure that the logout action in your user slice clears the token from cookies
+// and updates the user state to reflect that the user is no longer authenticated.
+
+//Guess : 
+//vercel.json file is not correctly configured to handle cookie deletion on logout.
+
+//Domain :
+//CORS issues can arise if the frontend and backend are hosted on different domains or ports.

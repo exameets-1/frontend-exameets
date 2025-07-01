@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchGovtJobs, deleteGovtJob, createGovtJob } from "../../store/slices/govtJobSlice";
+import { fetchGovtJobs, deleteGovtJob, createGovtJob, createAiGovtJob } from "../../store/slices/govtJobSlice";
 import Spinner from "../../components/Spinner/Spinner";
 import { FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
 import AddGovtJobModal from "../../modals/AddModals/AddGovtJobModal"
+import AddAiGovtJob from "../../modals/AiModals/AddAiGovtJob";
 import useDebouncedSearch from "../../hooks/useDebouncedSearch"; // Import the custom hook
 
 const GovtJobs = () => {
@@ -17,6 +18,7 @@ const GovtJobs = () => {
     });
     const [currentPage, setCurrentPage] = useState(1);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAiModalOpen, setIsAiModalOpen] = useState(false);
 
     const { 
         searchKeyword, 
@@ -85,6 +87,16 @@ const GovtJobs = () => {
         }
     };
 
+    const handleAddAiJob = async (jobData) => {
+        const result = await dispatch(createAiGovtJob(jobData));
+        if (result.success) {
+            toast.success("AI Government Job added successfully!");
+            setIsAiModalOpen(false);
+        } else {
+            toast.error(result.error || "Error adding AI government job");
+        }
+    };
+
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
             setCurrentPage(newPage);
@@ -99,12 +111,19 @@ const GovtJobs = () => {
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
             <div className="max-w-7xl mx-auto">
                 {isAuthenticated && (user?.role === "admin" || user?.role === "manager") && (
-                    <button 
+                    <><button 
                         className="mb-6 bg-[#015990] dark:bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
                         onClick={() => setIsModalOpen(true)}
                     >
                         Add Government Job
                     </button>
+                    <button 
+                        className="mb-6 bg-[#015990] dark:bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
+                        onClick={() => setIsAiModalOpen(true)}
+                    >
+                        Add AI Government Job
+                    </button>
+                    </>
                 )}
 
                 <div className="bg-[#e6f4ff] dark:bg-gray-800 p-6 rounded-lg mb-8">
@@ -261,6 +280,11 @@ const GovtJobs = () => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={handleAddJob}
+            />
+            <AddAiGovtJob 
+                isOpen={isAiModalOpen}
+                onClose={() => setIsAiModalOpen(false)}
+                onSubmit={handleAddAiJob}
             />
         </div>
     );

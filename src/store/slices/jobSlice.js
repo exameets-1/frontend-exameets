@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice , createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const jobSlice = createSlice({
@@ -155,7 +155,45 @@ const jobSlice = createSlice({
       state.error = action.payload;
     }
   },
+  extraReducers: (builder) => {
+    // Add any async thunks here if needed
+    builder
+            // Create AI Job
+            .addCase(createAiJob.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(createAiJob.fulfilled, (state, action) => {
+                state.loading = false;
+                state.jobs.unshift(action.payload.job);
+                state.message = action.payload.message;
+            })
+            .addCase(createAiJob.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            });
+  }
 });
+
+export const createAiJob = createAsyncThunk(
+    "job/createAi",
+    async (jobData) => {
+        try {
+            const { data } = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/job/process`,
+                { jobDetails: jobData },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true,
+                }
+            );
+            return data;
+        } catch (error) {
+            throw error.response?.data?.message || "Failed to create AI job";
+        }
+    }
+);
 
 export const fetchJobs = ({ city, positionType, search, page = 1 }) => 
   async (dispatch) => {

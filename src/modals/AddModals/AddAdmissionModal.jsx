@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+/* eslint-disable react/prop-types */
+import { useState } from 'react';
 import { FaTimes, FaPlus, FaTrash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -43,6 +44,7 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
         try {
             new URL(url);
             return true;
+        // eslint-disable-next-line no-unused-vars
         } catch (_) {
             return false;
         }

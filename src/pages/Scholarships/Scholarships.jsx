@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchScholarships, deleteScholarship, createScholarship } from '../../store/slices/scholarshipSlice';
+import { fetchScholarships, deleteScholarship, createScholarship, createAiScholarship } from '../../store/slices/scholarshipSlice';
 import { FaTrash, FaPlus } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import AddScholarshipModal from '../../modals/AddModals/AddScholarshipModal';
+import AddAiScholarship from '../../modals/AiModals/AddAiScholarship';
 import Spinner from '../../components/Spinner/Spinner';
 import useDebouncedSearch from '../../hooks/useDebouncedSearch';
 
@@ -13,6 +14,7 @@ const Scholarships = () => {
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    const [isAiModalOpen, setIsAiModalOpen] = useState(false);
     const [filters, setFilters] = useState({
         category: "All",
         qualification: "All"
@@ -68,6 +70,17 @@ const Scholarships = () => {
         }
     };
 
+        const handleAddAiScholarship = async (scholarshipData) => {
+            const result = await dispatch(createAiScholarship(scholarshipData));
+            if(!result.error) {
+                setIsAiModalOpen(false);
+                toast.success("AI Scholarship created successfully");
+            }
+            else {
+                toast.error(result.error.message || "Failed to create AI Scholarship");
+            }
+        }
+
     const handleViewDetails = (scholarshipId) => {
         navigate(`/scholarship/get/${scholarshipId}`);
     };
@@ -93,13 +106,21 @@ const Scholarships = () => {
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
             <div className="max-w-7xl mx-auto">
                 {isAuthenticated && user?.role === 'admin' && (
-                    <button 
+                    <><button 
                         className="mb-6 bg-[#015990] dark:bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
                         onClick={() => setIsModalOpen(true)}
                     >
                         <FaPlus className="inline mr-2" />
                         Add Scholarship
                     </button>
+                    <button 
+                        className="mb-6 ml-4 bg-[#015990] dark:bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
+                        onClick={() => setIsAiModalOpen(true)}
+                    >
+                        <FaPlus className="inline mr-2" />
+                        Add AI Scholarship
+                    </button>
+                    </>
                 )}
     
                 <div className="bg-[#e6f4ff] dark:bg-gray-800 p-6 rounded-lg mb-8">
@@ -256,6 +277,11 @@ const Scholarships = () => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={handleAddScholarship}
+            />
+            <AddAiScholarship 
+                isOpen={isAiModalOpen}
+                onClose={() => setIsAiModalOpen(false)}
+                onSubmit={handleAddAiScholarship}
             />
         </div>
     );

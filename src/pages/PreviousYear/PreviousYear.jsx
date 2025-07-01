@@ -1,14 +1,16 @@
 import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchSubjects, createPreviousYear, clearErrors } from "../../store/slices/previousSlice";
+import { fetchSubjects, createPreviousYear, clearErrors, createAiPreviousYear } from "../../store/slices/previousSlice";
 import { toast } from 'react-toastify';
 import Spinner from "../../components/Spinner/Spinner";
 import AddPreviousYearModal from "../../modals/AddModals/AddPreviousYearModal";
+import AddAiPreviousYear from "../../modals/AiModals/AddAiPreviousYear";
 import useDebouncedSearch from "../../hooks/useDebouncedSearch"; // Import the custom hook
 
 const PreviousYear = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAiModalOpen, setIsAiModalOpen] = useState(false);
     const searchInputRef = useRef(null);
 
     const { 
@@ -59,6 +61,17 @@ const PreviousYear = () => {
         }
     };
 
+        const handleAddAiPreviousYear = async (jobData) => {
+            const result = await dispatch(createAiPreviousYear(jobData));
+            if(!result.error) {
+                setIsAiModalOpen(false);
+                toast.success("AI Job created successfully");
+            }
+            else {
+                toast.error(result.error.message || "Failed to create AI job");
+            }
+        }
+
     const filteredSubjects = subjects.filter(subject => 
         subject.toLowerCase().includes(debouncedSearchKeyword.toLowerCase())
     );
@@ -75,12 +88,19 @@ const PreviousYear = () => {
                             Previous Year Question Papers
                         </h1>
                         {isAuthenticated && user?.role === 'admin' && (
-                            <button
+                            <><button
                                 onClick={() => setIsModalOpen(true)}
                                 className="bg-[#015990] dark:bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-[#014970] dark:hover:bg-blue-700 transition-colors"
                             >
                                 Add Paper
                             </button>
+                            <button
+                                onClick={() => setIsAiModalOpen(true)}
+                                className="bg-[#015990] dark:bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-[#014970] dark:hover:bg-blue-700 transition-colors"
+                            >
+                                Add AI Paper
+                            </button>
+                            </>
                         )}
                     </div>
                     <div className="flex items-center relative">
@@ -133,6 +153,11 @@ const PreviousYear = () => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={handleAddPaper}
+            />
+            <AddAiPreviousYear
+                isOpen={isAiModalOpen}
+                onClose={() => setIsAiModalOpen(false)}
+                onSubmit={handleAddAiPreviousYear}
             />
         </div>
     );

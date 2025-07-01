@@ -189,8 +189,45 @@ extraReducers: (builder) => {
             state.loading = false;
             state.error = action.error.message;
         });
+
+        builder
+        builder
+            // Create AI Scholarship
+            .addCase(createAiScholarship.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(createAiScholarship.fulfilled, (state, action) => {
+                state.loading = false;
+                state.scholarships.unshift(action.payload.scholarship);
+                state.message = action.payload.message;
+            })
+            .addCase(createAiScholarship.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            });
 },
 });
+
+export const createAiScholarship = createAsyncThunk(
+    "scholarship/createAi",
+    async (scholarshipData) => {
+        try {
+            const { data } = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/scholarship/process`,
+                { scholarshipDetails: scholarshipData },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true,
+                }
+            );
+            return data;
+        } catch (error) {
+            throw error.response?.data?.message || "Failed to create AI scholarship";
+        }
+    }
+);
 
 export const fetchSingleScholarship = (scholarshipId) => async (dispatch) => {
     dispatch(scholarshipSlice.actions.requestForSingleScholarship());

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchJobs, deleteJob, createJob } from "../../store/slices/jobSlice";
+import { fetchJobs, deleteJob, createJob, createAiJob } from "../../store/slices/jobSlice";
 import Spinner from "../../components/Spinner/Spinner";
 import { FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
 import AddJobModal from "../../modals/AddModals//AddJobModal";
+import AddAiJob from "../../modals/AiModals/AddAiJob";
 import useDebouncedSearch from "../../hooks/useDebouncedSearch"; // Import the custom hook
 
 const Jobs = () => {
@@ -17,6 +18,7 @@ const Jobs = () => {
     });
     const [currentPage, setCurrentPage] = useState(1);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAiModalOpen, setIsAiModalOpen] = useState(false);
 
     const { 
         searchKeyword, 
@@ -85,6 +87,39 @@ const Jobs = () => {
         }
     };
 
+    // const handleAddAiJob = async (jobData) => {
+    //     const result = await dispatch(createAiJob(jobData));
+    //     if(!result.error) {
+    //         setIsAiModalOpen(false);
+    //         toast.success("AI Job created successfully");
+    //     }
+    //     else {
+    //         toast.error(result.error.message || "Failed to create AI job");
+    //     }
+    // }
+
+    // In your main GovtJobs component, replace the handleAddAiJob function with this:
+
+    const handleAddAiJob = async (jobData) => {
+        try {
+            const result = await dispatch(createAiJob(jobData));
+            
+            // Check if the operation was successful
+            if (result.payload && !result.error) {
+                toast.success("AI Job added successfully!");
+                setIsAiModalOpen(false); // Only close on success
+            } else {
+                // Handle the error case
+                const errorMessage = result.error?.message || result.payload?.message || "Error adding AI job";
+                toast.error(errorMessage);
+                // Don't close the modal on error
+            }
+        } catch (error) {
+            toast.error(error.message || "Error adding AI job");
+            // Don't close the modal on error
+        }
+    };
+
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
             setCurrentPage(newPage);
@@ -98,12 +133,20 @@ const Jobs = () => {
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
             <div className="max-w-7xl mx-auto">
                 {isAuthenticated && (user?.role === 'admin' || user?.role === 'manager') && (
-                    <button 
+                   <> 
+                   <button 
                         className="mb-6 bg-[#015990] dark:bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
                         onClick={() => setIsModalOpen(true)}
                     >
                         Add Job
                     </button>
+                         <button 
+                        className="mb-6 bg-[#015990] dark:bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
+                        onClick={() => setIsAiModalOpen(true)}
+                    >
+                        Add AI Job
+                    </button>
+                    </>
                 )}
 
                 <div className="bg-[#e6f4ff] dark:bg-gray-800 p-6 rounded-lg mb-8">
@@ -246,6 +289,11 @@ const Jobs = () => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={handleCreateJob}
+            />
+            <AddAiJob
+                isOpen={isAiModalOpen}
+                onClose={() => setIsAiModalOpen(false)}
+                onSubmit={handleAddAiJob}
             />
         </div>
     );

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchAdmissions, deleteAdmission, createAdmission } from '../../store/slices/admissionSlice';
+import { fetchAdmissions, deleteAdmission, createAdmission , createAiAdmission} from '../../store/slices/admissionSlice';
 import AddAdmissionModal from '../../modals/AddModals/AddAdmissionModal';
+import AddAiAdmission from '../../modals/AiModals/AddAiAdmission';
 import Spinner from '../../components/Spinner/Spinner';
 import { toast } from 'react-toastify';
 import { FaPlus, FaTrash } from 'react-icons/fa';
@@ -12,6 +13,7 @@ const Admissions = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAiModalOpen, setIsAiModalOpen] = useState(false);
     const [filters, setFilters] = useState({
         location: "All",
         category: "All",
@@ -77,6 +79,16 @@ const Admissions = () => {
         }
     };
 
+    const handleAddAiAdmission = async (admissionData) => {
+        const result = await dispatch(createAiAdmission(admissionData));
+        if (!result.error) {
+            toast.success('AI Admission added successfully!');
+            setIsAiModalOpen(false);
+        } else {
+            toast.error(result.error || 'Error adding AI Admission');
+        }
+    };
+
     const handleSearch = (e) => {
         setSearchKeyword(e.target.value); // Update the search keyword
         setCurrentPage(1); // Reset to the first page
@@ -116,13 +128,22 @@ const Admissions = () => {
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
             <div className="max-w-7xl mx-auto">
                 {isAuthenticated && (user?.role === 'admin' || user?.role === 'manager') && (
-                    <button 
+                    <><button 
                         className="mb-6 bg-[#015990] dark:bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
                         onClick={() => setIsModalOpen(true)}
                     >
                         <FaPlus className="inline mr-2" />
                         Add Admission
                     </button>
+                    <button 
+                        className="mb-6 bg-[#015990] dark:bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
+                        onClick={() => setIsAiModalOpen(true)}
+                    >
+                        <FaPlus className="inline mr-2" />
+                        Add AI Admission
+                    </button>
+                    </>
+
                 )}
     
                 <div className="bg-[#e6f4ff] dark:bg-gray-800 p-6 rounded-lg mb-8">
@@ -271,6 +292,11 @@ const Admissions = () => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={handleAddAdmission}
+            />
+            <AddAiAdmission
+                isOpen={isAiModalOpen}
+                onClose={() => setIsAiModalOpen(false)}
+                onSubmit={handleAddAiAdmission}
             />
         </div>
     );

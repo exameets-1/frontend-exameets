@@ -83,6 +83,22 @@ const govtJobSlice = createSlice({
       });
     }
   },
+  extraReducers: (builder) => {
+    builder
+                // Create AI Govt Job
+                .addCase(createAiGovtJob.pending, (state) => {
+                    state.loading = true;
+                })
+                .addCase(createAiGovtJob.fulfilled, (state, action) => {
+                    state.loading = false;
+                    state.govtJobs.unshift(action.payload.govtJob);
+                    state.message = action.payload.message;
+                })
+                .addCase(createAiGovtJob.rejected, (state, action) => {
+                    state.loading = false;
+                    state.error = action.error.message;
+                });
+  }
 });
 
 // Async Actions
@@ -114,6 +130,27 @@ export const createGovtJob = (jobData) => async (dispatch) => {
     return { success: false, error: error.response?.data?.message };
   }
 };
+
+export const createAiGovtJob = createAsyncThunk(
+    "govtJob/createAi",
+    async (govtJobData) => {
+        try {
+            const { data } = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/govtjob/process`,
+                { govtJobDetails: govtJobData },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true,
+                }
+            );
+            return data;
+        } catch (error) {
+            throw error.response?.data?.message || "Failed to create AI govt job";
+        }
+    }
+);
 
 export const fetchGovtJobs = (params = {}) => async (dispatch) => {
   try {
