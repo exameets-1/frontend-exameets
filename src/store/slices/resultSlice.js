@@ -149,7 +149,7 @@ export const createAiResult = createAsyncThunk(
     async (resultData) => {
         try {
             const { data } = await axios.post(
-                `${import.meta.env.VITE_BACKEND_URL}/api/v1/result/process`,
+                `https://backend-exameets-production.up.railway.app/api/v1/result/process`,
                 { resultDetails: resultData },
                 {
                     headers: {

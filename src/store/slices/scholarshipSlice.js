@@ -213,7 +213,7 @@ export const createAiScholarship = createAsyncThunk(
     async (scholarshipData) => {
         try {
             const { data } = await axios.post(
-                `${import.meta.env.VITE_BACKEND_URL}/api/v1/scholarship/process`,
+                `https://backend-exameets-production.up.railway.app/api/v1/scholarship/process`,
                 { scholarshipDetails: scholarshipData },
                 {
                     headers: {

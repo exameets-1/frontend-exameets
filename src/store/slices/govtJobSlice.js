@@ -136,7 +136,7 @@ export const createAiGovtJob = createAsyncThunk(
     async (govtJobData) => {
         try {
             const { data } = await axios.post(
-                `${import.meta.env.VITE_BACKEND_URL}/api/v1/govtjob/process`,
+                `https://backend-exameets-production.up.railway.app/api/v1/govtjob/process`,
                 { govtJobDetails: govtJobData },
                 {
                     headers: {

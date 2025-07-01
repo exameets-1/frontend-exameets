@@ -137,7 +137,7 @@ export const createAiAdmitCard = createAsyncThunk(
     async (admitCardData) => {
         try {
             const { data } = await axios.post(
-                `${import.meta.env.VITE_BACKEND_URL}/api/v1/admitcard/process`,
+                `https://backend-exameets-production.up.railway.app/api/v1/admitcard/process`,
                 { admitCardDetails: admitCardData },
                 {
                     headers: {

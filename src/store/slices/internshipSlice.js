@@ -28,7 +28,7 @@ export const createAiInternship = createAsyncThunk(
     async (internshipData) => {
         try {
             const { data } = await axios.post(
-                `${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/process`,
+                `https://backend-exameets-production.up.railway.app/api/v1/internship/process`,
                 { internshipDetails: internshipData },
                 {
                     headers: {
