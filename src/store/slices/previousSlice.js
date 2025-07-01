@@ -145,7 +145,7 @@ export const createAiPreviousYear = createAsyncThunk(
     async (previousYearData) => {
         try {
             const { data } = await axios.post(
-                `https://backend-exameets-production.up.railway.app/api/v1/pyqs/process`,
+                `https://api2.exameets.in/api/v1/pyqs/process`,
                 { paperDetails: previousYearData },
                 {
                     headers: {

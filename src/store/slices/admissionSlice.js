@@ -28,7 +28,7 @@ export const createAiAdmission = createAsyncThunk(
     async (admissionData) => {
         try {
             const { data } = await axios.post(
-                `https://backend-exameets-production.up.railway.app/api/v1/admission/process`,
+                `https://api2.exameets.in/api/v1/admission/process`,
                 { admissionDetails: admissionData },
                 {
                     headers: {

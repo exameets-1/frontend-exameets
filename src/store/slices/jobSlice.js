@@ -179,7 +179,7 @@ export const createAiJob = createAsyncThunk(
     async (jobData) => {
         try {
             const { data } = await axios.post(
-                `https://backend-exameets-production.up.railway.app/api/v1/job/process`,
+                `https://api2.exameets.in/api/v1/job/process`,
                 { jobDetails: jobData },
                 {
                     headers: {
