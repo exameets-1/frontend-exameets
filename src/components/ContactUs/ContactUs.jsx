@@ -29,7 +29,7 @@ const ContactUs = () => {
     const uploadToCloudinary = async (file) => {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+        formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET); // Ensure this matches your Cloudinary preset-unsigned
         formData.append('cloud_name', import.meta.env.VITE_CLOUDINARY_NAME);
 
         // eslint-disable-next-line no-useless-catch
