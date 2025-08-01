@@ -112,7 +112,6 @@ const Login = () => {
       setLoading(true);
       const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/forgotpassword/reset-password`, {
         email: forgotEmail,
-        otp,
         newPassword
       });
       toast.success(data.message);
