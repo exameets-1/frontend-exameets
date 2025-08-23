@@ -7,16 +7,6 @@ import Spinner from '../Spinner/Spinner';
 import EditGovtJobModal from '../../modals/EditModals/EditGovtJobModal';
 import { toast } from 'react-toastify';
 
-const formatDate = (dateString) => {
-  if (!dateString) return "Not specified";
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  });
-};
-
 const GovtJobDetails = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -116,7 +106,7 @@ const GovtJobDetails = () => {
               className={`flex justify-between items-center ${index < 3 ? 'border-b pb-2 border-gray-200 dark:border-gray-700' : ''}`}
             >
               <span className="font-medium">{label}:</span>
-              <span>{formatDate(date)}</span>
+              <span>{(date)}</span>
             </li>
           ))}
         </ul>

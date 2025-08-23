@@ -165,7 +165,7 @@ const GovtJobs = () => {
                                 onChange={(e) => handleFilterChange("sort", e.target.value)}
                                 className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             >
-                                                                <option value="All">Sort by</option>
+                                <option value="All">Sort by</option>
                                 <option value="recent">Recent First</option>
                                 <option value="deadline">Nearest Deadline</option>
                             </select>

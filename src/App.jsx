@@ -213,8 +213,6 @@ function App() {
 
             <Route path="/selected-jobs" element={<SelectedJobs />} />
 
-            
-            
           </Routes>
           <Footer />
           <ToastContainer

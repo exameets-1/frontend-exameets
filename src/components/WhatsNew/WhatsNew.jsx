@@ -148,7 +148,7 @@ const WhatsNew = () => {
             <div className="h-full max-w-6xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-5 flex flex-col">
               <div className="mb-6">
                 <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 text-center">
-                  What's New
+                  What&apos;s New
                 </h2>
               </div>
         
