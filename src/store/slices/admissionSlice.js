@@ -244,7 +244,7 @@ export const fetchLatestAdmissions = () => async (dispatch) => {
 export const deleteAdmission = (id) => async(dispatch) => {
     try {
         dispatch(admissionSlice.actions.deleteAdmissionRequest());
-        const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/admission/${id}`, {
+        const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/admission/delete/${id}`, {
             withCredentials: true
         });
         dispatch(admissionSlice.actions.deleteAdmissionSuccess({ message: response.data.message, id }));

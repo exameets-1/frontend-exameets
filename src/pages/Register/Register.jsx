@@ -187,6 +187,7 @@ const Register = () => {
     }
   };
 
+  // eslint-disable-next-line no-unused-vars
   const verifyPhoneOTP = async () => {
     if (!otp || otp.length !== 6) {
       toast.error("Please enter a valid OTP");

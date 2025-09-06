@@ -136,7 +136,7 @@ export const createAiGovtJob = createAsyncThunk(
     async (govtJobData) => {
         try {
             const { data } = await axios.post(
-                `https://api2.exameets.in/api/v1/govtjob/process`,
+                `http://localhost:4000/api/v1/govtjob/process`,
                 { govtJobDetails: govtJobData },
                 {
                     headers: {
