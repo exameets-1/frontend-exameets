@@ -44,7 +44,7 @@ const EditScholarshipModal = ({ isOpen, onClose, onSubmit, scholarship }) => {
         'Class 10',
         'Class 11',
         'Class 12',
-        'Graduation',
+        'Under Graduation',
         'Post Graduation',
         'Post Graduation Diploma',
         'Phd',
@@ -137,7 +137,7 @@ const EditScholarshipModal = ({ isOpen, onClose, onSubmit, scholarship }) => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Title and Organization */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Title</label>
                             <input
                                 type="text"
                                 name="title"
@@ -150,7 +150,7 @@ const EditScholarshipModal = ({ isOpen, onClose, onSubmit, scholarship }) => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Organization</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Organization</label>
                             <input
                                 type="text"
                                 name="organization"
@@ -164,7 +164,7 @@ const EditScholarshipModal = ({ isOpen, onClose, onSubmit, scholarship }) => {
 
                         {/* Category */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Category</label>
                             <select
                                 name="category"
                                 value={formData.category}
@@ -181,7 +181,7 @@ const EditScholarshipModal = ({ isOpen, onClose, onSubmit, scholarship }) => {
 
                         {/* Qualification */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Qualification</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Qualification</label>
                             <select
                                 name="qualification"
                                 value={formData.qualification}
@@ -198,7 +198,7 @@ const EditScholarshipModal = ({ isOpen, onClose, onSubmit, scholarship }) => {
 
                         {/* Dates */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Start Date</label>
                             <input
                                 type="text"
                                 name="start_date"
@@ -211,7 +211,7 @@ const EditScholarshipModal = ({ isOpen, onClose, onSubmit, scholarship }) => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Last Date to Apply</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Last Date to Apply</label>
                             <input
                                 type="text"
                                 name="last_date"
@@ -225,7 +225,7 @@ const EditScholarshipModal = ({ isOpen, onClose, onSubmit, scholarship }) => {
 
                         {/* Amount and Application Link */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Scholarship Amount</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Scholarship Amount</label>
                             <input
                                 type="text"
                                 name="amount"
@@ -238,7 +238,7 @@ const EditScholarshipModal = ({ isOpen, onClose, onSubmit, scholarship }) => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Application Link</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Application Link</label>
                             <input
                                 type="url"
                                 name="application_link"
@@ -252,7 +252,7 @@ const EditScholarshipModal = ({ isOpen, onClose, onSubmit, scholarship }) => {
 
                         {/* Eligibility Criteria */}
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Eligibility Criteria</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Eligibility Criteria</label>
                             <textarea
                                 name="eligibility_criteria"
                                 value={formData.eligibility_criteria}
@@ -266,7 +266,7 @@ const EditScholarshipModal = ({ isOpen, onClose, onSubmit, scholarship }) => {
 
                         {/* Description */}
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Description</label>
                             <textarea
                                 name="description"
                                 value={formData.description}
@@ -288,13 +288,13 @@ const EditScholarshipModal = ({ isOpen, onClose, onSubmit, scholarship }) => {
                                     onChange={handleChange}
                                     className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 focus:ring-blue-500"
                                 />
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Featured Scholarship</span>
+                                <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Featured Scholarship</span>
                             </label>
                         </div>
 
                         {/* Slug */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Slug</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Slug</label>
                             <input
                                 type="text"
                                 name="slug"
@@ -308,7 +308,7 @@ const EditScholarshipModal = ({ isOpen, onClose, onSubmit, scholarship }) => {
 
                         {/* Search Description */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Search Description</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Search Description</label>
                             <textarea
                                 name="searchDescription"
                                 value={formData.searchDescription}
@@ -322,7 +322,7 @@ const EditScholarshipModal = ({ isOpen, onClose, onSubmit, scholarship }) => {
 
                         {/* Keywords */}
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Keywords</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Keywords</label>
                             <div className="flex gap-2">
                                 <input
                                     type="text"
