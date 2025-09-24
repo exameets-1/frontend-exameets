@@ -7,6 +7,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
   const initialFormData = {
     jobTitle: '',
     category: 'IT',
+    imageUrl: '',
     city: '',
     state: '',
     country: '',
@@ -46,7 +47,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
     techSkill: { type: 'languages', value: '' },
     keyword: ''
   });
-  const [isFormValid, setIsFormValid] = useState(false);
+  const [, setIsFormValid] = useState(false);
 
   const { isAuthenticated, user } = useSelector((state) => state.user);
 
@@ -54,6 +55,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
   useEffect(() => {
     const isValid = 
       formData.jobTitle.trim() !== '' &&
+      formData.imageUrl.trim() !== '' &&
       formData.city.trim() !== '' &&
       formData.state.trim() !== '' &&
       formData.country.trim() !== '' &&
@@ -162,7 +164,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
             <h3 className="text-lg font-semibold dark:text-gray-100">Basic Information</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1 dark:text-gray-300">Job Title *</label>
+                <label className="block text-sm font-bold mb-1 dark:text-gray-300">Job Title *</label>
                 <input
                   type="text"
                   required
@@ -172,7 +174,17 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 dark:text-gray-300">Category *</label>
+                <label className="block text-sm font-bold mb-1 dark:text-gray-300">Image Url *</label>
+                <input
+                  type="url"
+                  required
+                  className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+                  value={formData.imageUrl}
+                  onChange={(e) => handleNestedChange('imageUrl', e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-1 dark:text-gray-300">Category *</label>
                 <select
                   className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                   value={formData.category}
@@ -183,7 +195,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 dark:text-gray-300">Position Type *</label>
+                <label className="block text-sm font-bold mb-1 dark:text-gray-300">Position Type *</label>
                 <select
                   className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                   value={formData.positionType}
@@ -253,7 +265,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold dark:text-gray-100">Position Details</h3>
             <div>
-              <label className="block text-sm font-medium mb-1 dark:text-gray-300">Position Summary *</label>
+              <label className="block text-sm font-bold mb-1 dark:text-gray-300">Position Summary *</label>
               <textarea
                 required
                 rows={3}
@@ -264,7 +276,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
   
             <div className="space-y-2">
-              <label className="block text-sm font-medium dark:text-gray-300">Key Responsibilities *</label>
+              <label className="block text-sm font-bold dark:text-gray-300">Key Responsibilities *</label>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -307,7 +319,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
             
             {/* Education */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium dark:text-gray-300">Education *</label>
+              <label className="block text-sm font-bold dark:text-gray-300">Education *</label>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -345,7 +357,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
   
             {/* Experience */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium dark:text-gray-300">Experience *</label>
+              <label className="block text-sm font-bold dark:text-gray-300">Experience *</label>
               <input
                 type="text"
                 required
@@ -357,7 +369,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
   
             <div className="space-y-2">
-              <label className="block text-sm font-medium dark:text-gray-300">Technical Skills</label>
+              <label className="block text-sm font-bold dark:text-gray-300">Technical Skills</label>
               <div className="space-y-2">
                 {/* Selection box with full width */}
                 <select
@@ -409,7 +421,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
               {['languages', 'frameworks', 'databases', 'methodologies'].map((type) => (
                 formData[type].length > 0 && (
                   <div key={type} className="mt-2">
-                    <h4 className="text-sm font-medium capitalize dark:text-gray-300">{type}</h4>
+                    <h4 className="text-sm font-bold capitalize dark:text-gray-300">{type}</h4>
                     <div className="flex flex-wrap gap-2">
                       {formData[type].map((skill, index) => (
                         <div key={index} className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded flex items-center gap-1 dark:text-gray-100">
@@ -431,7 +443,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
   
             {/* Soft Skills */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium dark:text-gray-300">Soft Skills *</label>
+              <label className="block text-sm font-bold dark:text-gray-300">Soft Skills *</label>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -469,7 +481,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
   
             {/* Preferred Qualifications */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium dark:text-gray-300">Preferred Qualifications</label>
+              <label className="block text-sm font-bold dark:text-gray-300">Preferred Qualifications</label>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -509,7 +521,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
           {/* Benefits and Dates */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="block text-sm font-medium dark:text-gray-300">Benefits *</label>
+              <label className="block text-sm font-bold dark:text-gray-300">Benefits *</label>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -546,7 +558,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
   
             <div className="space-y-2">
-              <label className="block text-sm font-medium dark:text-gray-300">Dates</label>
+              <label className="block text-sm font-bold dark:text-gray-300">Dates</label>
               <input
                 type="text"
                 className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
@@ -608,7 +620,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
   
           {/* Equal Opportunity Statement */}
           <div>
-            <label className="block text-sm font-medium mb-1 dark:text-gray-300">Equal Opportunity Statement *</label>
+            <label className="block text-sm font-bold mb-1 dark:text-gray-300">Equal Opportunity Statement *</label>
             <textarea
               required
               rows={3}
@@ -631,7 +643,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
             
             {/* Keywords */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium dark:text-gray-300">Keywords</label>
+              <label className="block text-sm font-bold dark:text-gray-300">Keywords</label>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -669,7 +681,7 @@ const AddJobModal = ({ isOpen, onClose, onSubmit }) => {
   
             {/* Search Description */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium dark:text-gray-300">Search Description</label>
+              <label className="block text-sm font-bold dark:text-gray-300">Search Description</label>
               <textarea
                 rows={3}
                 className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
