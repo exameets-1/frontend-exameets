@@ -311,11 +311,7 @@ export const createJob = (jobData) => async (dispatch) => {
 
     // Validate required fields
     const requiredFields = [
-      'jobTitle', 'category', 'city', 'state', 'country',
-      'positionType', 'companyName', 'companyOverview',
-      'positionSummary', 'education', 'experience',
-      'softSkills', 'benefits', 'submissionMethod',
-      'equalOpportunityStatement', 'slug'
+      'jobTitle','slug'
     ];
 
     const missingFields = requiredFields.filter(field => !jobData[field]);
@@ -324,43 +320,43 @@ export const createJob = (jobData) => async (dispatch) => {
     }
 
     // Validate array requirements
-    const validateArray = (field, name) => {
-      if (!Array.isArray(field) || field.length === 0) {
-        throw new Error(`${name} must have at least one item`);
-      }
-    };
+    // const validateArray = (field, name) => {
+    //   if (!Array.isArray(field) || field.length === 0) {
+    //     throw new Error(`${name} must have at least one item`);
+    //   }
+    // };
 
-    validateArray(jobData.keyResponsibilities, "Key responsibilities");
-    validateArray(jobData.education, "Education requirements");
-    validateArray(jobData.softSkills, "Soft skills");
-    validateArray(jobData.benefits, "Benefits");
+    // validateArray(jobData.keyResponsibilities, "Key responsibilities");
+    // validateArray(jobData.education, "Education requirements");
+    // validateArray(jobData.softSkills, "Soft skills");
+    // validateArray(jobData.benefits, "Benefits");
 
     // Validate enums
-    if (!['IT', 'NON-IT'].includes(jobData.category)) {
-      throw new Error("Invalid category");
-    }
-    if (!['Full-Time', 'Part-Time', 'Contract'].includes(jobData.positionType)) {
-      throw new Error("Invalid position type");
-    }
-    if (!['email', 'portal'].includes(jobData.submissionMethod)) {
-      throw new Error("Invalid submission method");
-    }
+    // if (!['IT', 'NON-IT'].includes(jobData.category)) {
+    //   throw new Error("Invalid category");
+    // }
+    // if (!['Full-Time', 'Part-Time', 'Contract'].includes(jobData.positionType)) {
+    //   throw new Error("Invalid position type");
+    // }
+    // if (!['email', 'portal'].includes(jobData.submissionMethod)) {
+    //   throw new Error("Invalid submission method");
+    // }
 
     // Validate submission method requirements
-    if (jobData.submissionMethod === 'email' && !jobData.contactEmail) {
-      throw new Error("Contact email is required for email submissions");
-    }
-    if (jobData.submissionMethod === 'portal' && !jobData.applicationPortalLink) {
-      throw new Error("Application portal link is required for portal submissions");
-    }
+    // if (jobData.submissionMethod === 'email' && !jobData.contactEmail) {
+    //   throw new Error("Contact email is required for email submissions");
+    // }
+    // if (jobData.submissionMethod === 'portal' && !jobData.applicationPortalLink) {
+    //   throw new Error("Application portal link is required for portal submissions");
+    // }
 
-    if (jobData.keywords && !Array.isArray(jobData.keywords)) {
-      throw new Error('Keywords must be an array');
-    }
+    // if (jobData.keywords && !Array.isArray(jobData.keywords)) {
+    //   throw new Error('Keywords must be an array');
+    // }
 
-    if (jobData.searchDescription && jobData.searchDescription.length > 160) {
-      throw new Error('Search description must be less than 160 characters');
-    }
+    // if (jobData.searchDescription && jobData.searchDescription.length > 160) {
+    //   throw new Error('Search description must be less than 160 characters');
+    // }
 
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}/api/v1/job/create`,
