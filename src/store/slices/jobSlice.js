@@ -293,15 +293,28 @@ export const deleteJob = (jobId) => async (dispatch) => {
 export const updateJob = ({ jobId, updatedData }) => async (dispatch) => {
   try {
     dispatch(jobSlice.actions.updateJobRequest());
+    
+    // console.log('Sending to backend - jobId:', jobId);
+    // console.log('Sending to backend - updatedData:', updatedData);
+    // console.log('Removed fields being sent:', updatedData.removedFields);
+
     const { data } = await axios.put(
       `${import.meta.env.VITE_BACKEND_URL}/api/v1/job/${jobId}`,
-      updatedData,
-      { withCredentials: true }
+      updatedData, // This includes both job data and removedFields
+      { 
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
     );
+    
     dispatch(jobSlice.actions.updateJobSuccess(data.job));
     return data;
   } catch (error) {
-    dispatch(jobSlice.actions.updateJobFailure(error.response?.data?.message || "Failed to update job"));
+    const errorMessage = error.response?.data?.message || error.message || "Failed to update job";
+    dispatch(jobSlice.actions.updateJobFailure(errorMessage));
+    throw error;
   }
 };
 

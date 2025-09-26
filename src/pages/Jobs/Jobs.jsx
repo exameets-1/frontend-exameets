@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchJobs, deleteJob, createJob, createAiJob } from "../../store/slices/jobSlice";
+import { fetchJobs, deleteJob, createJob, createAiJob, updateJob } from "../../store/slices/jobSlice";
 import Spinner from "../../components/Spinner/Spinner";
-import { FaTrash } from "react-icons/fa";
+import { FaTrash, FaEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
 import AddJobModal from "../../modals/AddModals//AddJobModal";
 import AddAiJob from "../../modals/AiModals/AddAiJob";
+import EditJobModal from "../../modals/EditModals/EditJobModal";
 import useDebouncedSearch from "../../hooks/useDebouncedSearch"; // Import the custom hook
 
 const Jobs = () => {
@@ -19,6 +20,8 @@ const Jobs = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+    const [selectedJob, setSelectedJob] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     const { 
         searchKeyword, 
@@ -87,19 +90,6 @@ const Jobs = () => {
         }
     };
 
-    // const handleAddAiJob = async (jobData) => {
-    //     const result = await dispatch(createAiJob(jobData));
-    //     if(!result.error) {
-    //         setIsAiModalOpen(false);
-    //         toast.success("AI Job created successfully");
-    //     }
-    //     else {
-    //         toast.error(result.error.message || "Failed to create AI job");
-    //     }
-    // }
-
-    // In your main GovtJobs component, replace the handleAddAiJob function with this:
-
     const handleAddAiJob = async (jobData) => {
         try {
             const result = await dispatch(createAiJob(jobData));
@@ -117,6 +107,39 @@ const Jobs = () => {
         } catch (error) {
             toast.error(error.message || "Error adding AI job");
             // Don't close the modal on error
+        }
+    };
+
+    const handleEditJob = (job) => {
+        setSelectedJob(job);
+        setIsEditModalOpen(true);
+    };
+
+    const handleUpdateJob = async (updatedData) => {
+        try {
+            // console.log('Parent component - handling update with data:', updatedData);
+            // console.log('Parent component - removed fields:', updatedData.removedFields);
+            
+            const result = await dispatch(updateJob({
+                jobId: selectedJob._id,
+                updatedData: updatedData // This includes both job data and removedFields
+            }));
+            
+            if (result?.success) {
+                toast.success("Job updated successfully!");
+                setIsEditModalOpen(false);
+                setSelectedJob(null);
+                // Refresh the job list
+                dispatch(fetchJobs({
+                    city: filters.city,
+                    positionType: filters.positionType,
+                    search: debouncedSearchKeyword,
+                    page: currentPage,
+                    limit: filters.limit
+                }));
+            }
+        } catch (error) {
+            toast.error(error.message || "Failed to update job");
         }
     };
 
@@ -206,12 +229,20 @@ const Jobs = () => {
         className="grid grid-rows-[auto_auto_1fr_auto] bg-white dark:bg-gray-800 border-2 border-[#015990] dark:border-gray-700 rounded-lg p-4 shadow-md hover:scale-105 transition-transform relative h-full"
       >
         {isAuthenticated && (user?.role === 'admin' || user?.role === 'manager') && (
-          <button 
-            className="absolute top-2 right-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-600"
-            onClick={() => handleDeleteJob(job._id)}
-          >
-            <FaTrash className="w-5 h-5" />
-          </button>
+          <div className="absolute top-2 right-2 flex gap-1">
+            <button 
+              className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-600"
+              onClick={() => handleEditJob(job)}
+            >
+              <FaEdit className="w-4 h-4" />
+            </button>
+            <button 
+              className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-600"
+              onClick={() => handleDeleteJob(job._id)}
+            >
+              <FaTrash className="w-4 h-4" />
+            </button>
+          </div>
         )}
         {/* Title Section */}
         <h3 className="text-xl font-semibold mb-2 dark:text-white line-clamp-2 min-h-[3.5rem]">
@@ -294,6 +325,15 @@ const Jobs = () => {
                 isOpen={isAiModalOpen}
                 onClose={() => setIsAiModalOpen(false)}
                 onSubmit={handleAddAiJob}
+            />
+            <EditJobModal
+                isOpen={isEditModalOpen}
+                onClose={() => {
+                    setIsEditModalOpen(false);
+                    setSelectedJob(null);
+                }}
+                job={selectedJob}
+                onUpdate={handleUpdateJob}
             />
         </div>
     );
