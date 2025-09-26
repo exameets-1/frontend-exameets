@@ -183,7 +183,7 @@ const YearPapers = () => {
                                                         className="w-full p-2 border dark:border-gray-600 rounded dark:bg-gray-700 dark:text-white"
                                                     />
                                                 ) : (
-                                                    <p className="font-medium text-gray-800 dark:text-gray-200">{paper[field]}</p>
+                                                    <p className="font-bold text-gray-800 dark:text-gray-200">{paper[field]}</p>
                                                 )}
                                             </div>
                                         ))}
@@ -206,7 +206,7 @@ const YearPapers = () => {
                                                     ))}
                                                 </select>
                                             ) : (
-                                                <p className="font-medium text-gray-800 dark:text-gray-200">{paper.category}</p>
+                                                <p className="font-bold text-gray-800 dark:text-gray-200">{paper.category}</p>
                                             )}
                                         </div>
 
@@ -223,7 +223,7 @@ const YearPapers = () => {
                                                     className="w-full p-2 border dark:border-gray-600 rounded dark:bg-gray-700 dark:text-white"
                                                 />
                                             ) : (
-                                                <p className="font-medium text-gray-800 dark:text-gray-200">{paper.slug}</p>
+                                                <p className="font-bold text-gray-800 dark:text-gray-200">{paper.slug}</p>
                                             )}
                                         </div>
                                     </div>

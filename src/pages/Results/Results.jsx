@@ -179,7 +179,7 @@ const Results = () => {
             {result.totalVacancies} posts
           </span>
           <button
-            className="text-[#015990] dark:text-blue-400 font-medium hover:underline"
+            className="text-[#015990] dark:text-blue-400 font-bold hover:underline"
             onClick={() => handleViewDetails(result._id)}
           >
             View Details →

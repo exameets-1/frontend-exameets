@@ -164,7 +164,7 @@ const AddATeamMemberModal = ({ isOpen, onClose, onSubmit }) => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Name and Position */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Full Name</label>
                             <input
                                 type="text"
                                 name="name"
@@ -177,7 +177,7 @@ const AddATeamMemberModal = ({ isOpen, onClose, onSubmit }) => {
                         </div>
     
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Position</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Position</label>
                             <input
                                 type="text"
                                 name="position"
@@ -191,7 +191,7 @@ const AddATeamMemberModal = ({ isOpen, onClose, onSubmit }) => {
     
                         {/* Image Upload */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Profile Image</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Profile Image</label>
                             <input
                                 type="file"
                                 name="image"
@@ -204,7 +204,7 @@ const AddATeamMemberModal = ({ isOpen, onClose, onSubmit }) => {
     
                         {/* Duration with Company */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Duration with Company</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Duration with Company</label>
                             <input
                                 type="text"
                                 name="duration"
@@ -217,7 +217,7 @@ const AddATeamMemberModal = ({ isOpen, onClose, onSubmit }) => {
     
                         {/* LinkedIn and GitHub */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">LinkedIn Profile</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">LinkedIn Profile</label>
                             <input
                                 type="url"
                                 name="linkedin"
@@ -230,7 +230,7 @@ const AddATeamMemberModal = ({ isOpen, onClose, onSubmit }) => {
                         </div>
     
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">GitHub Profile</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">GitHub Profile</label>
                             <input
                                 type="url"
                                 name="github"
@@ -244,7 +244,7 @@ const AddATeamMemberModal = ({ isOpen, onClose, onSubmit }) => {
     
                         {/* Description and Strengths */}
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Description</label>
                             <textarea
                                 name="description"
                                 value={formData.description}
@@ -257,7 +257,7 @@ const AddATeamMemberModal = ({ isOpen, onClose, onSubmit }) => {
                         </div>
     
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Key Strengths</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Key Strengths</label>
                             <textarea
                                 name="strengths"
                                 value={formData.strengths}
@@ -271,7 +271,7 @@ const AddATeamMemberModal = ({ isOpen, onClose, onSubmit }) => {
     
                         {/* Certificates */}
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Certifications</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Certifications</label>
                             <div className="flex gap-2">
                                 <input
                                     type="file"

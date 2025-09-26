@@ -137,7 +137,7 @@ const AdmissionDetails = () => {
                             key={index}
                             className={`flex justify-between items-center ${index < 1 ? 'border-b pb-2 border-gray-200 dark:border-gray-700' : ''}`}
                         >
-                            <span className="font-medium">{label}:</span>
+                            <span className="font-bold">{label}:</span>
                             <span>{formatDate(date)}</span>
                         </li>
                     ))}
@@ -168,11 +168,11 @@ const AdmissionDetails = () => {
                 <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">SEO Fields</h2>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">URL Slug</h3>
+                        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">URL Slug</h3>
                         <p className="text-gray-700 dark:text-gray-300">{admission.slug || 'Not specified'}</p>
                     </div>
                     <div>
-                        <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">Search Description</h3>
+                        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">Search Description</h3>
                         <p className="text-gray-700 dark:text-gray-300">{admission.searchDescription || 'Not provided'}</p>
                     </div>
                 </div>

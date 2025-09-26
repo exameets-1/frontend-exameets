@@ -73,7 +73,7 @@ export const AddAiAdmitCard = ({ isOpen, onClose, onSubmit }) => {
                             <div className="flex items-start gap-3">
                                 <FaRobot className="text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0" />
                                 <div>
-                                    <h4 className="text-sm font-medium text-purple-800 dark:text-purple-300 mb-2">
+                                    <h4 className="text-sm font-bold text-purple-800 dark:text-purple-300 mb-2">
                                         AI Processing
                                     </h4>
                                     <p className="text-sm text-purple-700 dark:text-purple-400">
@@ -86,7 +86,7 @@ export const AddAiAdmitCard = ({ isOpen, onClose, onSubmit }) => {
                         <div className="space-y-2">
                             <label 
                                 htmlFor="admitCardDetails" 
-                                className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+                                className="block text-sm font-bold text-gray-700 dark:text-gray-200"
                             >
                                 Admit Card Details <span className="text-red-500">*</span>
                             </label>

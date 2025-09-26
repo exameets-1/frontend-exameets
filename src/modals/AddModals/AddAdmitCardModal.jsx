@@ -150,7 +150,7 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
                                 { label: "Vacancies", name: "vacancies", required: true }
                             ].map(({ label, name, required }) => (
                                 <div key={name} className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
                                         {label} {required && <span className="text-red-500">*</span>}
                                     </label>
                                     <input
@@ -172,7 +172,7 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
                                 { label: "Slug", name: "slug", required: true }
                             ].map(({ label, name, type = "text", required }) => (
                                 <div key={name} className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
                                         {label} {required && <span className="text-red-500">*</span>}
                                     </label>
                                     <input
@@ -190,7 +190,7 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
                         {/* Array Fields */}
                         {Object.entries(arrayFields).map(([field, config]) => (
                             <div key={field} className="md:col-span-2 space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
                                     {config.label} {(field === 'importantDates' || field === 'examDetails') && <span className="text-red-500">*</span>}
                                 </label>
     
@@ -220,7 +220,7 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
                                                 <div key={index} className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg flex justify-between items-center">
                                                     <div className="flex gap-2">
                                                         {Object.entries(item).map(([key, value]) => (
-                                                            <span key={key} className="font-medium dark:text-white">{key}: {value}</span>
+                                                            <span key={key} className="font-bold dark:text-white">{key}: {value}</span>
                                                         ))}
                                                     </div>
                                                     <button
@@ -273,7 +273,7 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
     
                         {/* Search Description */}
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Search Description</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">Search Description</label>
                             <textarea
                                 name="searchDescription"
                                 value={formData.searchDescription}
@@ -285,7 +285,7 @@ const AddAdmitCardModal = ({ isOpen, onClose, onSubmit }) => {
     
                         {/* Featured Checkbox */}
                         <div className="md:col-span-2 space-y-2">
-                            <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-200">
+                            <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-700 dark:text-gray-200">
                                 <input
                                     type="checkbox"
                                     name="isFeatured"

@@ -335,7 +335,7 @@ const Register = () => {
           <h2 className="text-2xl text-center text-[#015990] dark:text-gray-100 mb-8">Register</h2>
 
           <div className="mb-5 ">
-            <label className="block text-[#015990] font-medium mb-2 dark:text-gray-100 " htmlFor="name">Full Name</label>
+            <label className="block text-[#015990] font-bold mb-2 dark:text-gray-100 " htmlFor="name">Full Name</label>
             <input
               type="text"
               id="name"
@@ -348,7 +348,7 @@ const Register = () => {
           </div>
 
           <div className="mb-5">
-            <label className="block text-[#015990] font-medium mb-2 dark:text-gray-100 " htmlFor="dob">Date of Birth</label>
+            <label className="block text-[#015990] font-bold mb-2 dark:text-gray-100 " htmlFor="dob">Date of Birth</label>
             <input
               type="date"
               id="dob"
@@ -360,7 +360,7 @@ const Register = () => {
           </div>
 
           <div className="mb-5">
-            <label className="block text-[#015990] font-medium mb-2 dark:text-gray-100" htmlFor="gender">Gender</label>
+            <label className="block text-[#015990] font-bold mb-2 dark:text-gray-100" htmlFor="gender">Gender</label>
             <select
               id="gender"
               value={gender}
@@ -376,7 +376,7 @@ const Register = () => {
           </div>
 
           <div className="mb-5">
-            <label className="block text-[#015990] dark:text-gray-100 font-medium mb-2" htmlFor="phone">Phone Number</label>
+            <label className="block text-[#015990] dark:text-gray-100 font-bold mb-2" htmlFor="phone">Phone Number</label>
             <div className="flex gap-2">
               <select 
                 id="country-code"
@@ -404,7 +404,7 @@ const Register = () => {
           </div>
 
           <div className="mb-5">
-            <label className="block text-[#015990] font-medium mb-2 dark:text-gray-100 " htmlFor="email">Email ID</label>
+            <label className="block text-[#015990] font-bold mb-2 dark:text-gray-100 " htmlFor="email">Email ID</label>
             <input
               type="email"
               id="email"
@@ -505,7 +505,7 @@ const Register = () => {
             )}
           </div>
 
-          <div className="mb-2 text-[#015990] dark:text-gray-100 font-medium">
+          <div className="mb-2 text-[#015990] dark:text-gray-100 font-bold">
             <label>Create Password</label>
           </div>
           <div className="mb-4">

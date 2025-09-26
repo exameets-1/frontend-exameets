@@ -124,7 +124,7 @@ const handleSubmit = async (e) => {
                             { name: 'slug', label: 'Slug', placeholder: 'Enter admission slug' },
                         ].map(({ name, label, placeholder }) => (
                             <div key={name} className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{label}</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">{label}</label>
                                 <input
                                     type="text"
                                     name={name}
@@ -139,7 +139,7 @@ const handleSubmit = async (e) => {
     
                         {/* Category Select */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Category</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">Category</label>
                             <select
                                 name="category"
                                 value={formData.category}
@@ -156,7 +156,7 @@ const handleSubmit = async (e) => {
     
                         {/* Application Link */}
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Application Link</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">Application Link</label>
                             <input
                                 type="url"
                                 name="application_link"
@@ -175,7 +175,7 @@ const handleSubmit = async (e) => {
                             { name: 'searchDescription', label: 'Search Description', rows: 3 },
                         ].map(({ name, label, rows }) => (
                             <div key={name} className="md:col-span-2 space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{label}</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">{label}</label>
                                 <textarea
                                     name={name}
                                     value={formData[name]}
@@ -198,13 +198,13 @@ const handleSubmit = async (e) => {
                                     onChange={handleChange}
                                     className="w-4 h-4 rounded border-gray-300 dark:border-gray-700 focus:ring-blue-500"
                                 />
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Featured Admission</span>
+                                <span className="text-sm font-bold text-gray-700 dark:text-gray-200">Featured Admission</span>
                             </label>
                         </div>
     
                         {/* Keywords Field */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Keywords</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">Keywords</label>
                             <div className="flex gap-2">
                                 <input
                                     type="text"

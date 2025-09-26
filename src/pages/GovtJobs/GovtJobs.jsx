@@ -234,7 +234,7 @@ const GovtJobs = () => {
                         {item.category || (item.totalVacancies ? `${item.totalVacancies} posts` : 'General')}
                     </span>
                     <button
-                        className="text-[#015990] dark:text-blue-400 font-medium hover:underline"
+                        className="text-[#015990] dark:text-blue-400 font-bold hover:underline"
                         onClick={(e) => {
                             e.preventDefault();
                             handleViewDetails(item._id);

@@ -190,7 +190,7 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                             { name: 'slug', label: 'Slug', placeholder: 'Enter admission slug' },
                         ].map(({ name, label, placeholder }) => (
                             <div key={name} className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{label}</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">{label}</label>
                                 <input
                                     type="text"
                                     name={name}
@@ -204,7 +204,7 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                         ))}
     
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Category</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">Category</label>
                             <select
                                 name="category"
                                 value={formData.category}
@@ -220,7 +220,7 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                         </div>
     
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Application Link</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">Application Link</label>
                             <input
                                 type="url"
                                 name="application_link"
@@ -233,7 +233,7 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                         </div>
     
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Eligibility Criteria</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">Eligibility Criteria</label>
                             <textarea
                                 name="eligibility_criteria"
                                 value={formData.eligibility_criteria}
@@ -246,7 +246,7 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                         </div>
     
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Description</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">Description</label>
                             <textarea
                                 name="description"
                                 value={formData.description}
@@ -259,7 +259,7 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                         </div>
     
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Search Description</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">Search Description</label>
                             <textarea
                                 name="searchDescription"
                                 value={formData.searchDescription}
@@ -284,12 +284,12 @@ const AddAdmissionModal = ({ isOpen, onClose, onSubmit }) => {
                                     onChange={handleChange}
                                     className="w-4 h-4 rounded border-gray-300 dark:border-gray-700 focus:ring-blue-500"
                                 />
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Featured Admission</span>
+                                <span className="text-sm font-bold text-gray-700 dark:text-gray-200">Featured Admission</span>
                             </label>
                         </div>
     
                         <div className="space-y-2 md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Keywords</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">Keywords</label>
                             <div className="flex gap-2">
                                 <input
                                     type="text"

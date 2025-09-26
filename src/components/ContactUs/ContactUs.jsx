@@ -167,7 +167,7 @@ const ContactUs = () => {
               )}
               
               <div className="mb-6">
-                <label htmlFor="name" className="block text-lg text-gray-700 dark:text-gray-300 font-medium mb-2">
+                <label htmlFor="name" className="block text-lg text-gray-700 dark:text-gray-300 font-bold mb-2">
                   Name: <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -182,7 +182,7 @@ const ContactUs = () => {
               </div>
               
               <div className="mb-6">
-                <label htmlFor="email" className="block text-lg text-gray-700 dark:text-gray-300 font-medium mb-2">
+                <label htmlFor="email" className="block text-lg text-gray-700 dark:text-gray-300 font-bold mb-2">
                   Email:
                 </label>
                 <input
@@ -197,7 +197,7 @@ const ContactUs = () => {
               </div>
               
               <div className="mb-6">
-                <label htmlFor="suggestion" className="block text-lg text-gray-700 dark:text-gray-300 font-medium mb-2">
+                <label htmlFor="suggestion" className="block text-lg text-gray-700 dark:text-gray-300 font-bold mb-2">
                   Your Suggestion: <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -213,7 +213,7 @@ const ContactUs = () => {
               </div>
       
               <div className="mb-8">
-                <label htmlFor="screenshot" className="block text-lg text-gray-700 dark:text-gray-300 font-medium mb-2">
+                <label htmlFor="screenshot" className="block text-lg text-gray-700 dark:text-gray-300 font-bold mb-2">
                   Upload Screenshot (optional):
                 </label>
                 <input
@@ -229,7 +229,7 @@ const ContactUs = () => {
               <button 
                 type="submit" 
                 disabled={loading}
-                className="w-full bg-[#015990] dark:bg-blue-500 text-white py-3 px-6 rounded-md text-lg font-medium hover:bg-[#014570] dark:hover:bg-blue-400 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="w-full bg-[#015990] dark:bg-blue-500 text-white py-3 px-6 rounded-md text-lg font-bold hover:bg-[#014570] dark:hover:bg-blue-400 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {loading ? 'Sending...' : 'Submit Feedback'}
               </button>

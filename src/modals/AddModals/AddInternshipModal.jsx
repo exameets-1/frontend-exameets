@@ -139,7 +139,7 @@ const AddInternshipModal = ({ isOpen, onClose, onSubmit }) => {
                             { label: "Slug", name: "slug", required: false }
                         ].map(({ label, name, type = "text", required }) => (
                             <div key={name} className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">
                                     {label} {required && <span className="text-red-500">*</span>}
                                 </label>
                                 <input
@@ -160,7 +160,7 @@ const AddInternshipModal = ({ isOpen, onClose, onSubmit }) => {
     
                         {/* Internship Type */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">
                                 Internship Type <span className="text-red-500">*</span>
                             </label>
                             <select
@@ -184,7 +184,7 @@ const AddInternshipModal = ({ isOpen, onClose, onSubmit }) => {
                         {/* Array Fields */}
                         {Object.entries(arrayFields).map(([field, config]) => (
                             <div key={field} className="md:col-span-2 space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">
                                     {config.label} {field === 'skills_required' && <span className="text-red-500">*</span>}
                                 </label>
                                 <div className="flex gap-2">
@@ -233,7 +233,7 @@ const AddInternshipModal = ({ isOpen, onClose, onSubmit }) => {
                             { name: "searchDescription", label: "Search Description", required: false }
                         ].map(({ name, label, required }) => (
                             <div key={name} className="md:col-span-2 space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">
                                     {label} {required && <span className="text-red-500">*</span>}
                                 </label>
                                 <textarea
@@ -262,7 +262,7 @@ const AddInternshipModal = ({ isOpen, onClose, onSubmit }) => {
                                     onChange={handleChange}
                                     className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300 dark:border-gray-600 dark:bg-gray-800"
                                 />
-                                <span className="text-gray-700 dark:text-gray-300 font-medium">Featured Internship</span>
+                                <span className="text-gray-700 dark:text-gray-300 font-bold">Featured Internship</span>
                             </label>
                         </div>
                     </div>

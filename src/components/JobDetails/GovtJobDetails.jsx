@@ -105,7 +105,7 @@ const GovtJobDetails = () => {
               key={index}
               className={`flex justify-between items-center ${index < 3 ? 'border-b pb-2 border-gray-200 dark:border-gray-700' : ''}`}
             >
-              <span className="font-medium">{label}:</span>
+              <span className="font-bold">{label}:</span>
               <span>{(date)}</span>
             </li>
           ))}
@@ -117,11 +117,11 @@ const GovtJobDetails = () => {
         <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">Eligibility Criteria</h2>
         <div className="space-y-6">
           <div>
-            <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">Educational Qualifications</h3>
+            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">Educational Qualifications</h3>
             {renderArrayAsList(job.educationalQualifications)}
           </div>
           <div>
-            <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">Age Limit</h3>
+            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">Age Limit</h3>
             <div className="space-y-1 text-gray-700 dark:text-gray-300">
               <p>Minimum: {job.ageLimitMin || "Not specified"}</p>
               <p>Maximum: {job.ageLimitMax || "Not specified"}</p>
@@ -129,7 +129,7 @@ const GovtJobDetails = () => {
             </div>
           </div>
           <div>
-            <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">Additional Requirements</h3>
+            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">Additional Requirements</h3>
             {renderArrayAsList(job.additionalRequirements)}
           </div>
         </div>
@@ -172,7 +172,7 @@ const GovtJobDetails = () => {
               key={index}
               className={`flex justify-between items-center ${index < 3 ? 'border-b pb-2 border-gray-200 dark:border-gray-700' : ''}`}
             >
-              <span className="font-medium">{label}:</span>
+              <span className="font-bold">{label}:</span>
               <span>{value || "Not specified"}</span>
             </li>
           ))}
@@ -190,15 +190,15 @@ const GovtJobDetails = () => {
         <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-300 mb-4">How to Apply</h2>
         <div className="space-y-6">
           <div>
-            <h3 className="text-lg font-medium dark:text-white mb-2">Online Application Steps</h3>
+            <h3 className="text-lg font-bold dark:text-white mb-2">Online Application Steps</h3>
             {renderArrayAsList(job.howToApplyOnlineSteps)}
           </div>
           <div>
-            <h3 className="text-lg font-medium dark:text-white mb-2">Offline Application Steps</h3>
+            <h3 className="text-lg font-bold dark:text-white mb-2">Offline Application Steps</h3>
             {renderArrayAsList(job.howToApplyOfflineSteps)}
           </div>
           <div>
-            <h3 className="text-lg font-medium dark:text-white mb-2">Required Documents</h3>
+            <h3 className="text-lg font-bold dark:text-white mb-2">Required Documents</h3>
             {renderArrayAsList(job.requiredDocuments)}
           </div>
         </div>
@@ -235,7 +235,7 @@ const GovtJobDetails = () => {
         <ul className="space-y-3">
           {job.notificationPDFLink && (
             <li className="flex justify-between items-center border-b pb-2 border-gray-200 dark:border-gray-700">
-              <span className="font-medium">Notification PDF:</span>
+              <span className="font-bold">Notification PDF:</span>
               <a href={job.notificationPDFLink} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300" target="_blank" rel="noopener noreferrer">
                 Download
               </a>
@@ -243,7 +243,7 @@ const GovtJobDetails = () => {
           )}
           {job.applyOnlineLink && (
             <li className="flex justify-between items-center border-b pb-2 border-gray-200 dark:border-gray-700">
-              <span className="font-medium">Apply Online:</span>
+              <span className="font-bold">Apply Online:</span>
               <a href={job.applyOnlineLink} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300" target="_blank" rel="noopener noreferrer">
                 Visit
               </a>
@@ -251,7 +251,7 @@ const GovtJobDetails = () => {
           )}
           {job.officialWebsiteLink && (
             <li className="flex justify-between items-center">
-              <span className="font-medium">Official Website:</span>
+              <span className="font-bold">Official Website:</span>
               <a href={job.officialWebsiteLink} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300" target="_blank" rel="noopener noreferrer">
                 Visit
               </a>

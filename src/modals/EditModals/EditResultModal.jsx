@@ -137,7 +137,7 @@ const EditResultModal = ({ isOpen, onClose, onUpdate, resultData }) => {
                         <div className="space-y-6">
                             {["title", "organization", "postName", "totalVacancies"].map((field) => (
                                 <div key={field} className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">{field.replace(/([A-Z])/g, ' $1')}</label>
+                                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 capitalize">{field.replace(/([A-Z])/g, ' $1')}</label>
                                     <input
                                         type="text"
                                         name={field}
@@ -152,7 +152,7 @@ const EditResultModal = ({ isOpen, onClose, onUpdate, resultData }) => {
                         {/* Dates & Links */}
                         <div className="space-y-6">
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Result Date</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Result Date</label>
                                 <input
                                     type="text"
                                     name="resultDate"
@@ -164,7 +164,7 @@ const EditResultModal = ({ isOpen, onClose, onUpdate, resultData }) => {
                             </div>
     
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Official Website</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Official Website</label>
                                 <input
                                     type="url"
                                     name="officialWebsite"
@@ -175,7 +175,7 @@ const EditResultModal = ({ isOpen, onClose, onUpdate, resultData }) => {
                             </div>
     
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Exam Type</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Exam Type</label>
                                 <select
                                     name="exam_type"
                                     value={formData.exam_type}
@@ -192,7 +192,7 @@ const EditResultModal = ({ isOpen, onClose, onUpdate, resultData }) => {
                         {/* Array Fields */}
                         {Object.entries(arrayFields).map(([field, config]) => (
                             <div key={field} className="md:col-span-2 space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{config.label}</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">{config.label}</label>
     
                                 {config.type === 'object' ? (
                                     <div className="space-y-4">
@@ -217,7 +217,7 @@ const EditResultModal = ({ isOpen, onClose, onUpdate, resultData }) => {
                                                 <div key={index} className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg flex justify-between items-center">
                                                     <div className="flex gap-2 text-sm text-gray-700 dark:text-gray-200">
                                                         {Object.entries(item).map(([key, value]) => (
-                                                            <span key={key} className="font-medium">{key}: {value}</span>
+                                                            <span key={key} className="font-bold">{key}: {value}</span>
                                                         ))}
                                                     </div>
                                                     <button type="button" onClick={() => handleRemoveItem(field, index)} className="text-red-500 hover:text-red-700">
@@ -258,11 +258,11 @@ const EditResultModal = ({ isOpen, onClose, onUpdate, resultData }) => {
     
                         {/* Important Links */}
                         <div className="md:col-span-2 space-y-6">
-                            <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100">Important Links</h3>
+                            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">Important Links</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {Object.entries(formData.importantLinks).map(([linkType, linkValue]) => (
                                     <div key={linkType} className="space-y-2">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
+                                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 capitalize">
                                             {linkType.replace(/([A-Z])/g, ' $1')}
                                         </label>
                                         <input
@@ -280,7 +280,7 @@ const EditResultModal = ({ isOpen, onClose, onUpdate, resultData }) => {
                         {/* Textareas */}
                         {["nextStepsDescription", "searchDescription"].map((field) => (
                             <div key={field} className="md:col-span-2 space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">{field.replace(/([A-Z])/g, ' $1')}</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 capitalize">{field.replace(/([A-Z])/g, ' $1')}</label>
                                 <textarea
                                     name={field}
                                     value={formData[field]}
@@ -293,7 +293,7 @@ const EditResultModal = ({ isOpen, onClose, onUpdate, resultData }) => {
     
                         {/* Slug */}
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Slug</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Slug</label>
                             <input
                                 type="text"
                                 name="slug"
@@ -305,7 +305,7 @@ const EditResultModal = ({ isOpen, onClose, onUpdate, resultData }) => {
     
                         {/* Is Featured */}
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Is Featured</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Is Featured</label>
                             <input
                                 type="checkbox"
                                 name="isFeatured"

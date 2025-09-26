@@ -197,11 +197,11 @@ const AddGovtJobModal = ({ isOpen, onClose, onSubmit }) => {
                                             onChange={handleChange}
                                             className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
                                         />
-                                        <span className="text-gray-700 dark:text-gray-200 font-medium">{fieldInfo.label}</span>
+                                        <span className="text-gray-700 dark:text-gray-200 font-bold">{fieldInfo.label}</span>
                                     </label>
                                 ) : (
                                     <div className="space-y-2">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
                                             {fieldInfo.label}
                                             {requiredFields.includes(fieldName) && <span className="text-red-500 ml-1">*</span>}
                                         </label>
@@ -242,7 +242,7 @@ const AddGovtJobModal = ({ isOpen, onClose, onSubmit }) => {
 
                         {arrayFields.map(field => (
                             <div key={field} className="md:col-span-2 space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
                                     {field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                                 </label>
                                 <div className="flex gap-2">
@@ -280,7 +280,7 @@ const AddGovtJobModal = ({ isOpen, onClose, onSubmit }) => {
 
                         {/* FAQ Section */}
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
                                 Frequently Asked Questions (FAQ)
                             </label>
                             <div className="space-y-4">
@@ -322,7 +322,7 @@ const AddGovtJobModal = ({ isOpen, onClose, onSubmit }) => {
                                     {formData.faq.map((item, index) => (
                                         <div key={index} className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg flex flex-col gap-2">
                                             <div className="flex justify-between items-center">
-                                                <span className="font-medium dark:text-white">{item.question}</span>
+                                                <span className="font-bold dark:text-white">{item.question}</span>
                                                 <button
                                                     type="button"
                                                     onClick={() => handleRemoveItem('faq', index)}
@@ -348,7 +348,7 @@ const AddGovtJobModal = ({ isOpen, onClose, onSubmit }) => {
                                     onChange={handleChange}
                                     className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
                                 />
-                                <span className="text-gray-700 dark:text-gray-200 font-medium">Mark as Featured</span>
+                                <span className="text-gray-700 dark:text-gray-200 font-bold">Mark as Featured</span>
                             </label>
                         </div>
                     </div>

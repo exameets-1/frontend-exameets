@@ -73,7 +73,7 @@ export const AddAiScholarship = ({ isOpen, onClose, onSubmit }) => {
                             <div className="flex items-start gap-3">
                                 <FaRobot className="text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
                                 <div>
-                                    <h4 className="text-sm font-medium text-green-800 dark:text-green-300 mb-2">
+                                    <h4 className="text-sm font-bold text-green-800 dark:text-green-300 mb-2">
                                         AI Processing
                                     </h4>
                                     <p className="text-sm text-green-700 dark:text-green-400">
@@ -86,7 +86,7 @@ export const AddAiScholarship = ({ isOpen, onClose, onSubmit }) => {
                         <div className="space-y-2">
                             <label 
                                 htmlFor="scholarshipDetails" 
-                                className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+                                className="block text-sm font-bold text-gray-700 dark:text-gray-200"
                             >
                                 Scholarship Details <span className="text-red-500">*</span>
                             </label>

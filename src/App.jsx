@@ -42,6 +42,9 @@ import AdmissionDetails from "./components/AdmissionDetails/AdmissionDetails";
 import Team from "./pages/Teams/Teams";
 import TeamDetails from "./components/TeamDetails/TeamDetails";
 
+import EmployeesPage from "./pages/Employees/Employees";
+import EmployeeDetails from "./components/EmployeeDetails/EmployeeDetails";
+
 import Scholarships from "./pages/Scholarships/Scholarships";
 import ScholarshipDetails from "./components/ScholarshipDetails/ScholarshipDetails";
 
@@ -203,6 +206,9 @@ function App() {
 
             <Route path="/team" element={<Team />} />
             <Route path="/team/get/:id" element={<TeamDetails />} />
+
+            <Route path="/employees" element={<EmployeesPage />} />
+            <Route path="/emp/get/:id" element={<EmployeeDetails />} />
 
             <Route path="/scholarships" element={<Scholarships />} />
             <Route path="/scholarship/get/:id" element={<ScholarshipDetails />} />

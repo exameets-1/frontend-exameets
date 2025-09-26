@@ -136,7 +136,7 @@ const EditInternshipModal = ({ isOpen, onClose, onSubmit, internship }) => {
                             { label: "Slug", name: "slug" }
                         ].map((field, idx) => (
                             <div key={idx} className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{field.label}</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">{field.label}</label>
                                 {field.type === "select" ? (
                                     <select
                                         name={field.name}
@@ -164,7 +164,7 @@ const EditInternshipModal = ({ isOpen, onClose, onSubmit, internship }) => {
                         {/* Array Fields */}
                         {Object.entries(arrayFields).map(([field, config]) => (
                             <div key={field} className="md:col-span-2 space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{config.label}</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">{config.label}</label>
                                 <div className="flex gap-2">
                                     <input
                                         type="text"
@@ -213,7 +213,7 @@ const EditInternshipModal = ({ isOpen, onClose, onSubmit, internship }) => {
                             { label: "Search Description", name: "searchDescription" }
                         ].map((field) => (
                             <div key={field.name} className="md:col-span-2 space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{field.label}</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">{field.label}</label>
                                 <textarea
                                     name={field.name}
                                     value={formData[field.name]}
@@ -227,7 +227,7 @@ const EditInternshipModal = ({ isOpen, onClose, onSubmit, internship }) => {
     
                         {/* Featured Checkbox */}
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Featured Internship</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Featured Internship</label>
                             <input
                                 type="checkbox"
                                 name="is_featured"

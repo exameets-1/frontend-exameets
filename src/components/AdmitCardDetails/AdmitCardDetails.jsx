@@ -104,7 +104,7 @@ const AdmitCardDetails = () => {
         <div className="space-y-3">
           {admitCard.importantDates?.map((date, index) => (
             <div key={index} className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-              <p className="font-medium text-gray-800 dark:text-gray-200">{date.event}</p>
+              <p className="font-bold text-gray-800 dark:text-gray-200">{date.event}</p>
               <p className="text-gray-700 dark:text-gray-300">{date.date}</p>
             </div>
           ))}
@@ -117,7 +117,7 @@ const AdmitCardDetails = () => {
         <div className="space-y-3">
           {admitCard.examDetails?.map((detail, index) => (
             <div key={index} className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-              <p className="font-medium text-gray-800 dark:text-gray-200">Exam Date: {detail.examDate}</p>
+              <p className="font-bold text-gray-800 dark:text-gray-200">Exam Date: {detail.examDate}</p>
               <p className="text-gray-700 dark:text-gray-300">Shift Timings: {detail.shiftTimings}</p>
               <p className="text-gray-700 dark:text-gray-300">Reporting Time: {detail.reportingTime}</p>
             </div>

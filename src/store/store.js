@@ -7,6 +7,7 @@ import internshipReducer from "./slices/internshipSlice.js";
 import previousYearReducer from './slices/previousSlice.js';
 import admissionReducer from './slices/admissionSlice.js';
 import teamReducer from './slices/teamSlice.js';
+import employeeReducer from './slices/employeeSlice.js';
 import scholarshipReducer from './slices/scholarshipSlice.js';
 import admitCardReducer from './slices/admitCardSlice.js';
 import resultReducer from './slices/resultSlice.js';
@@ -22,6 +23,7 @@ const store = configureStore({
     previousYears : previousYearReducer,
     admissions: admissionReducer,
     team: teamReducer,
+    employee: employeeReducer,
     scholarships: scholarshipReducer,
     admitCards: admitCardReducer,
     results: resultReducer,

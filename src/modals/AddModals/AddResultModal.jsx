@@ -144,7 +144,7 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
                         <div className="space-y-6">
                             {["title", "organization", "postName", "totalVacancies"].map((field) => (
                                 <div key={field} className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
+                                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 capitalize">
                                         {field.replace(/([A-Z])/g, " $1")}
                                         {["title", "organization", "postName"].includes(field) && (
                                             <span className="text-red-500 ml-1">*</span>
@@ -165,7 +165,7 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
                         {/* Dates and Links */}
                         <div className="space-y-6">
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">
                                     Result Date<span className="text-red-500 ml-1">*</span>
                                 </label>
                                 <input
@@ -179,7 +179,7 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">
                                     Official Website<span className="text-red-500 ml-1">*</span>
                                 </label>
                                 <input
@@ -192,7 +192,7 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Exam Type</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Exam Type</label>
                                 <select
                                     name="exam_type"
                                     value={formData.exam_type}
@@ -209,7 +209,7 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
                         {/* Array Fields */}
                         {Object.entries(arrayFields).map(([field, config]) => (
                             <div key={field} className="md:col-span-2 space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{config.label}</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">{config.label}</label>
     
                                 {config.type === 'object' ? (
                                     <div className="space-y-4">
@@ -243,7 +243,7 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
                                                 <div key={index} className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg flex justify-between items-center">
                                                     <div className="flex gap-2 text-gray-700 dark:text-gray-200">
                                                         {Object.entries(item).map(([key, value]) => (
-                                                            <span key={key} className="font-medium">{key}: {value}</span>
+                                                            <span key={key} className="font-bold">{key}: {value}</span>
                                                         ))}
                                                     </div>
                                                     <button
@@ -302,11 +302,11 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
     
                         {/* Important Links */}
                         <div className="md:col-span-2 space-y-6">
-                            <h3 className="text-lg font-medium text-gray-800 dark:text-white">Important Links</h3>
+                            <h3 className="text-lg font-bold text-gray-800 dark:text-white">Important Links</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {Object.entries(formData.importantLinks).map(([linkType, linkValue]) => (
                                     <div key={linkType} className="space-y-2">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
+                                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 capitalize">
                                             {linkType.replace(/([A-Z])/g, ' $1')}
                                         </label>
                                         <input
@@ -324,7 +324,7 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
                         {/* Next Steps Description */}
                         {["nextStepsDescription", "slug", "searchDescription"].map((field) => (
                             <div key={field} className="md:col-span-2 space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">{field.replace(/([A-Z])/g, ' $1')}</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 capitalize">{field.replace(/([A-Z])/g, ' $1')}</label>
                                 <textarea
                                     name={field}
                                     value={formData[field]}
@@ -337,7 +337,7 @@ const AddResultModal = ({ isOpen, onClose, onSubmit }) => {
     
                         {/* Is Featured */}
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Is Featured</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Is Featured</label>
                             <input
                                 type="checkbox"
                                 name="isFeatured"

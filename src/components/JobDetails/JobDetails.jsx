@@ -147,25 +147,25 @@ const JobDetails = () => {
         <div className="space-y-6">
           {job.languages?.length > 0 && (
             <div>
-              <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">Languages</h3>
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">Languages</h3>
               {renderArrayAsList(job.languages)}
             </div>
           )}
           {job.frameworks?.length > 0 && (
             <div>
-              <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">Frameworks</h3>
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">Frameworks</h3>
               {renderArrayAsList(job.frameworks)}
             </div>
           )}
           {job.databases?.length > 0 && (
             <div>
-              <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">Databases</h3>
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">Databases</h3>
               {renderArrayAsList(job.databases)}
             </div>
           )}
           {job.methodologies?.length > 0 && (
             <div>
-              <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">Methodologies</h3>
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">Methodologies</h3>
               {renderArrayAsList(job.methodologies)}
             </div>
           )}
@@ -200,12 +200,12 @@ const JobDetails = () => {
         <ul className="space-y-3">
           {job.startDate && (
             <li className="flex justify-between items-center border-b pb-2 border-gray-200 dark:border-gray-700">
-              <span className="font-medium">Start Date:</span>
+              <span className="font-bold">Start Date:</span>
               <span>{formatDate(job.startDate)}</span>
             </li>
           )}
           <li className="flex justify-between items-center">
-            <span className="font-medium">Application Deadline:</span>
+            <span className="font-bold">Application Deadline:</span>
             <span>{formatDate(job.applicationDeadline)}</span>
           </li>
         </ul>

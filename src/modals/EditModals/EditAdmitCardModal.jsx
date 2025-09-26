@@ -142,7 +142,7 @@ const EditAdmitCardModal = ({ isOpen, onClose, onSubmit, admitCardData }) => {
                                 { name: 'vacancies', label: 'Vacancies' },
                             ].map(({ name, label }) => (
                                 <div key={name} className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{label}</label>
+                                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">{label}</label>
                                     <input
                                         type="text"
                                         name={name}
@@ -161,7 +161,7 @@ const EditAdmitCardModal = ({ isOpen, onClose, onSubmit, admitCardData }) => {
                                 { name: 'slug', label: 'Slug', type: 'text' },
                             ].map(({ name, label, type }) => (
                                 <div key={name} className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{label}</label>
+                                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">{label}</label>
                                     <input
                                         type={type}
                                         name={name}
@@ -176,7 +176,7 @@ const EditAdmitCardModal = ({ isOpen, onClose, onSubmit, admitCardData }) => {
                         {/* Array Fields */}
                         {Object.entries(arrayFields).map(([field, config]) => (
                             <div key={field} className="md:col-span-2 space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{config.label}</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">{config.label}</label>
     
                                 {config.type === 'object' ? (
                                     <div className="space-y-4">
@@ -204,7 +204,7 @@ const EditAdmitCardModal = ({ isOpen, onClose, onSubmit, admitCardData }) => {
                                                 <div key={index} className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg flex justify-between items-center">
                                                     <div className="flex gap-2 text-gray-800 dark:text-gray-100">
                                                         {Object.entries(item).map(([key, value]) => (
-                                                            <span key={key} className="font-medium">{key}: {value}</span>
+                                                            <span key={key} className="font-bold">{key}: {value}</span>
                                                         ))}
                                                     </div>
                                                     <button
@@ -257,7 +257,7 @@ const EditAdmitCardModal = ({ isOpen, onClose, onSubmit, admitCardData }) => {
     
                         {/* Search Description */}
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Search Description</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">Search Description</label>
                             <textarea
                                 name="searchDescription"
                                 value={formData.searchDescription}
@@ -269,7 +269,7 @@ const EditAdmitCardModal = ({ isOpen, onClose, onSubmit, admitCardData }) => {
     
                         {/* Featured Checkbox */}
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Featured Admit Card</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">Featured Admit Card</label>
                             <input
                                 type="checkbox"
                                 name="isFeatured"

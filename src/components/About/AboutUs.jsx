@@ -83,7 +83,7 @@ const AboutUs = () => {
       
             <div className="flex justify-center mt-8">
               <Link to="/register">
-                <button className="bg-[#015990] dark:bg-blue-500 text-white px-6 py-3 rounded-lg text-xl font-medium hover:bg-[#0788d8] dark:hover:bg-blue-400 transition-colors">
+                <button className="bg-[#015990] dark:bg-blue-500 text-white px-6 py-3 rounded-lg text-xl font-bold hover:bg-[#0788d8] dark:hover:bg-blue-400 transition-colors">
                   Join Us Today
                 </button>
               </Link>

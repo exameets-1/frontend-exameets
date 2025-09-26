@@ -144,7 +144,7 @@ const Login = () => {
         <h2 className="text-center text-2xl font-semibold text-[#005587] dark:text-white mb-8">Welcome Back!</h2>
         <form onSubmit={handleLogin}>
           <div className="mb-5">
-            <label htmlFor="email" className="block font-medium text-[#005587] dark:text-gray-300 mb-2">Email Address</label>
+            <label htmlFor="email" className="block font-bold text-[#005587] dark:text-gray-300 mb-2">Email Address</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <MdOutlineMailOutline className="text-[#005587] dark:text-gray-400" />
@@ -162,7 +162,7 @@ const Login = () => {
           </div>
 
           <div className="mb-5">
-            <label htmlFor="password" className="block font-medium text-[#005587] dark:text-gray-300 mb-2">Password</label>
+            <label htmlFor="password" className="block font-bold text-[#005587] dark:text-gray-300 mb-2">Password</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <RiLock2Fill className="text-[#005587] dark:text-gray-400" />
@@ -203,7 +203,7 @@ const Login = () => {
 
           <button
             type="submit"
-            className={`w-full py-3 rounded-lg font-medium transition-colors ${
+            className={`w-full py-3 rounded-lg font-bold transition-colors ${
               authLoading
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-[#005587] hover:bg-[#004670] dark:bg-blue-700 dark:hover:bg-blue-800 text-white"
@@ -216,7 +216,7 @@ const Login = () => {
 
         <div className="text-center mt-5 text-gray-600 dark:text-gray-400">
           Don&lsquo;t have an account?{" "}
-          <Link to="/register" className="text-[#005587] dark:text-gray-400 font-medium hover:underline">
+          <Link to="/register" className="text-[#005587] dark:text-gray-400 font-bold hover:underline">
             Sign up
           </Link>
         </div>
@@ -235,7 +235,7 @@ const Login = () => {
             <h3 className="text-xl font-semibold text-[#005587] dark:text-white text-center mb-6">Forgot Password</h3>
             <form onSubmit={handleForgotPassword}>
               <div className="mb-5">
-                <label className="block font-medium text-[#005587] dark:text-gray-300 mb-2">Email Address</label>
+                <label className="block font-bold text-[#005587] dark:text-gray-300 mb-2">Email Address</label>
                 <input
                   type="email"
                   placeholder="Enter your email"
@@ -247,7 +247,7 @@ const Login = () => {
               </div>
               <button 
                 type="submit" 
-                className={`w-full py-3 rounded-lg font-medium text-white ${
+                className={`w-full py-3 rounded-lg font-bold text-white ${
                   loading
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-[#005587] hover:bg-[#004670] dark:bg-blue-700 dark:hover:bg-blue-800"
@@ -274,7 +274,7 @@ const Login = () => {
             <h3 className="text-xl font-semibold text-[#005587] dark:text-white text-center mb-6">Enter OTP</h3>
             <form onSubmit={handleVerifyOTP}>
               <div className="mb-5">
-                <label className="block font-medium text-[#005587] dark:text-gray-300 mb-2">OTP</label>
+                <label className="block font-bold text-[#005587] dark:text-gray-300 mb-2">OTP</label>
                 <div className="flex gap-2 justify-center">
                   {[...Array(6)].map((_, idx) => (
                     <input
@@ -318,7 +318,7 @@ const Login = () => {
               )}
               <button 
                 type="submit" 
-                className={`w-full py-3 rounded-lg font-medium text-white ${
+                className={`w-full py-3 rounded-lg font-bold text-white ${
                   loading
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-[#005587] hover:bg-[#004670] dark:bg-blue-700 dark:hover:bg-blue-800"
@@ -345,7 +345,7 @@ const Login = () => {
             <h3 className="text-xl font-semibold text-[#005587] dark:text-white text-center mb-6">Reset Password</h3>
             <form onSubmit={handleResetPassword}>
               <div className="mb-5">
-                <label className="block font-medium text-[#005587] dark:text-gray-300 mb-2">New Password</label>
+                <label className="block font-bold text-[#005587] dark:text-gray-300 mb-2">New Password</label>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
@@ -367,7 +367,7 @@ const Login = () => {
                 </div>
               </div>
               <div className="mb-5">
-                <label className="block font-medium text-[#005587] dark:text-gray-300 mb-2">Confirm Password</label>
+                <label className="block font-bold text-[#005587] dark:text-gray-300 mb-2">Confirm Password</label>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
@@ -381,7 +381,7 @@ const Login = () => {
               </div>
               <button 
                 type="submit" 
-                className={`w-full py-3 rounded-lg font-medium text-white ${
+                className={`w-full py-3 rounded-lg font-bold text-white ${
                   loading
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-[#005587] hover:bg-[#004670] dark:bg-blue-700 dark:hover:bg-blue-800"

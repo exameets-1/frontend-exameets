@@ -132,7 +132,7 @@ const AddPreviousYearModal = ({ isOpen, onClose, onSubmit }) => {
                             { name: 'slug', label: 'Slug', placeholder: 'Enter paper slug' }
                         ].map(({ name, label, placeholder }) => (
                             <div key={name} className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">{label}</label>
                                 <input
                                     type="text"
                                     name={name}
@@ -147,7 +147,7 @@ const AddPreviousYearModal = ({ isOpen, onClose, onSubmit }) => {
     
                         {/* Category */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Category</label>
                             <select
                                 name="category"
                                 value={formData.category}
@@ -164,7 +164,7 @@ const AddPreviousYearModal = ({ isOpen, onClose, onSubmit }) => {
     
                         {/* Year */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Year</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Year</label>
                             <select
                                 name="year"
                                 value={formData.year}
@@ -180,7 +180,7 @@ const AddPreviousYearModal = ({ isOpen, onClose, onSubmit }) => {
     
                         {/* Difficulty Level */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Difficulty Level</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Difficulty Level</label>
                             <select
                                 name="difficulty_level"
                                 value={formData.difficulty_level}
@@ -201,7 +201,7 @@ const AddPreviousYearModal = ({ isOpen, onClose, onSubmit }) => {
                             { name: 'solution_link', label: 'Solution Link (Optional)', placeholder: 'Enter solution paper URL', required: false }
                         ].map(({ name, label, placeholder, required }) => (
                             <div key={name} className="md:col-span-2 space-y-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">{label}</label>
                                 <input
                                     type="url"
                                     name={name}
@@ -216,7 +216,7 @@ const AddPreviousYearModal = ({ isOpen, onClose, onSubmit }) => {
     
                         {/* Description */}
                         <div className="md:col-span-2 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Description</label>
                             <textarea
                                 name="description"
                                 value={formData.description}
@@ -230,7 +230,7 @@ const AddPreviousYearModal = ({ isOpen, onClose, onSubmit }) => {
     
                         {/* Search Description */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Search Description</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Search Description</label>
                             <textarea
                                 name="searchDescription"
                                 value={formData.searchDescription}
@@ -244,7 +244,7 @@ const AddPreviousYearModal = ({ isOpen, onClose, onSubmit }) => {
     
                         {/* Keywords */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Keywords</label>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Keywords</label>
                             <div className="flex gap-2">
                                 <input
                                     type="text"
@@ -290,7 +290,7 @@ const AddPreviousYearModal = ({ isOpen, onClose, onSubmit }) => {
                                     onChange={handleChange}
                                     className="w-4 h-4 border-gray-300 dark:border-gray-600 dark:bg-gray-800 text-blue-600 focus:ring-blue-500"
                                 />
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Featured Paper</span>
+                                <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Featured Paper</span>
                             </label>
                         </div>
                     </div>
