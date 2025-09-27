@@ -316,15 +316,28 @@ export const deleteInternship = (id) => async (dispatch) => {
 export const updateInternship = ({ internshipId, updatedData }) => async (dispatch) => {
   try {
     dispatch(internshipSlice.actions.updateInternshipRequest());
+    
+    // console.log('Sending to backend - internshipId:', internshipId);
+    // console.log('Sending to backend - updatedData:', updatedData);
+    // console.log('Removed fields being sent:', updatedData.removedFields);
+
     const { data } = await axios.put(
       `${import.meta.env.VITE_BACKEND_URL}/api/v1/internship/update/${internshipId}`,
-      updatedData,
-      { withCredentials: true }
+      updatedData, // This includes both internship data and removedFields
+      { 
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
     );
+    
     dispatch(internshipSlice.actions.updateInternshipSuccess(data.internship));
     return data;
   } catch (error) {
-    dispatch(internshipSlice.actions.updateInternshipFailure(error.response?.data?.message || "Failed to update internship"));
+    const errorMessage = error.response?.data?.message || error.message || "Failed to update internship";
+    dispatch(internshipSlice.actions.updateInternshipFailure(errorMessage));
+    throw error;
   }
 };
 
