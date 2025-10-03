@@ -4,7 +4,7 @@ import axios from "axios"
 const userSlice = createSlice({
   name: "user",
   initialState: {
-    loading: false,
+    loading: true, // Start with true to check auth on mount
     isAuthenticated: false,
     user: {},
     error: null,
@@ -36,7 +36,6 @@ const userSlice = createSlice({
     },
     fetchUserSuccess(state, action) {
       state.loading = false;
-      // Only update authentication state if we actually got user data
       if (action.payload) {
         state.isAuthenticated = true;
         state.user = action.payload;
@@ -47,12 +46,9 @@ const userSlice = createSlice({
     },
     fetchUserFailed(state, action) {
       state.loading = false;
-      // Only update these states if not on login/register pages
-      if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
-        state.isAuthenticated = false;
-        state.user = {};
-        state.error = action.payload;
-      }
+      state.isAuthenticated = false;
+      state.user = {};
+      state.error = action.payload;
     },
     resetAuthErrors(state) {
       state.error = null;
