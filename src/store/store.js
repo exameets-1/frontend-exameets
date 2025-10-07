@@ -11,6 +11,7 @@ import employeeReducer from './slices/employeeSlice.js';
 import scholarshipReducer from './slices/scholarshipSlice.js';
 import admitCardReducer from './slices/admitCardSlice.js';
 import resultReducer from './slices/resultSlice.js';
+import taskReducer from './slices/taskSlice.js';
 import globalSearchReducer from './slices/globalSearchSlice';
 
 const store = configureStore({
@@ -23,6 +24,7 @@ const store = configureStore({
     previousYears : previousYearReducer,
     admissions: admissionReducer,
     team: teamReducer,
+    task: taskReducer,
     employee: employeeReducer,
     scholarships: scholarshipReducer,
     admitCards: admitCardReducer,
