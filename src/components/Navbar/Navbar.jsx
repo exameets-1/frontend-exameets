@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '../../App';
-import { UserCog, X, Menu, ChevronDown } from 'lucide-react';
+import { UserCog, X, Menu, ChevronDown, CheckSquare } from 'lucide-react';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -47,10 +47,10 @@ const Navbar = () => {
     <header className="w-full dark:bg-gray-800">
       {/* Top Line */}
       <div className="bg-[#015990] dark:bg-gray-950 text-white dark:text-gray-100 text-center py-2 flex items-center justify-center px-4">
-  <p className="text-base md:text-xl">
-    ...Exameets is a one-step platform for students, where all the needs are met...
-  </p>
-</div>
+        <p className="text-base md:text-xl">
+          ...Exameets is a one-step platform for students, where all the needs are met...
+        </p>
+      </div>
 
       {/* Logo and Menu */}
       <div className="flex items-center justify-between px-5 py-4 relative dark:bg-gray-800">
@@ -87,6 +87,17 @@ const Navbar = () => {
             <Link to="/admissions" onClick={closeMobileMenu} className={getNavItemStyle('/admissions')}>Admissions</Link>
             <Link to="/papers" onClick={closeMobileMenu} className={getNavItemStyle('/papers')}>PYQs</Link>
             <Link to="/scholarships" onClick={closeMobileMenu} className={getNavItemStyle('/scholarships')}>Scholarships</Link>
+            
+            {/* Tasks link for authenticated users in mobile menu */}
+            {isAuthenticated && (
+              <>
+                <hr className="border-gray-200 dark:border-gray-600" />
+                <Link to="/tasks" onClick={closeMobileMenu} className={`${getNavItemStyle('/tasks')} flex items-center gap-2 text-blue-600 dark:text-blue-400 font-medium`}>
+                  <CheckSquare size={18} />
+                  Tasks
+                </Link>
+              </>
+            )}
           </div>
           
           {/* Footer for mobile menu */}
@@ -187,6 +198,18 @@ const Navbar = () => {
               <span className="text-xl dark:text-gray-100">Scholarships</span>
             </Link>
           </div>
+
+          {/* Tasks navigation item for authenticated users */}
+          {isAuthenticated && (
+            <div className="flex flex-col items-center m-4">
+              <Link to="/tasks" className="flex flex-col items-center">
+                <div className="flex items-center justify-center w-[70px] h-[70px] bg-[#E8F4FD] border-[3.5px] border-[#3B82F6] rounded-full hover:bg-[#DBEAFE] transition-colors duration-200">
+                  <CheckSquare size={28} className="text-[#3B82F6]" />
+                </div>
+                <span className="text-xl dark:text-gray-100">Tasks</span>
+              </Link>
+            </div>
+          )}
         </nav>
       </div>
 
@@ -207,9 +230,15 @@ const Navbar = () => {
           <div className="w-full flex justify-between items-center pr-12">
             <p className="text-xl">Hi, {user.name}</p>
             <div className="flex items-center gap-4">
-              <Link to="/dashboard" className="text-white dark:text-gray-100 no-underline flex items-center">
+              {/* Tasks link in bottom bar for quick access */}
+              <Link to="/tasks" className="text-white dark:text-gray-100 no-underline flex items-center hover:text-blue-200 transition-colors">
+                <CheckSquare className="md:hidden" size={20} />
+                <span className="hidden md:inline text-lg">Tasks</span>
+              </Link>
+              <span className="text-lg">|</span>
+              <Link to="/dashboard" className="text-white dark:text-gray-100 no-underline flex items-center hover:text-blue-200 transition-colors">
                 <UserCog className="md:hidden" size={24} />
-                <span className="hidden md:inline text-xl">Profile</span>
+                <span className="hidden md:inline text-lg">Profile</span>
               </Link>
             </div>
           </div>
