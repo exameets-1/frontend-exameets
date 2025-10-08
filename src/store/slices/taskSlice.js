@@ -190,6 +190,37 @@ export const addComment = createAsyncThunk(
   }
 );
 
+export const getUserTasks = createAsyncThunk(
+  'task/getUserTasks',
+  async (userId, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(
+        `${BASE_URL}/view-user/${userId}`, 
+        { withCredentials: true }
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch user tasks');
+    }
+  }
+);
+
+// Get Task for Viewing (read-only)
+export const getTaskForViewing = createAsyncThunk(
+  'task/getTaskForViewing',
+  async (taskId, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(
+        `${BASE_URL}/view-task/${taskId}`, 
+        { withCredentials: true }
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch task');
+    }
+  }
+);
+
 // ================== TASK SLICE ==================
 
 const taskSlice = createSlice({
@@ -220,6 +251,7 @@ const taskSlice = createSlice({
     clearCurrentTask: (state) => {
       state.currentTask = null;
     },
+    
     
     // Update task in all relevant columns
     updateTaskInColumns: (state, action) => {
@@ -262,6 +294,30 @@ const taskSlice = createSlice({
       if (state.currentTask?._id === taskId) {
         state.currentTask = null;
       }
+    },
+  clearViewingData: (state) => {
+      state.viewingUser = null;
+      state.viewingTasks = {
+        notStarted: [],
+        inProgress: [],
+        completed: [],
+        assignedToUser: [],
+        assignedToOthers: []
+      };
+      state.viewingTasksCount = {
+        notStarted: 0,
+        inProgress: 0,
+        completed: 0,
+        assignedToUser: 0,
+        assignedToOthers: 0,
+        total: 0
+      };
+      state.viewOnlyTask = null;
+      state.isViewOnly = false;
+    },
+    
+    setViewOnlyMode: (state, action) => {
+      state.isViewOnly = action.payload;
     },
   },
   
@@ -427,6 +483,37 @@ const taskSlice = createSlice({
       .addCase(addComment.rejected, (state, action) => {
         state.error = action.payload;
       });
+      builder
+      .addCase(getUserTasks.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getUserTasks.fulfilled, (state, action) => {
+        state.loading = false;
+        state.viewingUser = action.payload.user;
+        state.viewingTasks = action.payload.tasks;
+        state.viewingTasksCount = action.payload.counts;
+        state.isViewOnly = true;
+      })
+      .addCase(getUserTasks.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Get Task for Viewing
+    builder
+      .addCase(getTaskForViewing.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getTaskForViewing.fulfilled, (state, action) => {
+        state.loading = false;
+        state.viewOnlyTask = action.payload.task;
+        state.isViewOnly = true;
+      })
+      .addCase(getTaskForViewing.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 
@@ -436,6 +523,8 @@ export const {
   clearCurrentTask,
   updateTaskInColumns,
   removeTaskFromColumns,
+  clearViewingData, // NEW
+  setViewOnlyMode, // NEW
 } = taskSlice.actions;
 
 export default taskSlice.reducer;

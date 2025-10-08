@@ -62,6 +62,7 @@ import SocialModal from "./components/SocialModal";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import Tasks from "./pages/Tasks/Tasks";
+import ViewUserTasks from "./pages/ViewUserTasks/ViewUserTasks";
 
 // Create ThemeContext
 export const ThemeContext = createContext();
@@ -232,7 +233,9 @@ function App() {
               <Route path="/whatsnew" element={<ProtectedRoute><WhatsNew /></ProtectedRoute>} />
 
               <Route path="/selected-jobs" element={<ProtectedRoute><SelectedJobs /></ProtectedRoute>} />
+
               <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
+              <Route path="/tasks/view/:userId" element={<ProtectedRoute><ViewUserTasks /></ProtectedRoute>} />
 
               {/* 404 - also protected */}
               <Route path="*" element={<ProtectedRoute><NotFound /></ProtectedRoute>} />

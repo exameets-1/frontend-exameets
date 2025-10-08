@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { Plus, Smartphone, Monitor } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Smartphone, Monitor, Users, ChevronDown } from 'lucide-react';
+import axios from 'axios';
 import { CreateTaskModal } from '../../modals/TaskModals/CreateTaskModal';
 import { TaskDetailsModal } from '../../modals/TaskModals/TaskDetailsModal';
 import { 
@@ -17,6 +19,9 @@ import { toast } from 'react-toastify';
 
 export default function Tasks() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const dropdownRef = useRef(null);
+  
   const { 
     notStartedTasks,
     inProgressTasks,
@@ -33,6 +38,29 @@ export default function Tasks() {
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [initialLoading, setInitialLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  
+  // Admin users state
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [showAdminsDropdown, setShowAdminsDropdown] = useState(false);
+
+  // Fetch admins function
+  const fetchUsers = async () => {
+    try {
+      setLoadingUsers(true);
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/user/admins`,
+        { withCredentials: true }
+      );
+      setUsers(data.admins || []);
+    } catch (error) {
+      console.error('Failed to fetch users:', error);
+      setUsers([]);
+      toast.error('Failed to fetch admin users');
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
 
   // Check if device is mobile
   useEffect(() => {
@@ -40,14 +68,13 @@ export default function Tasks() {
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
       const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
       const isMobileDevice = mobileRegex.test(userAgent.toLowerCase());
-      const isSmallScreen = window.innerWidth < 768; // Less than tablet size
+      const isSmallScreen = window.innerWidth < 768;
       
       setIsMobile(isMobileDevice || isSmallScreen);
     };
 
     checkMobile();
     
-    // Listen for window resize
     const handleResize = () => {
       checkMobile();
     };
@@ -56,7 +83,7 @@ export default function Tasks() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Fetch all column data on mount
+  // Fetch all column data and admins on mount
   useEffect(() => {
     if (!isMobile) {
       const fetchData = async () => {
@@ -69,6 +96,8 @@ export default function Tasks() {
             dispatch(getTasksAssignedToMe()),
             dispatch(getTasksAssignedToOthers())
           ]);
+          // Fetch admins for the dropdown
+          await fetchUsers();
         } finally {
           setInitialLoading(false);
         }
@@ -90,12 +119,25 @@ export default function Tasks() {
     }
   }, [message, error, dispatch]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowAdminsDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   // Mobile Restriction Screen
   if (isMobile) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 text-center">
-          {/* Icon */}
           <div className="mb-6">
             <div className="relative mx-auto w-24 h-24 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
               <Smartphone size={32} className="text-blue-600 dark:text-blue-400" />
@@ -117,18 +159,15 @@ export default function Tasks() {
             </div>
           </div>
 
-          {/* Title */}
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Desktop Only
           </h1>
 
-          {/* Message */}
           <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
             The Tasks page is optimized for desktop use with multiple columns and complex interactions. 
             Please access this page from a desktop or laptop computer for the best experience.
           </p>
 
-          {/* Features that require desktop */}
           <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
               <Monitor size={16} className="mr-2" />
@@ -139,10 +178,6 @@ export default function Tasks() {
                 <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2"></span>
                 5-column kanban board layout
               </li>
-              {/* <li className="flex items-center">
-                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2"></span>
-                Drag & drop functionality
-              </li> */}
               <li className="flex items-center">
                 <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2"></span>
                 Multi-panel task details
@@ -154,7 +189,6 @@ export default function Tasks() {
             </ul>
           </div>
 
-          {/* Instructions */}
           <div className="text-sm text-gray-500 dark:text-gray-400">
             <p className="mb-2">
               💡 <strong>Tip:</strong> Switch to desktop mode in your browser or use a computer
@@ -164,7 +198,6 @@ export default function Tasks() {
             </p>
           </div>
 
-          {/* Back button */}
           <button
             onClick={() => window.history.back()}
             className="mt-6 w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -205,6 +238,11 @@ export default function Tasks() {
     dispatch(getCompletedTasks());
     dispatch(getTasksAssignedToMe());
     dispatch(getTasksAssignedToOthers());
+  };
+
+  const handleViewUserTasks = (userId) => {
+    navigate(`/tasks/view/${userId}`);
+    setShowAdminsDropdown(false);
   };
 
   // Task Card Component
@@ -256,7 +294,6 @@ export default function Tasks() {
           </span>
         </div>
 
-        {/* Status badge - only show when showStatus prop is true */}
         {showStatus && (
           <div className="mb-2">
             <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(task.status)}`}>
@@ -265,14 +302,12 @@ export default function Tasks() {
           </div>
         )}
 
-        {/* Assignee info */}
         {task.assignedTo && task.assignedTo.length > 0 && (
           <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 truncate">
             Assigned: {task.assignedTo.map(u => u.name).join(', ')}
           </div>
         )}
         
-        {/* Progress bar */}
         {task.currentProgress > 0 && (
           <div className="mt-2">
             <div className="flex justify-between items-center mb-1">
@@ -330,14 +365,65 @@ export default function Tasks() {
               Every Task is managed from here
             </p>
           </div>
-          <button
-            onClick={handleCreateTask}
-            disabled={loading}
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Plus size={20} className="mr-2" />
-            Create Task
-          </button>
+          
+          {/* Action Buttons */}
+          <div className="flex items-center space-x-3">
+            {/* View Other Admins Tasks Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setShowAdminsDropdown(!showAdminsDropdown)}
+                disabled={loadingUsers}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Users size={20} className="mr-2" />
+                View Other Admins Tasks
+                <ChevronDown 
+                  size={16} 
+                  className={`ml-2 transition-transform ${showAdminsDropdown ? 'rotate-180' : ''}`} 
+                />
+              </button>
+
+              {/* Dropdown Menu */}
+              {showAdminsDropdown && (
+                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-10">
+                  <div className="py-1 max-h-60 overflow-y-auto">
+                    {loadingUsers ? (
+                      <div className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
+                        Loading admins...
+                      </div>
+                    ) : users.length > 0 ? (
+                      users.map((user) => (
+                        <button
+                          key={user._id}
+                          onClick={() => handleViewUserTasks(user._id)}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          <div>
+                            <div className="font-medium">{user.name}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">{user.email}</div>
+                          </div>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
+                        No admin users found
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Create Task Button */}
+            <button
+              onClick={handleCreateTask}
+              disabled={loading}
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Plus size={20} className="mr-2" />
+              Create Task
+            </button>
+          </div>
         </div>
       </div>
 
@@ -346,7 +432,6 @@ export default function Tasks() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 h-full">
           {/* Column 1: Not Started */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 flex flex-col h-full min-h-0">
-            {/* Fixed Header */}
             <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -358,7 +443,6 @@ export default function Tasks() {
               </div>
             </div>
             
-            {/* Scrollable Content */}
             <div className="flex-1 p-4 overflow-y-auto min-h-0">
               {notStartedTasks && notStartedTasks.length > 0 ? (
                 <div className="space-y-3">
