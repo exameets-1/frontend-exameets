@@ -276,7 +276,7 @@ export const CreateTaskModal = ({ isOpen, onClose }) => {
               Due Date *
             </label>
             <input
-              type="date"
+              type="datetime-local"
               name="dueDate"
               value={formData.dueDate}
               onChange={handleInputChange}

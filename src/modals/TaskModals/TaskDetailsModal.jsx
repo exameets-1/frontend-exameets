@@ -252,15 +252,25 @@ export const TaskDetailsModal = ({ isOpen, onClose, taskId, onTaskUpdate }) => {
                 <div>
                   <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <Calendar size={16} className="inline mr-2" />
-                    Due Date
+                    Due Date & Time
                   </h3>
-                  <p className="text-gray-900 dark:text-gray-100">
-                    {new Date(currentTask.dueDate).toLocaleDateString('en-US', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
-                  </p>
+                  <div className="text-gray-900 dark:text-gray-100">
+                    <p className="font-medium">
+                      {new Date(currentTask.dueDate).toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'long', 
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      Due at {new Date(currentTask.dueDate).toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                      })}
+                    </p>
+                  </div>
                 </div>
 
                 <div>
