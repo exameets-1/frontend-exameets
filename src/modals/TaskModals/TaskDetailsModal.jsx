@@ -368,7 +368,7 @@ export const TaskDetailsModal = ({ isOpen, onClose, taskId, onTaskUpdate }) => {
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                {/* Submit for Review - Only assignees can submit */}
+                {/* Submit for Review - Only assignees can submit (and only if they're not the creator) */}
                 {isAssignee && !isCreator && currentTask.status !== 'completed' && currentTask.status !== 'review' && (
                   <button
                     onClick={handleSubmitForReview}
@@ -380,30 +380,52 @@ export const TaskDetailsModal = ({ isOpen, onClose, taskId, onTaskUpdate }) => {
                   </button>
                 )}
 
-                {/* Creator Actions - Only when task is in review */}
-                {isCreator && currentTask.status === 'review' && (
+                {/* Creator Actions */}
+                {isCreator && currentTask.status !== 'completed' && (
                   <>
-                    <button
-                      onClick={handleApprove}
-                      disabled={submittingAction === 'approve'}
-                      className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white rounded-lg transition-colors"
-                    >
-                      <CheckCircle size={16} className="mr-2" />
-                      {submittingAction === 'approve' ? 'Approving...' : 'Approve & Complete'}
-                    </button>
-                    
-                    <button
-                      onClick={() => setShowRequestChanges(!showRequestChanges)}
-                      className="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors"
-                    >
-                      <AlertCircle size={16} className="mr-2" />
-                      Request Changes
-                    </button>
+                    {/* If task has no assignees OR only assigned to creator, show direct complete button */}
+                    {(!currentTask.assignedTo || currentTask.assignedTo.length === 0 || 
+                      (currentTask.assignedTo.length === 1 && currentTask.assignedTo[0]._id === user._id)) && (
+                      <button
+                        onClick={handleApprove}
+                        disabled={submittingAction === 'approve'}
+                        className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white rounded-lg transition-colors"
+                      >
+                        <CheckCircle size={16} className="mr-2" />
+                        {submittingAction === 'approve' ? 'Completing...' : 'Mark as Complete'}
+                      </button>
+                    )}
+
+                    {/* If task has assignees (other than creator) and status is 'review', show approve/request changes */}
+                    {currentTask.assignedTo && currentTask.assignedTo.length > 0 && 
+                     !currentTask.assignedTo.every(assignee => assignee._id === user._id) && 
+                     currentTask.status === 'review' && (
+                      <>
+                        <button
+                          onClick={handleApprove}
+                          disabled={submittingAction === 'approve'}
+                          className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white rounded-lg transition-colors"
+                        >
+                          <CheckCircle size={16} className="mr-2" />
+                          {submittingAction === 'approve' ? 'Approving...' : 'Approve & Complete'}
+                        </button>
+                        
+                        <button
+                          onClick={() => setShowRequestChanges(!showRequestChanges)}
+                          className="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors"
+                        >
+                          <AlertCircle size={16} className="mr-2" />
+                          Request Changes
+                        </button>
+                      </>
+                    )}
                   </>
                 )}
 
-                {/* Informational message for creator when task is not in review */}
-                {isCreator && currentTask.status !== 'review' && currentTask.status !== 'completed' && (
+                {/* Informational message for creator when waiting for assignees */}
+                {isCreator && currentTask.assignedTo && currentTask.assignedTo.length > 0 && 
+                 !currentTask.assignedTo.every(assignee => assignee._id === user._id) && 
+                 currentTask.status !== 'review' && currentTask.status !== 'completed' && (
                   <div className="inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg text-sm">
                     <Clock size={16} className="mr-2" />
                     {currentTask.status === 'not_started' 
