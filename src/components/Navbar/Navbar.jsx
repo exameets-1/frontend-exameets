@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '../../App';
-import { UserCog, X, Menu, ChevronDown, CheckSquare } from 'lucide-react';
+import { UserCog, X, Menu, ChevronDown, CheckSquare, FileText } from 'lucide-react';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -88,13 +88,17 @@ const Navbar = () => {
             <Link to="/papers" onClick={closeMobileMenu} className={getNavItemStyle('/papers')}>PYQs</Link>
             <Link to="/scholarships" onClick={closeMobileMenu} className={getNavItemStyle('/scholarships')}>Scholarships</Link>
             
-            {/* Tasks link for authenticated users in mobile menu */}
+            {/* Admin-only links for authenticated users in mobile menu */}
             {isAuthenticated && (
               <>
                 <hr className="border-gray-200 dark:border-gray-600" />
                 <Link to="/tasks" onClick={closeMobileMenu} className={`${getNavItemStyle('/tasks')} flex items-center gap-2 text-blue-600 dark:text-blue-400 font-medium`}>
                   <CheckSquare size={18} />
                   Tasks
+                </Link>
+                <Link to="/test" onClick={closeMobileMenu} className={`${getNavItemStyle('/test')} flex items-center gap-2 text-green-600 dark:text-green-400 font-medium`}>
+                  <FileText size={18} />
+                  Test
                 </Link>
               </>
             )}
@@ -199,16 +203,29 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Tasks navigation item for authenticated users */}
+          {/* Admin-only navigation items for authenticated users */}
           {isAuthenticated && (
-            <div className="flex flex-col items-center m-4">
-              <Link to="/tasks" className="flex flex-col items-center">
-                <div className="flex items-center justify-center w-[70px] h-[70px] bg-[#E8F4FD] border-[3.5px] border-[#3B82F6] rounded-full hover:bg-[#DBEAFE] transition-colors duration-200">
-                  <CheckSquare size={28} className="text-[#3B82F6]" />
-                </div>
-                <span className="text-xl dark:text-gray-100">Tasks</span>
-              </Link>
-            </div>
+            <>
+              {/* Tasks navigation item */}
+              <div className="flex flex-col items-center m-4">
+                <Link to="/tasks" className="flex flex-col items-center">
+                  <div className="flex items-center justify-center w-[70px] h-[70px] bg-[#E8F4FD] border-[3.5px] border-[#3B82F6] rounded-full hover:bg-[#DBEAFE] transition-colors duration-200">
+                    <CheckSquare size={28} className="text-[#3B82F6]" />
+                  </div>
+                  <span className="text-xl dark:text-gray-100">Tasks</span>
+                </Link>
+              </div>
+
+              {/* Test navigation item */}
+              <div className="flex flex-col items-center m-4">
+                <Link to="/test" className="flex flex-col items-center">
+                  <div className="flex items-center justify-center w-[70px] h-[70px] bg-[#F0FDF4] border-[3.5px] border-[#10B981] rounded-full hover:bg-[#DCFCE7] transition-colors duration-200">
+                    <FileText size={28} className="text-[#10B981]" />
+                  </div>
+                  <span className="text-xl dark:text-gray-100">Test</span>
+                </Link>
+              </div>
+            </>
           )}
         </nav>
       </div>
@@ -234,6 +251,12 @@ const Navbar = () => {
               <Link to="/tasks" className="text-white dark:text-gray-100 no-underline flex items-center hover:text-blue-200 transition-colors">
                 <CheckSquare className="md:hidden" size={20} />
                 <span className="hidden md:inline text-lg">Tasks</span>
+              </Link>
+              <span className="text-lg">|</span>
+              {/* Test link in bottom bar for quick access */}
+              <Link to="/test" className="text-white dark:text-gray-100 no-underline flex items-center hover:text-green-200 transition-colors">
+                <FileText className="md:hidden" size={20} />
+                <span className="hidden md:inline text-lg">Test</span>
               </Link>
               <span className="text-lg">|</span>
               <Link to="/dashboard" className="text-white dark:text-gray-100 no-underline flex items-center hover:text-blue-200 transition-colors">
