@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchActiveTests, addQuestion, clearAddQuestionStatus } from '../../store/slices/testSlice.js';
+import { fetchActiveTests, addQuestion, clearAddQuestionStatus, createTestCourse, clearCreateTestStatus } from '../../store/slices/testSlice.js';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -15,6 +15,13 @@ const Test = () => {
       error: submitError,
       success: submitSuccess,
       response: submitResponse
+    },
+    createTestStatus: {
+      isLoading: createTestLoading,
+      error: createTestError,
+      success: createTestSuccess,
+      // eslint-disable-next-line no-unused-vars
+      response: createTestResponse
     }
   } = useSelector((state) => state.test);
 
@@ -29,6 +36,16 @@ const Test = () => {
     correctOptionIndex: 0,
     minTimeToSolve: 30,
     selectedTests: [],
+  });
+
+  const [testCourseData, setTestCourseData] = useState({
+    title: '',
+    description: '',
+    durationMinutes: 30,
+    totalMarks: 100,
+    isActive: false,
+    questionsPerTest: 15,
+    instructions: ['']
   });
 
   useEffect(() => {
@@ -69,6 +86,30 @@ const Test = () => {
     }
   }, [error, submitError]);
 
+  useEffect(() => {
+    if (createTestSuccess) {
+      toast.success('Test course created successfully!');
+      setTestCourseData({
+        title: '',
+        description: '',
+        durationMinutes: 30,
+        totalMarks: 100,
+        isActive: false,
+        questionsPerTest: 15,
+        instructions: ['']
+      });
+      setTimeout(() => {
+        dispatch(clearCreateTestStatus());
+      }, 3000);
+    }
+  }, [createTestSuccess, dispatch]);
+
+  useEffect(() => {
+    if (createTestError) {
+      toast.error(`Error: ${createTestError}`);
+    }
+  }, [createTestError]);
+
   const handleQuestionChange = (e) => {
     setFormData({ ...formData, questionText: e.target.value });
   };
@@ -93,6 +134,37 @@ const Test = () => {
       : [...formData.selectedTests, testId];
     
     setFormData({ ...formData, selectedTests: newSelectedTests });
+  };
+
+  const handleTestCourseChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setTestCourseData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleInstructionChange = (index, value) => {
+    const newInstructions = [...testCourseData.instructions];
+    newInstructions[index] = value;
+    setTestCourseData(prev => ({
+      ...prev,
+      instructions: newInstructions
+    }));
+  };
+
+  const addInstruction = () => {
+    setTestCourseData(prev => ({
+      ...prev,
+      instructions: [...prev.instructions, '']
+    }));
+  };
+
+  const removeInstruction = (index) => {
+    setTestCourseData(prev => ({
+      ...prev,
+      instructions: prev.instructions.filter((_, i) => i !== index)
+    }));
   };
 
   const isFormValid = () => {
@@ -139,11 +211,29 @@ const Test = () => {
     dispatch(addQuestion(questionData));
   };
 
+  const handleCreateTestCourse = (e) => {
+    e.preventDefault();
+    
+    if (!testCourseData.title.trim()) {
+      toast.error('Title is required');
+      return;
+    }
+
+    // Filter out empty instructions
+    const filteredInstructions = testCourseData.instructions.filter(instr => instr.trim());
+    
+    dispatch(createTestCourse({
+      ...testCourseData,
+      instructions: filteredInstructions,
+      questions: [] // Always empty array as per requirement
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto space-y-8">
+        {/* Existing Question Form */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden">
-          {/* Header */}
           <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-8">
             <h1 className="text-3xl sm:text-4xl font-bold text-white text-center">
               Add New Question
@@ -335,6 +425,161 @@ const Test = () => {
                   )}
                 </button>
               </div>
+            </div>
+          </form>
+        </div>
+
+        {/* Test Course Creation Form */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden">
+          <div className="bg-gradient-to-r from-green-600 to-teal-600 px-6 py-8">
+            <h1 className="text-3xl sm:text-4xl font-bold text-white text-center">
+              Create New Test Course
+            </h1>
+            <p className="text-green-100 text-center mt-2">
+              Set up a new test course
+            </p>
+          </div>
+
+          <form onSubmit={handleCreateTestCourse} className="p-6 space-y-6">
+            {/* Basic Details */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
+                  Title *
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  value={testCourseData.title}
+                  onChange={handleTestCourseChange}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
+                  Description
+                </label>
+                <input
+                  type="text"
+                  name="description"
+                  value={testCourseData.description}
+                  onChange={handleTestCourseChange}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
+                  Duration (minutes) *
+                </label>
+                <input
+                  type="number"
+                  name="durationMinutes"
+                  value={testCourseData.durationMinutes}
+                  onChange={handleTestCourseChange}
+                  min="1"
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
+                  Total Marks *
+                </label>
+                <input
+                  type="number"
+                  name="totalMarks"
+                  value={testCourseData.totalMarks}
+                  onChange={handleTestCourseChange}
+                  min="1"
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
+                  Questions Per Test *
+                </label>
+                <input
+                  type="number"
+                  name="questionsPerTest"
+                  value={testCourseData.questionsPerTest}
+                  onChange={handleTestCourseChange}
+                  min="1"
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
+                  Active
+                </label>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="isActive"
+                    checked={testCourseData.isActive}
+                    onChange={handleTestCourseChange}
+                    className="w-4 h-4 text-green-600 border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-green-500"
+                  />
+                  <span className="ml-2 text-sm text-gray-700 dark:text-gray-200">
+                    Enable this test course
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Instructions */}
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
+                  Instructions
+                </label>
+                <button
+                  type="button"
+                  onClick={addInstruction}
+                  className="px-4 py-2 text-sm text-green-600 hover:text-green-700 dark:text-green-400"
+                >
+                  + Add Instruction
+                </button>
+              </div>
+              
+              {testCourseData.instructions.map((instruction, index) => (
+                <div key={index} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={instruction}
+                    onChange={(e) => handleInstructionChange(index, e.target.value)}
+                    placeholder={`Instruction ${index + 1}`}
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-green-500"
+                  />
+                  {testCourseData.instructions.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeInstruction(index)}
+                      className="p-2 text-red-500 hover:text-red-700"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                disabled={createTestLoading}
+                className="px-6 py-2 bg-gradient-to-r from-green-600 to-teal-600 text-white font-semibold rounded-lg hover:from-green-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {createTestLoading ? 'Creating...' : 'Create Test Course'}
+              </button>
             </div>
           </form>
         </div>
