@@ -27,6 +27,7 @@ const Test = () => {
       { text: '' },
     ],
     correctOptionIndex: 0,
+    minTimeToSolve: 30,
     selectedTests: [],
   });
 
@@ -48,6 +49,7 @@ const Test = () => {
           { text: '' },
         ],
         correctOptionIndex: 0,
+        minTimeToSolve: 30,
         selectedTests: [],
       });
 
@@ -79,6 +81,10 @@ const Test = () => {
 
   const handleCorrectOptionChange = (e) => {
     setFormData({ ...formData, correctOptionIndex: parseInt(e.target.value) });
+  };
+
+  const handleMinTimeChange = (e) => {
+    setFormData({ ...formData, minTimeToSolve: parseInt(e.target.value) || 0 });
   };
 
   const handleTestSelection = (testId) => {
@@ -126,6 +132,7 @@ const Test = () => {
       questionText: formData.questionText,
       options: formData.options,
       correctOptionIndex: formData.correctOptionIndex,
+      minTimeToSolve: formData.minTimeToSolve,
       testCourseIds: formData.selectedTests,
     };
 
@@ -225,6 +232,25 @@ const Test = () => {
               </select>
             </div>
 
+            {/* Minimum Time to Solve */}
+            <div className="space-y-2">
+              <label htmlFor="minTimeToSolve" className="block text-sm font-bold text-gray-700 dark:text-gray-200">
+                Minimum Time to Solve (seconds) *
+              </label>
+              <input
+                type="number"
+                id="minTimeToSolve"
+                value={formData.minTimeToSolve}
+                onChange={handleMinTimeChange}
+                min="1"
+                required
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Minimum time required for students to solve this question
+              </p>
+            </div>
+
             {/* Test Selection */}
             <div className="space-y-2">
               <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
@@ -283,6 +309,7 @@ const Test = () => {
                         { text: '' },
                       ],
                       correctOptionIndex: 0,
+                      minTimeToSolve: 30,
                       selectedTests: [],
                     });
                   }}
