@@ -1,5 +1,6 @@
+import React from 'react';
 import { useState, useEffect } from 'react';
-import { AlertCircle, Loader2, Users, BookOpen, CheckCircle, Clock } from 'lucide-react';
+import { AlertCircle, Loader2, Users, CheckCircle } from 'lucide-react';
 
 export default function Registrations() {
   const [data, setData] = useState(null);
@@ -150,8 +151,8 @@ export default function Registrations() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {data?.students.map((student) => (
-                  <>
-                    <tr key={student.id} className="hover:bg-gray-50 transition">
+                  <React.Fragment key={student.id}>
+                    <tr className="hover:bg-gray-50 transition">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="font-medium text-gray-900">{student.name}</div>
                       </td>
@@ -299,7 +300,7 @@ export default function Registrations() {
                         </td>
                       </tr>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
