@@ -217,14 +217,14 @@ const Navbar = () => {
               </div>
 
               {/* Test navigation item */}
-              <div className="flex flex-col items-center m-4">
+              {/* <div className="flex flex-col items-center m-4">
                 <Link to="/test" className="flex flex-col items-center">
                   <div className="flex items-center justify-center w-[70px] h-[70px] bg-[#F0FDF4] border-[3.5px] border-[#10B981] rounded-full hover:bg-[#DCFCE7] transition-colors duration-200">
                     <FileText size={28} className="text-[#10B981]" />
                   </div>
                   <span className="text-xl dark:text-gray-100">Test</span>
                 </Link>
-              </div>
+              </div> */}
             </>
           )}
         </nav>

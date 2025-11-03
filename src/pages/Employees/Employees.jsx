@@ -41,22 +41,44 @@ const EmployeesPage = () => {
         }
     }, []);
 
+    // const handleVerify = (employeeId, e) => {
+    //     e.stopPropagation();
+    //     if (!isAuthenticated) {
+    //         toast.info("Please login to verify employee", {
+    //             position: "top-center",
+    //             autoClose: 2000,
+    //         });
+    //         localStorage.setItem("pendingEmployeeVerification", employeeId);
+    //         setTimeout(() => {
+    //             navigate("/login");
+    //         }, 1000);
+    //         return;
+    //     }
+    //     localStorage.setItem("employeeScrollPosition", window.scrollY.toString());
+    //     navigate(`/emp/get/${employeeId}`);
+    // };
+
     const handleVerify = (employeeId, e) => {
-        e.stopPropagation();
-        if (!isAuthenticated) {
-            toast.info("Please login to verify employee", {
-                position: "top-center",
-                autoClose: 2000,
-            });
-            localStorage.setItem("pendingEmployeeVerification", employeeId);
-            setTimeout(() => {
-                navigate("/login");
-            }, 1000);
-            return;
-        }
-        localStorage.setItem("employeeScrollPosition", window.scrollY.toString());
-        navigate(`/emp/get/${employeeId}`);
-    };
+    e.stopPropagation();
+    if (!isAuthenticated) {
+        toast.info("Please login to verify employee", {
+            position: "top-center",
+            autoClose: 2000,
+        });
+        // Store in sessionStorage instead of localStorage
+        sessionStorage.setItem("pendingEmployeeVerification", employeeId);
+        // Clear after 5 minutes (300000ms) as a safety measure
+        setTimeout(() => {
+            sessionStorage.removeItem("pendingEmployeeVerification");
+        }, 300000);
+        setTimeout(() => {
+            navigate("/login");
+        }, 1000);
+        return;
+    }
+    localStorage.setItem("employeeScrollPosition", window.scrollY.toString());
+    navigate(`/emp/get/${employeeId}`);
+};
 
     const handleDelete = (id, e) => {
         e.stopPropagation();
