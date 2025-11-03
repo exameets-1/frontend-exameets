@@ -66,6 +66,8 @@ import ViewUserTasks from "./pages/ViewUserTasks/ViewUserTasks";
 
 import Test from "./pages/Test/Test";
 
+import Registrations from "./pages/Registrations/Registrations";
+
 // Create ThemeContext
 export const ThemeContext = createContext();
 
@@ -238,6 +240,8 @@ function App() {
 
               <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
               <Route path="/tasks/view/:userId" element={<ProtectedRoute><ViewUserTasks /></ProtectedRoute>} />
+
+              <Route path="/reg" element={<ProtectedRoute><Registrations /></ProtectedRoute>} />
 
               <Route path="/test" element={<ProtectedRoute><Test /></ProtectedRoute>} />
 
