@@ -128,24 +128,6 @@ export default function Registrations() {
                 {data?.students.filter(s => s.verified).length || 0}
               </p>
             </div>
-            <div className="bg-purple-50 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <BookOpen className="w-5 h-5 text-purple-600" />
-                <span className="text-sm font-medium text-gray-600">Total Courses</span>
-              </div>
-              <p className="text-2xl font-bold text-gray-800">
-                {data?.students.reduce((sum, s) => sum + s.totalRegisteredCourses, 0) || 0}
-              </p>
-            </div>
-            <div className="bg-orange-50 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Clock className="w-5 h-5 text-orange-600" />
-                <span className="text-sm font-medium text-gray-600">Test Attempts</span>
-              </div>
-              <p className="text-2xl font-bold text-gray-800">
-                {data?.students.reduce((sum, s) => sum + s.totalAttempts, 0) || 0}
-              </p>
-            </div>
           </div>
         </div>
 
